@@ -3,13 +3,32 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <set>
-#include <map>
+#include <unordered_map>
 
 #include "EntityType.h"
 
 using namespace std;
+
+/*
+struct KeyHash {
+	std::size_t operator()(const string& k) const {
+		return std::stoi(k);
+	}
+};
+
+struct KeyEqual {
+	bool operator()(const string& lhs, const string& rhs) const {
+		return std::stoi(lhs) == std::stoi(rhs);
+	}
+};
+
+struct KeyComp {
+	bool operator()(const string& lhs, const string& rhs) const {
+		return std::stoi(lhs) < std::stoi(rhs);
+	}
+};
+*/
 
 class PKB {
 
@@ -19,7 +38,7 @@ public:
 	* 
 	* @param number the number of statements in the program
 	*/
-	PKB(int n);
+	PKB(const int& n);
 
 	/**
 	* Initializes the PKB after the parser finishes 
@@ -34,7 +53,7 @@ public:
 	*
 	* @return a boolean indicating whether the operation is successful
 	*/
-	bool setStatementType(int index, EntityType type);
+	bool setStatementType(const int& index, const EntityType& type);
 
 	/**
 	* Inserts a parent relationship into PKB
@@ -44,7 +63,7 @@ public:
 	*
 	* @return a boolean indicating whether the operation is successful
 	*/
-	bool insertParent(int parent, int child);
+	bool insertParent(const int& parent, const int& child);
 
 	/**
 	* Inserts a follow relationship into PKB
@@ -54,7 +73,7 @@ public:
 	*
 	* @return a boolean indicating whether the operation is successful
 	*/
-	bool insertFollow(int former, int latter);
+	bool insertFollow(const int& former, const int& latter);
 
 	/**
 	* Insert a set of variables directly used by a statement into PKB
@@ -64,7 +83,7 @@ public:
 	*
 	* @return a boolean indicating whether the operation is successful
 	*/
-	bool insertDirectUses(int index, set<string> variables);
+	bool insertDirectUses(const int& index, const set<string>& variables);
 
 	/**
 	* Inserts the variable directly modified by a statement into PKB
@@ -74,7 +93,7 @@ public:
 	*
 	* @return a boolean indicating whether the operation is successful
 	*/
-	bool insertDirectModifies(int index, string variables);
+	bool insertDirectModifies(const int& index, const string& variables);
 
 	/**
 	* Inserts a hashed expression of an assign statement into PKB
@@ -84,7 +103,7 @@ public:
 	*
 	* @return a boolean indicating whether the operation is successful
 	*/
-	bool insertExpression(int index, long expression);
+	bool insertExpression(const int& index, const long& expression);
 
 	/**
 	* Retrieves induces of all statement of some type
@@ -93,7 +112,7 @@ public:
 	* 
 	* @return set of statement indices as string
 	*/
-	set<string> getEntities(EntityType type);
+	set<string> getEntities(const EntityType& type);
 
 
 
@@ -101,13 +120,15 @@ private:
 	
 	const int number; // number of statement
 	
-	vector<EntityType> types; // type of each statement
+	unordered_map<string, EntityType> types; // map from index to type
 	
-	map<string, set<string>> relations[5]; // relationship maps
+	unordered_map<EntityType, set<string>> stmts; // map from type to indices
+
+	unordered_map<string, set<string>> relations[6]; // relationship maps
 	
-	map<string, set<string>> relationsBy[5]; // by-relationship maps
+	unordered_map<string, set<string>> relationsBy[6]; // by-relationship maps
 	
-	map<long, set<string>> expressions; // map from expression to indices
+	unordered_map<long, set<string>> expressions; // map from expression to indices
 	
 	void extractFollowStar();
 
