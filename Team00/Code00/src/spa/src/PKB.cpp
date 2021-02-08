@@ -37,17 +37,42 @@ bool PKB::insertParent(const int& parent, const int& child) {
 		return false;
 	} else if (child <= 0 || child > this->number) {
 		return false;
+	} else if (child >= parent) {
+		return false;
 	} else {
-		int t = RelationshipType::FOLLOWS;
-		this->relations[t][to_string(parent)].insert(to_string(child));
-		this->relationsBy[t][to_string(child)].insert(to_string(parent));
-		return true;
+		int t = RelationshipType::PARENT;
+		string parentString = to_string(parent);
+		string childString = to_string(child);
+		if (!relations[t][parentString].empty()) { // key exists
+			return false;
+		} else {
+			this->relations[t][parentString].insert(childString);
+			this->relationsBy[t][childString].insert(parentString);
+			return true;
+		}
 	}
 }
 
 
 bool PKB::insertFollow(const int& former, const int& latter) {
-	return true;
+	if (former <= 0 || former > this->number) {
+		return false;
+	} else if (latter <= 0 || latter > this->number) {
+		return false;
+	} else if (former >= latter) {
+		return false;
+	} else {
+		int t = RelationshipType::FOLLOWS;
+		string formerString = to_string(former);
+		string latterString = to_string(latter);
+		if (!relations[t][formerString].empty()) { // key exists
+			return false;
+		} else {
+			this->relations[t][formerString].insert(latterString);
+			this->relationsBy[t][latterString].insert(formerString);
+			return true;
+		}
+	}
 }
 
 

@@ -106,7 +106,7 @@ public:
 	bool insertExpression(const int& index, const long& expression);
 
 	/**
-	* Retrieves induces of all statement of some type
+	* Retrieves indices of all statements of some type as string
 	* 
 	* @param type
 	* 
