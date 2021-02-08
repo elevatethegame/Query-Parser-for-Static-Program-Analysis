@@ -96,6 +96,28 @@ set<string> PKB::getEntities(const EntityType& type) {
 	}
 }
 
+bool PKB::getBooleanResultOfRS(const RelationshipType& type,
+	const QueryInput& input1, const QueryInput& input2) {
+	return true;
+}
+
+unordered_map<string, set<string>> PKB::getResultsOfRS(
+	const RelationshipType& type, const QueryInput& input1, const QueryInput& input2) {
+	return unordered_map<string, set<string>>();
+}
+
+bool PKB::getBooleanResultOfPattern(
+	const QueryInput& input, const Expression& expression) {
+	return true;
+}
+
+
+unordered_map<string, set<string>> PKB::getResultsOfPattern(
+	const Declaration& input, const Expression& expression) {
+	return unordered_map<string, set<string>>();
+}
+
+
 void PKB::extractFollowStar() {
 }
 
