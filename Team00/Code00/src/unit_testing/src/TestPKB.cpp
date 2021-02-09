@@ -1,4 +1,7 @@
 #include "PKB.h"
+#include "StmtNum.h"
+#include "Indent.h"
+#include "Any.h"
 
 #include "catch.hpp"
 using namespace std;
@@ -39,4 +42,58 @@ TEST_CASE("PKB setAndGetTypes") {
 	REQUIRE(pkb.getEntities(EntityType::CONST).empty());
 }
 
+TEST_CASE("PKB parentAndFollow") {
+	
+	PKB pkb = PKB(10);
+
+	REQUIRE(pkb.insertFollow(1, 2));
+	REQUIRE(pkb.insertFollow(2, 3));
+	REQUIRE(pkb.insertFollow(3, 4));
+	REQUIRE(pkb.insertParent(4, 5));
+	REQUIRE(pkb.insertParent(5, 6));
+	REQUIRE(pkb.insertFollow(6, 7));
+	REQUIRE(pkb.insertFollow(8, 9));
+
+	REQUIRE_FALSE(pkb.insertFollow(0, 1));
+	REQUIRE_FALSE(pkb.insertFollow(3, 1));
+	REQUIRE_FALSE(pkb.insertParent(0, -1));
+	REQUIRE_FALSE(pkb.insertParent(1, 1));
+
+	REQUIRE(pkb.getBooleanResultOfRS(FOLLOWS, *(new StmtNum("1")), *(new StmtNum("2"))));
+	REQUIRE(pkb.getBooleanResultOfRS(FOLLOWS, *(new StmtNum("3")), *(new StmtNum("4"))));
+	REQUIRE(pkb.getBooleanResultOfRS(FOLLOWS, *(new StmtNum("8")), *(new StmtNum("9"))));
+	REQUIRE(pkb.getBooleanResultOfRS(FOLLOWS, *(new Any()), *(new StmtNum("3"))));
+	REQUIRE(pkb.getBooleanResultOfRS(FOLLOWS, *(new StmtNum("6")), *(new Any())));
+	REQUIRE(pkb.getBooleanResultOfRS(FOLLOWS, *(new Any()), *(new Any())));
+	REQUIRE(pkb.getBooleanResultOfRS(PARENT, *(new StmtNum("4")), *(new StmtNum("5"))));
+	REQUIRE(pkb.getBooleanResultOfRS(PARENT, *(new StmtNum("4")), *(new Any())));
+
+	REQUIRE_FALSE(pkb.getBooleanResultOfRS(
+		RelationshipType::FOLLOWS, *(new StmtNum("9")), *(new StmtNum("10"))));
+	REQUIRE_FALSE(pkb.getBooleanResultOfRS(
+		RelationshipType::FOLLOWS, *(new StmtNum("4")), *(new Any())));
+	REQUIRE_FALSE(pkb.getBooleanResultOfRS(
+		RelationshipType::FOLLOWS, *(new StmtNum("0")), *(new StmtNum("1"))));
+	REQUIRE_FALSE(pkb.getBooleanResultOfRS(
+		RelationshipType::PARENT, *(new StmtNum("11")), *(new Any())));
+	
+	REQUIRE_FALSE(pkb.getBooleanResultOfRS(RelationshipType::FOLLOWS, 
+		*(new Declaration(EntityType::ASSIGN,"a")), *(new StmtNum("1"))));
+	REQUIRE_FALSE(pkb.getBooleanResultOfRS(RelationshipType::PARENT,
+		*(new Any()), *(new Declaration(EntityType::CALL, "c"))));
+	REQUIRE_FALSE(pkb.getBooleanResultOfRS(RelationshipType::PARENT,
+		*(new Any()), *(new Indent("dummyIndent"))));
+
+	set<string> resultFollow = pkb.getResultsOfRS(FOLLOWS,
+		*(new Any()), *(new Declaration(EntityType::STMT, "s")))[""];
+	string a[] = { "2", "3", "4", "7", "9" };
+	set<string> expectedFollow { std::begin(a), std::end(a) };
+	REQUIRE(expectedFollow == resultFollow);
+	
+	set<string> resultParent = pkb.getResultsOfRS(PARENT,
+		*(new Declaration(EntityType::STMT, "s")), *(new StmtNum("5")))[""];
+	string b[] = { "4" }; 
+	set<string> expectedParent { std::begin(b), std::end(b) };
+	REQUIRE(expectedParent == resultParent);
+}
 

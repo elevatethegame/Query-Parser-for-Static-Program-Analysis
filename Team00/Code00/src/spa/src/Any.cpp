@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Any::Any(string value) {
-	this->aValue = value;
+Any::Any() {
+	this->aValue = "_";
 	this->aQueryInputType = QueryInputType::ANY;
 }
