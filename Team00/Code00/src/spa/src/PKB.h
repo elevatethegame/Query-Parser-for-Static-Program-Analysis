@@ -97,7 +97,7 @@ public:
 	*
 	* @return a boolean indicating whether the operation is successful
 	*/
-	bool insertDirectModifies(const int& index, const string& variables);
+	bool insertDirectModifies(const int& index, const string& variable);
 
 	/**
 	* Inserts a hashed expression of an assign statement into PKB
@@ -129,7 +129,7 @@ public:
 	* if there is any Declaration in inputs, returns false
 	*/
 	bool getBooleanResultOfRS(const RelationshipType& type, 
-		const QueryInput& input1, const QueryInput& input2);
+		QueryInput input1, QueryInput input2);
 
 	/**
 	* Retrieves results of a given relationship query
@@ -143,7 +143,7 @@ public:
 	* or an empty map if neither of the inputs is a Declaration
 	*/
 	unordered_map<string, set<string>> getResultsOfRS(
-		const RelationshipType& type, const QueryInput& input1, const QueryInput& input2);
+		const RelationshipType& type, QueryInput input1, QueryInput input2);
 
 	/**
 	* Retrieves a boolean result of a pattern query
@@ -154,18 +154,20 @@ public:
 	* @return a boolean indicating whether the relationship is true.
 	* if the input is a Declaration, returns false
 	*/
-	bool getBooleanResultOfPattern(const QueryInput& input, const Expression& expression);
+	bool getBooleanResultOfPattern(QueryInput input, Expression expression);
 
 	/**
 	* Retrieves results of a pattern query
 	*
+	* @param type the type of statements being queried
 	* @param input the LHS of a pattern clause
 	* @param expression the RHS of a pattern clause
 	*
-	* @return a map of results (stmt_index, set<input_value>) 
+	* @return a map of results (stmt_index, set<input_value>), 
+	* or empty if the input is neither Indent nor Declaration
 	*/
 	unordered_map<string, set<string>> getResultsOfPattern(
-		const Declaration& input, const Expression& expression);
+		const EntityType& type, QueryInput input, Expression expression);
 
 
 private:

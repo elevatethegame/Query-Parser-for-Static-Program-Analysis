@@ -7,6 +7,7 @@
 #include "PKB.h"
 #include "EntityType.h"
 #include "RelationshipType.h"
+#include "QueryInputType.h"
 
 using namespace std;
 
@@ -77,15 +78,38 @@ bool PKB::insertFollow(const int& former, const int& latter) {
 
 
 bool PKB::insertDirectUses(const int& index, const set<string>& variables) {
-	return true;
+	if (index <= 0 || index > this->number) {
+		return false;
+	} else {
+		int t = RelationshipType::USES;
+		string indexString = to_string(index);
+		this->relations[t][indexString] = variables;
+		for (string v : variables) {
+			this->relationsBy[t][v].insert(indexString);
+		}
+		return true;
+	}
 }
 
-bool PKB::insertDirectModifies(const int& index, const string& variables) {
+bool PKB::insertDirectModifies(const int& index, const string& variable) {
+	if (index <= 0 || index > this->number) {
+		return false;
+	} else {
+		int t = RelationshipType::MODIFIES;
+		string indexString = to_string(index);
+		this->relations[t][indexString].insert(variable);
+		this->relationsBy[t][variable].insert(indexString);
 		return true;
+	}
 }
 
 bool PKB::insertExpression(const int& index, const long& expression) {
-	return true;
+	if (index <= 0 || index > this->number) {
+		return false;
+	} else {
+		this->expressions[expression].insert(to_string(index));
+		return true;
+	}
 }
 
 set<string> PKB::getEntities(const EntityType& type) {
@@ -96,24 +120,28 @@ set<string> PKB::getEntities(const EntityType& type) {
 	}
 }
 
-bool PKB::getBooleanResultOfRS(const RelationshipType& type,
-	const QueryInput& input1, const QueryInput& input2) {
-	return true;
+bool PKB::getBooleanResultOfRS(
+	const RelationshipType& type, QueryInput input1, QueryInput input2) {
+	if (input1.getQueryInputType() == QueryInputType::DECLARATION ||
+		input2.getQueryInputType() == QueryInputType::DECLARATION) {
+		return false;
+	} else {
+		set<string> results = this->relations[type][input1.getValue()];
+		return (results.find(input2.getValue()) != results.end());
+	}
 }
 
 unordered_map<string, set<string>> PKB::getResultsOfRS(
-	const RelationshipType& type, const QueryInput& input1, const QueryInput& input2) {
+	const RelationshipType& type, QueryInput input1, QueryInput input2) {
 	return unordered_map<string, set<string>>();
 }
 
-bool PKB::getBooleanResultOfPattern(
-	const QueryInput& input, const Expression& expression) {
+bool PKB::getBooleanResultOfPattern(QueryInput input, Expression expression) {
 	return true;
 }
 
-
 unordered_map<string, set<string>> PKB::getResultsOfPattern(
-	const Declaration& input, const Expression& expression) {
+	const EntityType& type, QueryInput input, Expression expression) {
 	return unordered_map<string, set<string>>();
 }
 
