@@ -6,5 +6,5 @@ using namespace std;
 
 class Indent : public QueryInput {
 public:
-	Indent(QueryInputType queryInputType, string value);
+	Indent(string value);
 };

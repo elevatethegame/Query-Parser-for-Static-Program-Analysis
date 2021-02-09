@@ -17,7 +17,8 @@ void PKB::init() {
 }
 
 bool PKB::setStatementType(const int& index, const EntityType& type) {
-	if (type == STMT || type == VAR || type == CONST || type == PROC) {
+	if (type == EntityType::STMT || type == EntityType::VAR ||
+		type == EntityType::CONST || type == EntityType::PROC) {
 		return false;
 	} else if (index > this->number || index <= 0) {
 		return false;
@@ -113,7 +114,8 @@ bool PKB::insertExpression(const int& index, const long& expression) {
 }
 
 set<string> PKB::getEntities(const EntityType& type) {
-	if (type == STMT || type == VAR || type == CONST || type == PROC) {
+	if (type == EntityType::STMT || type == EntityType::VAR || 
+		type == EntityType::CONST || type == EntityType::PROC) {
 		return set<string>();
 	} else {
 		return this->stmts[type];

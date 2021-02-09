@@ -1,4 +1,3 @@
-
 #include "PKB.h"
 
 #include "catch.hpp"
@@ -26,18 +25,18 @@ TEST_CASE("PKB setAndGetTypes") {
 	REQUIRE_FALSE(pkb.setStatementType(0, EntityType::WHILE));
 	REQUIRE_FALSE(pkb.setStatementType(-1e9+7, EntityType::IF));
 
-	REQUIRE(pkb.getEntities(PRINT).empty());
+	REQUIRE(pkb.getEntities(EntityType::PRINT).empty());
 	set<string> readResult;
 	readResult.insert("9");
 	readResult.insert("10");
-	REQUIRE(pkb.getEntities(READ) == readResult);
+	REQUIRE(pkb.getEntities(EntityType::READ) == readResult);
 	set<string> whileResult;
 	whileResult.insert("5");
-	REQUIRE(pkb.getEntities(WHILE) == whileResult);
+	REQUIRE(pkb.getEntities(EntityType::WHILE) == whileResult);
 	
-	REQUIRE(pkb.getEntities(PROC).empty());
-	REQUIRE(pkb.getEntities(VAR).empty());
-	REQUIRE(pkb.getEntities(CONST).empty());
+	REQUIRE(pkb.getEntities(EntityType::PROC).empty());
+	REQUIRE(pkb.getEntities(EntityType::VAR).empty());
+	REQUIRE(pkb.getEntities(EntityType::CONST).empty());
 }
 
 
