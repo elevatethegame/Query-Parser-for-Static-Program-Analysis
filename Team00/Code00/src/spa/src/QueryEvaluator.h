@@ -5,6 +5,7 @@
 #include "Query.h"
 #include "QueryInputType.h"
 #include "PKB.h"
+#include "ResultUtil.h"
 
 class QueryEvaluator {
 private:
@@ -19,18 +20,9 @@ private:
 
 	set<string> evaluateSelectClause(vector<unordered_map<string, string>> results);
 
-	vector<unordered_map<string, string>> mergeResults(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult);
+	vector<unordered_map<string, string>> mergeResults(vector<unordered_map<string, string>> firstResult, 
+		vector<unordered_map<string, string>> secondResult);
 	
-	vector<unordered_map<string, string>> convertPKBResult(unordered_map<string, set<string>> PKBResults, string leftSynonym, string rightSynonym);
-	
-	vector<unordered_map<string, string>> convertPKBResult(unordered_map<string, set<string>> PKBResults, string synonym);
-	
-	set<string> getCommonSynonyms(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult);
-	
-	vector<unordered_map<string, string>> getCartesianProduct(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult);
-	
-	vector<unordered_map<string, string>> getNaturalJoin(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult, set<string> commonSynonyms);
-
 public:
 	
 	QueryEvaluator();
