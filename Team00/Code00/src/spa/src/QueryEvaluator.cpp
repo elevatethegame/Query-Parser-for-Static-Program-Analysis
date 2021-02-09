@@ -106,7 +106,7 @@ vector<unordered_map<string, string>> QueryEvaluator::evaluateRelationshipClause
 			rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
 			unordered_map<string, set<string>> resultFromPKB = aPKB->getResultsOfRS(relationshipClause->getRelationshipType(),
 				*leftQueryInput, *rightQueryInput);
-			vector<unordered_map<string, string>> convertedResults = convertPKBResult(resultFromPKB, leftQueryInput->getValue(), rightQueryInput->getValue());
+			vector<unordered_map<string, string>> convertedResults = ResultUtil::convertPKBResult(resultFromPKB, leftQueryInput->getValue(), rightQueryInput->getValue());
 			results = mergeResults(results, convertedResults);
 			continue;
 		}
@@ -122,7 +122,7 @@ vector<unordered_map<string, string>> QueryEvaluator::evaluateRelationshipClause
 			synonym = rightQueryInput->getValue();
 		}
 
-		vector<unordered_map<string, string>> convertedResults = convertPKBResult(resultFromPKB, synonym);
+		vector<unordered_map<string, string>> convertedResults = ResultUtil::convertPKBResult(resultFromPKB, synonym);
 		results = mergeResults(results, convertedResults);
 
 	}
@@ -135,18 +135,18 @@ vector<unordered_map<string, string>> QueryEvaluator::evaluatePatternClauses(vec
 	for (vector<PatternClause*>::iterator iterator = patternClauses->begin();
 		iterator != patternClauses->end(); iterator++) {
 		PatternClause* patternClause = *iterator;
-		QueryInput* synonym = patternClause->getSynonym();
+		Declaration* synonym = (Declaration*) patternClause->getSynonym();
 		QueryInput* queryInput = patternClause->getQueryInput();
 		Expression* expression = patternClause->getExpression();
 
-		unordered_map<string, set<string>> resultFromPKB = aPKB->getResultsOfPattern(*synonym, *queryInput, *expression);
+		unordered_map<string, set<string>> resultFromPKB = aPKB->getResultsOfPattern(synonym->getEntityType(), *queryInput, *expression);
 
 		vector<unordered_map<string, string>> convertedResults;
 		if (queryInput->getQueryInputType() == QueryInputType::DECLARATION) {
-			convertedResults = convertPKBResult(resultFromPKB, synonym->getValue(), queryInput->getValue());
+			convertedResults = ResultUtil::convertPKBResult(resultFromPKB, synonym->getValue(), queryInput->getValue());
 		}
 		else {
-			convertedResults = convertPKBResult(resultFromPKB, synonym->getValue());
+			convertedResults = ResultUtil::convertPKBResult(resultFromPKB, synonym->getValue());
 		}
 
 		if (convertedResults.size() == 0) {
@@ -175,37 +175,6 @@ set<string> QueryEvaluator::evaluateSelectClause(vector<unordered_map<string, st
 }
 
 // Utility functions ############################################################################
-vector<unordered_map<string, string>> QueryEvaluator::convertPKBResult(unordered_map<string, set<string>> PKBResults, string leftSynonym, string rightSynonym) {
-	vector<unordered_map<string, string>> results;
-	unordered_map<string, set<string>>::iterator it;
-	for (it = PKBResults.begin(); it != PKBResults.end(); it++) {
-
-		for (auto rightSynonymValue : it->second) {
-			unordered_map<string, string> result;
-			result.insert({ leftSynonym, it->first });
-			result.insert({ rightSynonym, rightSynonymValue });
-			results.push_back(result);
-		}
-	}
-
-	return results;
-}
-
-vector<unordered_map<string, string>> QueryEvaluator::convertPKBResult(unordered_map<string, set<string>> PKBResults, string synonym) {
-	vector<unordered_map<string, string>> results;
-	unordered_map<string, set<string>>::iterator it;
-	for (it = PKBResults.begin(); it != PKBResults.end(); it++) {
-
-		for (auto synonymValue : it->second) {
-			unordered_map<string, string> result;
-			result.insert({ synonym, synonymValue });
-			results.push_back(result);
-		}
-	}
-
-	return results;
-}
-
 vector<unordered_map<string, string>> QueryEvaluator::mergeResults(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult) {
 	if (firstResult.size() == 0 && secondResult.size() == 0) {
 		return firstResult;
@@ -219,97 +188,11 @@ vector<unordered_map<string, string>> QueryEvaluator::mergeResults(vector<unorde
 		return firstResult;
 	}
 
-	set<string> commonSynonyms = getCommonSynonyms(firstResult, secondResult);
+	set<string> commonSynonyms = ResultUtil::getCommonSynonyms(firstResult, secondResult);
 	if (commonSynonyms.size() == 0) {
-		return getCartesianProduct(firstResult, secondResult);
+		return ResultUtil::getCartesianProduct(firstResult, secondResult);
 	}
 	else {
-		return getNaturalJoin(firstResult, secondResult, commonSynonyms);
+		return ResultUtil::getNaturalJoin(firstResult, secondResult, commonSynonyms);
 	}
-}
-
-set<string> QueryEvaluator::getCommonSynonyms(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult) {
-	set<string> commonSynonyms;
-	unordered_map<string, string> firstMap = firstResult.at(0);
-	unordered_map<string, string> secondMap = secondResult.at(0);
-
-	unordered_map<string, string>::iterator it1 = firstMap.begin();
-	unordered_map<string, string>::iterator it2 = secondMap.begin();
-
-	// using fact that map entries are sorted by default according to key, this comparison takes linear time
-	while (it1 != firstMap.end() && it2 != secondMap.end()) {
-		if (it1->first < it2->first) {
-			++it1;
-		}
-		else if (it2->first < it1->first) {
-			++it2;
-		}
-		else { // equal keys
-			commonSynonyms.insert(it1->first);
-			++it1;
-			++it2;
-		}
-	}
-
-	return commonSynonyms;
-
-}
-
-// used to merge 2 PKB results that have no common synonyms
-vector<unordered_map<string, string>> QueryEvaluator::getCartesianProduct(vector<unordered_map<string, string>> firstResult,
-	vector<unordered_map<string, string>> secondResult) {
-	vector<unordered_map<string, string>> results;
-
-	for (vector<unordered_map<string, string>>::iterator firstResultIt = firstResult.begin();
-		firstResultIt != firstResult.end(); firstResultIt++) {
-		unordered_map<string, string> firstMap = *firstResultIt;
-
-		for (vector<unordered_map<string, string>>::iterator secondResultIt = secondResult.begin();
-			secondResultIt != secondResult.end(); secondResultIt++) {
-			unordered_map<string, string> secondMap = *secondResultIt;
-
-			unordered_map<string, string> firstMapCopy(firstMap);
-			unordered_map<string, string> secondMapCopy(secondMap);
-			firstMapCopy.insert(secondMapCopy.begin(), secondMapCopy.end());
-
-			results.push_back(firstMapCopy);
-		}
-	}
-
-	return results;
-}
-
-// used to merge 2 PKB results that have some common synonym
-vector<unordered_map<string, string>> QueryEvaluator::getNaturalJoin(vector<unordered_map<string, string>> firstResult,
-	vector<unordered_map<string, string>> secondResult, set<string> commonSynonyms) {
-	vector<unordered_map<string, string>> results;
-
-	for (vector<unordered_map<string, string>>::iterator firstResultIt = firstResult.begin();
-		firstResultIt != firstResult.end(); firstResultIt++) {
-		unordered_map<string, string> firstMap = *firstResultIt;
-
-		for (vector<unordered_map<string, string>>::iterator secondResultIt = secondResult.begin();
-			secondResultIt != secondResult.end(); secondResultIt++) {
-			unordered_map<string, string> secondMap = *secondResultIt;
-
-			bool matchAll = true;
-			for (auto synonym : commonSynonyms) {
-				if (firstMap.find(synonym)->second != secondMap.find(synonym)->second) {
-					matchAll = false;
-					break;
-				}
-			}
-
-			if (matchAll) {
-				unordered_map<string, string> firstMapCopy(firstMap);
-				unordered_map<string, string> secondMapCopy(secondMap);
-				firstMapCopy.insert(secondMapCopy.begin(), secondMapCopy.end());
-				results.push_back(firstMapCopy);
-
-			}
-
-		}
-	}
-
-	return results;
 }
