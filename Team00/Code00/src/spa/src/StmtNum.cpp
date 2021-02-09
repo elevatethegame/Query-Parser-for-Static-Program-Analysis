@@ -3,7 +3,7 @@
 #include "QueryInput.h"
 using namespace std;
 
-StmtNum::StmtNum(QueryInputType queryInputType, string value) {
+StmtNum::StmtNum(string value) {
 	aValue = value;
-	aQueryInputType = queryInputType;
+	aQueryInputType = QueryInputType::STMT_NUM;
 };

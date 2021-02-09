@@ -1,6 +1,6 @@
 #include "Indent.h"
 
-Indent::Indent(QueryInputType queryInputType, string value) {
-	aQueryInputType = queryInputType;
+Indent::Indent(string value) {
+	aQueryInputType = QueryInputType::INDENT;
 	aValue = value;
 }

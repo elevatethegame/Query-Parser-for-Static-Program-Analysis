@@ -1,7 +1,11 @@
 #pragma once
-#include "Any.h"
+#include <string>
+#include "QueryInput.h"
 
-Any::Any(QueryInputType queryInputType, string value) {
-	aQueryInputType = queryInputType;
-	aValue = value;
-}
+using namespace std;
+
+class Any : public QueryInput {
+public:
+
+	Any(string value);
+};

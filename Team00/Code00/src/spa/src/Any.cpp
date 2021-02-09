@@ -1,10 +1,7 @@
 #pragma once
-#include <string>
-#include "QueryInput.h"
+#include "Any.h"
 
-using namespace std;
-
-class Any : public QueryInput {
-public:
-	Any(QueryInputType queryInputType, string value);
-};
+Any::Any(string value) {
+	aQueryInputType = QueryInputType::ANY;
+	aValue = value;
+}

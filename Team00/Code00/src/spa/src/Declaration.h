@@ -8,6 +8,6 @@ private:
 	EntityType aEntityType;
 
 public:
-	Declaration(QueryInputType queryInputType, EntityType entityType, string value);
+	Declaration(EntityType entityType, string value);
 	EntityType getEntityType();
 };
