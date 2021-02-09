@@ -146,17 +146,6 @@ public:
 		const RelationshipType& type, QueryInput input1, QueryInput input2);
 
 	/**
-	* Retrieves a boolean result of a pattern query
-	*
-	* @param input the LHS of a pattern clause
-	* @param expression the RHS of a pattern clause
-	*
-	* @return a boolean indicating whether the relationship is true.
-	* if the input is a Declaration, returns false
-	*/
-	bool getBooleanResultOfPattern(QueryInput input, Expression expression);
-
-	/**
 	* Retrieves results of a pattern query
 	*
 	* @param type the type of statements being queried
@@ -184,6 +173,10 @@ private:
 	
 	unordered_map<long, set<string>> expressions; // map from expression to indices
 	
+	set<string> relationKeys[6]; // key set for relationships
+
+	set<string> relationByKeys[6]; // key set for by-relationships 
+
 	void extractFollowStar();
 
 	void extractParentStar();

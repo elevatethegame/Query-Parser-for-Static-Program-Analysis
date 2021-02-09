@@ -8,6 +8,7 @@
 #include "EntityType.h"
 #include "RelationshipType.h"
 #include "QueryInputType.h"
+#include "Declaration.h"
 
 using namespace std;
 
@@ -39,17 +40,20 @@ bool PKB::insertParent(const int& parent, const int& child) {
 		return false;
 	} else if (child <= 0 || child > this->number) {
 		return false;
-	} else if (child >= parent) {
+	} else if (child <= parent) {
 		return false;
 	} else {
 		int t = RelationshipType::PARENT;
 		string parentString = to_string(parent);
 		string childString = to_string(child);
-		if (!relations[t][parentString].empty()) { // key exists
+		if (this->relationKeys[t].find(parentString) != 
+			this->relationKeys[t].end()) { // key exists
 			return false;
 		} else {
 			this->relations[t][parentString].insert(childString);
 			this->relationsBy[t][childString].insert(parentString);
+			this->relationKeys[t].insert(parentString);
+			this->relationByKeys[t].insert(childString);
 			return true;
 		}
 	}
@@ -67,11 +71,14 @@ bool PKB::insertFollow(const int& former, const int& latter) {
 		int t = RelationshipType::FOLLOWS;
 		string formerString = to_string(former);
 		string latterString = to_string(latter);
-		if (!relations[t][formerString].empty()) { // key exists
+		if (this->relationKeys[t].find(formerString) !=
+			this->relationKeys[t].end()) { // key exists
 			return false;
 		} else {
 			this->relations[t][formerString].insert(latterString);
 			this->relationsBy[t][latterString].insert(formerString);
+			this->relationKeys[t].insert(formerString);
+			this->relationByKeys[t].insert(latterString);
 			return true;
 		}
 	}
@@ -85,8 +92,10 @@ bool PKB::insertDirectUses(const int& index, const set<string>& variables) {
 		int t = RelationshipType::USES;
 		string indexString = to_string(index);
 		this->relations[t][indexString] = variables;
+		this->relationKeys[t].insert(indexString);
 		for (string v : variables) {
 			this->relationsBy[t][v].insert(indexString);
+			this->relationByKeys[t].insert(v);
 		}
 		return true;
 	}
@@ -100,6 +109,8 @@ bool PKB::insertDirectModifies(const int& index, const string& variable) {
 		string indexString = to_string(index);
 		this->relations[t][indexString].insert(variable);
 		this->relationsBy[t][variable].insert(indexString);
+		this->relationKeys[t].insert(indexString);
+		this->relationByKeys[t].insert(variable);
 		return true;
 	}
 }
@@ -124,22 +135,73 @@ set<string> PKB::getEntities(const EntityType& type) {
 
 bool PKB::getBooleanResultOfRS(
 	const RelationshipType& type, QueryInput input1, QueryInput input2) {
-	if (input1.getQueryInputType() == QueryInputType::DECLARATION ||
-		input2.getQueryInputType() == QueryInputType::DECLARATION) {
+	QueryInputType t1 = input1.getQueryInputType();
+	QueryInputType t2 = input2.getQueryInputType();
+	if (t1 == QueryInputType::DECLARATION || 
+		t2 == QueryInputType::DECLARATION) { // eg. uses(1, v)
 		return false;
-	} else {
+	} else if (t1 == QueryInputType::STMT_NUM &&
+		t2 == QueryInputType::STMT_NUM){ // eg. follows*(1, 3)
 		set<string> results = this->relations[type][input1.getValue()];
 		return (results.find(input2.getValue()) != results.end());
+	} else if (t1 == QueryInputType::ANY && 
+		t2 == QueryInputType::ANY) { // eg. parent(_, _)
+		return !this->relations[type].empty();
+	} else if (t1 == QueryInputType::ANY) { // eg. follows(_, 3)
+		return !this->relationsBy[type][input2.getValue()].empty();
+	} else if (t2 == QueryInputType::ANY) { // eg. uses(1, _)
+		return !this->relations[type][input1.getValue()].empty();
+	} else { // otherwise
+		return false;
 	}
 }
 
 unordered_map<string, set<string>> PKB::getResultsOfRS(
 	const RelationshipType& type, QueryInput input1, QueryInput input2) {
-	return unordered_map<string, set<string>>();
-}
-
-bool PKB::getBooleanResultOfPattern(QueryInput input, Expression expression) {
-	return true;
+	QueryInputType t1 = input1.getQueryInputType();
+	QueryInputType t2 = input2.getQueryInputType();
+	unordered_map<string, set<string>> ans;
+	if (t1 != QueryInputType::DECLARATION &&
+		t2 != QueryInputType::DECLARATION) { // eg. uses(1, 2)
+		return ans;
+	} else if (t1 == QueryInputType::DECLARATION &&
+		t2 == QueryInputType::DECLARATION) { // eg. follows*(s1, s2)
+		return this->relations[type];
+	} else if (t1 == QueryInputType::DECLARATION) {
+		switch (t2) {
+		case QueryInputType::STMT_NUM: { // eg. parent*(s, 3)
+			ans[""] = this->relationsBy[type][input2.getValue()];
+			break;
+		}
+		case QueryInputType::INDENT: { // eg. modifies(s, "x")
+			ans[""] = this->relationsBy[type][input2.getValue()];
+			break;
+		}
+		case QueryInputType::ANY: { // eg. follows*(s, _)
+			ans[""] = this->relationKeys[type];
+			break;
+		}
+		}
+		return ans;
+	} else if (t2 == QueryInputType::DECLARATION) {
+		switch (t1) {
+		case QueryInputType::STMT_NUM: { // eg. parent*(3, s)
+			ans[""] = this->relations[type][input1.getValue()];
+			break;
+		}
+		case QueryInputType::INDENT: { // eg. modifies("main", v)
+			ans[""] = this->relations[type][input1.getValue()];
+			break;
+		}
+		case QueryInputType::ANY: { // eg. follows*(_, s)
+			ans[""] = this->relationByKeys[type];
+			break;
+		}
+		}
+		return ans;
+	} else { // otherwise
+		return ans;
+	}
 }
 
 unordered_map<string, set<string>> PKB::getResultsOfPattern(
