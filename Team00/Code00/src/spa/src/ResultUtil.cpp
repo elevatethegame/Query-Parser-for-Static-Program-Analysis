@@ -1,4 +1,5 @@
 #include "ResultUtil.h"
+#include <map>
 
 vector<unordered_map<string, string>> ResultUtil::convertPKBResult(unordered_map<string, set<string>> PKBResults, string leftSynonym, string rightSynonym) {
 	vector<unordered_map<string, string>> results;
@@ -33,11 +34,16 @@ vector<unordered_map<string, string>> ResultUtil::convertPKBResult(unordered_map
 
 set<string> ResultUtil::getCommonSynonyms(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult) {
 	set<string> commonSynonyms;
-	unordered_map<string, string> firstMap = firstResult.at(0);
-	unordered_map<string, string> secondMap = secondResult.at(0);
 
-	unordered_map<string, string>::iterator it1 = firstMap.begin();
-	unordered_map<string, string>::iterator it2 = secondMap.begin();
+	if (firstResult.size() == 0 || secondResult.size() == 0) {
+		return commonSynonyms;
+	}
+
+	map<string, string> firstMap(firstResult.at(0).begin(), firstResult.at(0).end());
+	map<string, string> secondMap(secondResult.at(0).begin(), secondResult.at(0).end());
+
+	map<string, string>::iterator it1 = firstMap.begin();
+	map<string, string>::iterator it2 = secondMap.begin();
 
 	// using fact that map entries are sorted by default according to key, this comparison takes linear time
 	while (it1 != firstMap.end() && it2 != secondMap.end()) {
