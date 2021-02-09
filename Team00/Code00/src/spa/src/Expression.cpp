@@ -1,9 +1,9 @@
 #include "Expression.h"
 
-Expression::Expression(string value) {
-	aValue = value;
-}
+using namespace std;
+
+Expression::Expression(string value) : aValue(value) {}
 
 string Expression::getValue() {
-	return aValue;
+	return this->aValue;
 }

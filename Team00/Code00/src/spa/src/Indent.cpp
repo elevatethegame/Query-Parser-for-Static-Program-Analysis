@@ -1,6 +1,8 @@
 #include "Indent.h"
 
+using namespace std;
+
 Indent::Indent(string value) {
-	aQueryInputType = QueryInputType::INDENT;
-	aValue = value;
+	this->aQueryInputType = QueryInputType::INDENT;
+	this->aValue = value;
 }
