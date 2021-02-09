@@ -6,5 +6,5 @@ using namespace std;
 
 class Any: public QueryInput {
 public:
-	Any(QueryInputType queryInputType, string value);
+	Any(string value);
 };
