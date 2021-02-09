@@ -7,6 +7,11 @@ QueryEvaluator::QueryEvaluator() {
 	aPKB = new PKB();
 }
 
+QueryEvaluator::~QueryEvaluator() {
+	delete aQuery;
+	delete aPKB;
+}
+
 // API to be used by query parser ############################################################################
 void QueryEvaluator::setSelectClause(Declaration* declaration) {
 	SelectClause* selectClause = new SelectClause(declaration);
@@ -42,7 +47,6 @@ set<string> QueryEvaluator::evaluate() {
 	if (relationshipClauses->size() == 0 && patternClauses->size() == 0) {
 		Declaration* selectClauseDeclaration = aQuery->getSelectClause()->getDeclaration();
 		string selectClauseSynonym = selectClauseDeclaration->getValue();
-		unordered_map<string, set<string>> map;
 		finalResults = aPKB->getEntities(selectClauseDeclaration->getEntityType());
 		return finalResults;
 	}

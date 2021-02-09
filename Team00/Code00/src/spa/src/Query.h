@@ -16,6 +16,7 @@ private:
 
 public:
 	Query();
+	~Query();
 	void setSelectClause(SelectClause* selectClause);
 	void addRelationshipClause(RelationshipClause* relationshipClause);
 	void addPatternClause(PatternClause* patternClause);
@@ -23,4 +24,6 @@ public:
 	SelectClause* getSelectClause();
 	vector<RelationshipClause*>* getRelationshipClauses();
 	vector<PatternClause*>* getPatternClauses();
+
+	void deletePointers();
 };

@@ -35,6 +35,8 @@ public:
 	
 	QueryEvaluator();
 
+	~QueryEvaluator();
+
 	void evaluate(list<string> results);
 
 	void setSelectClause(Declaration* declaration);

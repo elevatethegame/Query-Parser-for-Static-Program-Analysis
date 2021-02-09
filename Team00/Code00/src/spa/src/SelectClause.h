@@ -8,5 +8,6 @@ private:
 
 public:
 	SelectClause(Declaration* declaration);
+	~SelectClause();
 	Declaration* getDeclaration();
 };

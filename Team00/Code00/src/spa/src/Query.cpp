@@ -28,3 +28,17 @@ vector<RelationshipClause*>* Query::getRelationshipClauses() {
 vector<PatternClause*>* Query::getPatternClauses() {
 	return aPatternClauses;
 }
+
+Query::~Query() {
+	delete aSelectClause;
+	for (vector<RelationshipClause*>::iterator it = aRelationshipClauses->begin(); it != aRelationshipClauses->end(); it++) {
+		delete *it;
+	}
+
+	for (vector<PatternClause*>::iterator it = aPatternClauses->begin(); it != aPatternClauses->end(); it++) {
+		delete *it;
+	}
+
+	delete aRelationshipClauses;
+	delete aPatternClauses;
+}
