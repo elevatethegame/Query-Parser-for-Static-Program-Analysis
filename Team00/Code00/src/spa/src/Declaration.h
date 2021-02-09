@@ -1,5 +1,4 @@
 #pragma once
-
 #include "QueryInput.h"
 #include "EntityType.h"
 

@@ -1,6 +1,5 @@
 #include "QueryEvaluator.h"
 #include "QueryInputType.h"
-#include <iostream>
 
 QueryEvaluator::QueryEvaluator() {
 	aQuery = new Query();
@@ -170,7 +169,7 @@ set<string> QueryEvaluator::evaluateSelectClause(vector<unordered_map<string, st
 			finalResults.insert(currentMap.find(synonym)->second);
 		}
 	}
-
+	
 	return finalResults;
 }
 
