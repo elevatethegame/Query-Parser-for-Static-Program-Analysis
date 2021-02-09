@@ -18,14 +18,14 @@ private:
 
 	vector<unordered_map<string, string>> evaluatePatternClauses(vector<PatternClause*>* patternClauses);
 
-	set<string> evaluateSelectClause(vector<unordered_map<string, string>> results);
+	vector<unordered_map<string, string>> evaluateSelectClause(SelectClause* selectClause);
 
 	vector<unordered_map<string, string>> mergeResults(vector<unordered_map<string, string>> firstResult, 
 		vector<unordered_map<string, string>> secondResult);
 	
 public:
 	
-	QueryEvaluator();
+	QueryEvaluator(PKB* pkb);
 
 	~QueryEvaluator();
 

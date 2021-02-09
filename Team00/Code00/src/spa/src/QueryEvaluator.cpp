@@ -1,9 +1,9 @@
 #include "QueryEvaluator.h"
 #include "QueryInputType.h"
 
-QueryEvaluator::QueryEvaluator() {
+QueryEvaluator::QueryEvaluator(PKB* pkb) {
 	aQuery = new Query();
-	aPKB = new PKB();
+	aPKB = pkb;
 }
 
 QueryEvaluator::~QueryEvaluator() {
@@ -40,15 +40,11 @@ void QueryEvaluator::evaluate(list<string> results) {
 set<string> QueryEvaluator::evaluate() {
 	vector<RelationshipClause*>* relationshipClauses = aQuery->getRelationshipClauses();
 	vector<PatternClause*>* patternClauses = aQuery->getPatternClauses();
-	vector<unordered_map<string, string>> mergedResults;
+	SelectClause* selectClause = aQuery->getSelectClause();
+	vector<unordered_map<string, string>> currentResults;
 	set<string> finalResults;
 
-	if (relationshipClauses->size() == 0 && patternClauses->size() == 0) {
-		Declaration* selectClauseDeclaration = aQuery->getSelectClause()->getDeclaration();
-		string selectClauseSynonym = selectClauseDeclaration->getValue();
-		finalResults = aPKB->getEntities(selectClauseDeclaration->getEntityType());
-		return finalResults;
-	}
+	currentResults = evaluateSelectClause(selectClause);
 
 	if (relationshipClauses->size() != 0) {
 		vector<unordered_map<string, string>> RSClauseResults = evaluateRelationshipClauses(relationshipClauses);
@@ -57,7 +53,7 @@ set<string> QueryEvaluator::evaluate() {
 			return finalResults;
 		}
 		else {
-			mergedResults = mergeResults(mergedResults, RSClauseResults);
+			currentResults = mergeResults(currentResults, RSClauseResults);
 		}
 	}
 
@@ -68,11 +64,19 @@ set<string> QueryEvaluator::evaluate() {
 			return finalResults;
 		}
 		else {
-			mergedResults = mergeResults(mergedResults, patternClauseResults);
+			currentResults = mergeResults(currentResults, patternClauseResults);
 		}
 	}
 
-	finalResults = evaluateSelectClause(mergedResults);
+	string selectedSynonym = selectClause->getDeclaration()->getValue();
+	for (vector<unordered_map<string, string>>::iterator iterator = currentResults.begin(); 
+		iterator != currentResults.end(); iterator++) {
+		unordered_map<string, string> currentMap = *iterator;
+		if (currentMap.count(selectedSynonym) == 1) {
+			finalResults.insert(currentMap.find(selectedSynonym)->second);
+		}
+	}
+
 	return finalResults;
 }
 
@@ -159,17 +163,14 @@ vector<unordered_map<string, string>> QueryEvaluator::evaluatePatternClauses(vec
 	return results;
 }
 
-set<string> QueryEvaluator::evaluateSelectClause(vector<unordered_map<string, string>> results) {
-	set<string> finalResults;
-	string synonym = aQuery->getSelectClause()->getDeclaration()->getValue();
+vector<unordered_map<string, string>> QueryEvaluator::evaluateSelectClause(SelectClause* selectClause) {
+	vector<unordered_map<string, string>> finalResults;
+	Declaration* selectClauseDeclaration = selectClause->getDeclaration();
+	string selectClauseSynonym = selectClauseDeclaration->getValue();
+	set<string> selectValues = aPKB->getEntities(selectClauseDeclaration->getEntityType());
+	unordered_map<string, set<string>> map = { {selectClauseSynonym, selectValues} };
+	finalResults = ResultUtil::convertPKBResult(map, selectClauseSynonym);
 
-	for (vector<unordered_map<string, string>>::iterator iterator = results.begin(); iterator != results.end(); iterator++) {
-		unordered_map<string, string> currentMap = *iterator;
-		if (currentMap.count(synonym) == 1) {
-			finalResults.insert(currentMap.find(synonym)->second);
-		}
-	}
-	
 	return finalResults;
 }
 
