@@ -1,7 +1,7 @@
 #include "Declaration.h"
 
-Declaration::Declaration(QueryInputType queryInputType, EntityType entityType, string value) {
-	aQueryInputType = queryInputType;
+Declaration::Declaration(EntityType entityType, string value) {
+	aQueryInputType = QueryInputType::DECLARATION;
 	aEntityType = entityType;
 	aValue = value;
 }
