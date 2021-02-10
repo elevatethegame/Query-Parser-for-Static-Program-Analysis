@@ -12,9 +12,17 @@
 
 using namespace std;
 
-PKB::PKB(const int& n) : number(n) {}
+PKB::PKB(const int& n) : number(n) {
+	for (int i = 1; i <= n; i++) {
+		this->stmts[EntityType::STMT].insert(to_string(i));
+	}
+}
 
 void PKB::init() {
+	this->extractFollowStar();
+	this->extractParentStar();
+	this->extractUses();
+	this->extractModifies();
 }
 
 bool PKB::setStatementType(const int& index, const EntityType& type) {
@@ -46,8 +54,8 @@ bool PKB::insertParent(const int& parent, const int& child) {
 		int t = RelationshipType::PARENT;
 		string parentString = to_string(parent);
 		string childString = to_string(child);
-		if (this->relationKeys[t].find(parentString) != 
-			this->relationKeys[t].end()) { // key exists
+		if (this->relationByKeys[t].find(childString) != 
+			this->relationByKeys[t].end()) { // key exists
 			return false;
 		} else {
 			this->relations[t][parentString].insert(childString);
@@ -125,8 +133,7 @@ bool PKB::insertExpression(const int& index, const long& expression) {
 }
 
 set<string> PKB::getEntities(const EntityType& type) {
-	if (type == EntityType::STMT || type == EntityType::VAR || 
-		type == EntityType::CONST || type == EntityType::PROC) {
+	if (type == EntityType::VAR || type == EntityType::CONST || type == EntityType::PROC) {
 		return set<string>();
 	} else {
 		return this->stmts[type];
@@ -211,6 +218,25 @@ unordered_map<string, set<string>> PKB::getResultsOfPattern(
 
 
 void PKB::extractFollowStar() {
+	int p = RelationshipType::PARENT;
+	int fs = RelationshipType::FOLLOWS_S;
+	for (int i = 1; i < this->number; i++) {
+		for (int j = i + 1; j <= this->number; j++) {
+			string former = to_string(i);
+			string latter = to_string(j);
+			bool e1 = relationByKeys[p].find(former) == relationByKeys[p].end();
+			bool e2 = relationByKeys[p].find(latter) == relationByKeys[p].end();
+			if (e1 != e2) {
+				continue;
+			} else if ((e1 && e2) || // no parent or same parent
+				relationsBy[p][former] == relationsBy[p][latter]) { 
+				relations[fs][former].insert(latter);
+				relationsBy[fs][latter].insert(former);
+				relationKeys[fs].insert(former);
+				relationByKeys[fs].insert(latter);
+			}
+		}
+	}
 }
 
 void PKB::extractParentStar() {
