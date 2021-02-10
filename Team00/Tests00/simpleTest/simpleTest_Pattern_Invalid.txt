@@ -1,0 +1,75 @@
+1 - comment
+assign a;
+select a pattern a(_, 1)
+none
+5000
+2 - comment
+assign a;
+select a pattern a(1, _)
+none
+5000
+3 - comment
+assign a;
+select a pattern a(_, "a")
+none
+5000
+4 - comment
+assign a;
+select a pattern a(_, _"a")
+none
+5000
+5 - comment 
+assign a;
+select a pattern a(_, "a"_)
+none
+5000
+6 - comment
+assign a; constant c;
+select a pattern a(c, _)
+none
+5000
+7 - comment
+assign a; constant c;
+select a pattern a(c, c)
+none
+5000
+8 - comment
+assign a; variable v;
+select a pattern a(v, v)
+none 
+5000
+9 - comment
+assign a;
+select a pattern a(a, a)
+none
+5000
+10  - comment
+assign a; stmt s;
+select a pattern a(_, s)
+none
+5000
+11 - comment
+assign a; stmt s;
+select a pattern a(s, s)
+none
+5000
+12 - comment
+assign a; while w;
+select a pattern a(_, w)
+none
+5000
+13 - comment
+assign a; while w;
+select a pattern a(w, w)
+none
+5000
+14 - comment
+assign a; if ifs;
+select a pattern a(_, ifs)
+none
+5000
+15 - comment
+assign a; if ifs;
+select a pattern(ifs, ifs)
+none
+5000
