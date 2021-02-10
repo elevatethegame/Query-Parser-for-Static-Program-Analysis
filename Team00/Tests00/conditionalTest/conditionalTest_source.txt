@@ -11,5 +11,5 @@ procedure conditionalTest {
 	} else {			
 		e = b;			// 9
 	}
-	a = a - b * c       //  10
+	a = a - b * c;      //  10
 }

@@ -5,7 +5,7 @@ none
 5000
 2 - comment
 stmt s;
-select s such that Follows(s, 5)
+select s such that Follows(s, 11)
 none
 5000
 3 - comment
@@ -19,66 +19,46 @@ select s such that Follows(s, "s")
 none 
 5000
 5 - comment
-while w;
-select w such that Follows(_, _)
-none 
-5000
-6 - comment
-while w;
-select w such that Follows(w, _)
-none
-5000
-7 - comment 
-while w; 
-select w such that Follows(_, w)
-none
-5000
-8 - comment
-if ifs;
-select ifs such that Follows(_, _)
-none
-5000
-9 - comment
-if ifs;
-select ifs such that Follows(ifs, _)
-none
-5000
-10 - comment
-if ifs;
-select ifs such that Follows(_, ifs)
-none
-5000
-11 - comment
 variable v;
 select v such that Follows(v, v)
 none
 5000
-12 - comment 
+6 - comment 
 variable v; stmt s;
 select s such that Follows(s, v)
 none
 5000
-13 - comment
+7 - comment
 variable v; stmt s;
 select s such that Follows(v, s)
 none
-14 - comment
+8 - comment
 variable v; stmt s;
 select v such that Follows(s, v)
 none
 5000
-15 - comment
+9 - comment
 constant c; stmt s;
 select s such that Follows(s, c)
 none
 5000
-16 - comment
+10 - comment
 constant c; stmt s;
 select s such that Follows(c, s)
 none
 5000
-17 - comment
+11 - comment
 constant c;
 select c such that Follows(c, c)
+none
+5000
+12 - comment
+while w;
+select w such that Follow(w, w)
+none
+5000
+13 - comment
+if ifs;
+select ifs such that Follows(ifs, ifs)
 none
 5000
