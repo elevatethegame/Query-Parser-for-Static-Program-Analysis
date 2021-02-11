@@ -17,13 +17,12 @@ private:
 public:
 	Query();
 	~Query();
-	void setSelectClause(SelectClause* selectClause);
-	void addRelationshipClause(RelationshipClause* relationshipClause);
-	void addPatternClause(PatternClause* patternClause);
+	void setSelectClause(Declaration* declaration);
+	void addRelationshipClause(RelationshipType relationshipType,
+		QueryInput* leftQueryInput, QueryInput* rightQueryInput);
+	void addPatternClause(QueryInput* synonym, QueryInput* queryInput, Expression* expression);
 
 	SelectClause* getSelectClause();
 	vector<RelationshipClause*>* getRelationshipClauses();
 	vector<PatternClause*>* getPatternClauses();
-
-	void deletePointers();
 };

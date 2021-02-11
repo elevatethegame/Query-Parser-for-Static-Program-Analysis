@@ -5,28 +5,31 @@ Query::Query() {
 	aPatternClauses = new vector<PatternClause*>;
 }
 
-void Query::setSelectClause(SelectClause* selectClause) {
-	aSelectClause = selectClause;
+// API to be used by query parser 
+void Query::setSelectClause(Declaration* declaration) {
+	this->aSelectClause = new SelectClause(declaration);
 }
 
-void Query::addRelationshipClause(RelationshipClause* relationshipClause) {
-	aRelationshipClauses->push_back(relationshipClause);
+void Query::addRelationshipClause(RelationshipType relationshipType, QueryInput* leftQueryInput, QueryInput* rightQueryInput) {
+	RelationshipClause* relationshipClause = new RelationshipClause(relationshipType, leftQueryInput, rightQueryInput);
+	this->aRelationshipClauses->push_back(relationshipClause);
 }
 
-void Query::addPatternClause(PatternClause* patternClause) {
-	aPatternClauses->push_back(patternClause);
+void Query::addPatternClause(QueryInput* synonym, QueryInput* queryInput, Expression* expression) {
+	PatternClause* patternClause = new PatternClause(synonym, queryInput, expression);
+	this->aPatternClauses->push_back(patternClause);
 }
 
 SelectClause* Query::getSelectClause() {
-	return aSelectClause;
+	return this->aSelectClause;
 }
 
 vector<RelationshipClause*>* Query::getRelationshipClauses() {
-	return aRelationshipClauses;
+	return this->aRelationshipClauses;
 }
 
 vector<PatternClause*>* Query::getPatternClauses() {
-	return aPatternClauses;
+	return this->aPatternClauses;
 }
 
 Query::~Query() {

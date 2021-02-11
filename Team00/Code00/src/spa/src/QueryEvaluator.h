@@ -6,35 +6,27 @@
 #include "QueryInputType.h"
 #include "PKBInterface.h"
 #include "ResultUtil.h"
+#include "ResultsTable.h"
 
 class QueryEvaluator {
 private:
 	Query* aQuery;
 	PKBInterface* aPKB;
 
-	set<string> evaluate();
+	ResultsTable* evaluateRelationshipClauses(vector<RelationshipClause*>* relationshipClauses, ResultsTable* results);
 
-	vector<unordered_map<string, string>> evaluateRelationshipClauses(vector<RelationshipClause*>* relationshipClauses);
-
-	vector<unordered_map<string, string>> evaluatePatternClauses(vector<PatternClause*>* patternClauses);
+	ResultsTable* evaluatePatternClauses(vector<PatternClause*>* patternClauses, ResultsTable* results);
 
 	vector<unordered_map<string, string>> evaluateSelectClause(SelectClause* selectClause);
 
-	vector<unordered_map<string, string>> mergeResults(vector<unordered_map<string, string>> firstResult, 
-		vector<unordered_map<string, string>> secondResult);
+	ResultsTable* mergeResults(unordered_map <string, set<string>> PKBResults, vector<string> synonyms, 
+		ResultsTable* currentResults);
 	
 public:
 	
-	QueryEvaluator(PKBInterface* pkb);
+	QueryEvaluator(Query* query, PKBInterface* pkb);
 
 	~QueryEvaluator();
 
-	void evaluate(list<string> results);
-
-	void setSelectClause(Declaration* declaration);
-
-	void addRelationshipClause(RelationshipType relationshipType,
-		QueryInput* leftQueryInput, QueryInput* rightQueryInput);
-
-	void addPatternClause(QueryInput* synonym, QueryInput* queryInput, Expression* expression);
+	ResultsTable* evaluate();
 };

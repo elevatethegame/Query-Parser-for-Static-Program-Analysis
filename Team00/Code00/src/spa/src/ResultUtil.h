@@ -4,20 +4,25 @@
 #include <unordered_map>
 #include <string>
 #include <set>
+#include "ResultsTable.h"
 
 using namespace std;
 
 class ResultUtil {
 public:
+	
+	static set<string> getCommonSynonyms(vector<string> PKBResultSynonyms, set<string> currentResultSynonyms);
 
-	static vector<unordered_map<string, string>> convertPKBResult(unordered_map<string, set<string>> PKBResults, string leftSynonym, string rightSynonym);
+	static ResultsTable* getCartesianProduct(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		ResultsTable* currentResults);
 
-	static vector<unordered_map<string, string>> convertPKBResult(unordered_map<string, set<string>> PKBResults, string synonym);
+	static ResultsTable* ResultUtil::getNaturalJoin(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		ResultsTable* currentResults, set<string> commonSynonyms);
 
-	static set<string> getCommonSynonyms(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult);
+private:
+	static ResultsTable* ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		ResultsTable* currentResults);
 
-	static vector<unordered_map<string, string>> getCartesianProduct(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult);
-
-	static vector<unordered_map<string, string>> getNaturalJoin(vector<unordered_map<string, string>> firstResult, vector<unordered_map<string, string>> secondResult, set<string> commonSynonyms);
-
+	static ResultsTable* ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, string commonSynonym,
+		string uncommonSynonym, bool isLeftSynonymCommon, ResultsTable* currentResults);
 };
