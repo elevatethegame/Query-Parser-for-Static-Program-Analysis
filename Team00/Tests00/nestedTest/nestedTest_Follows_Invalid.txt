@@ -1,0 +1,184 @@
+1 - comment
+stmt s;
+select s such that Follows(s, s)
+none
+5000
+2 - comment
+stmt s;
+select s such that Follows(s, 21)
+none
+5000
+3 - comment
+stmt s;
+select s such that Follows(3, 2)
+none
+5000
+4 - comment
+stmt s;
+select s such that Follows(s, "s")
+none 
+5000
+5 - comment
+variable v;
+select v such that Follows(v, v)
+none
+5000
+6 - comment 
+variable v; stmt s;
+select s such that Follows(s, v)
+none
+5000
+7 - comment
+variable v; stmt s;
+select s such that Follows(v, s)
+none
+8 - comment
+variable v; stmt s;
+select v such that Follows(s, v)
+none
+5000
+9 - comment
+constant c; stmt s;
+select s such that Follows(s, c)
+none
+5000
+10 - comment
+constant c; stmt s;
+select s such that Follows(c, s)
+none
+5000
+11 - comment
+constant c;
+select c such that Follows(c, c)
+none
+5000
+12 - comment
+while w;
+select w such that Follow(w, w)
+none
+5000
+13 - comment
+if ifs;
+select ifs such that Follows(ifs, ifs)
+none
+5000
+14 - comment
+assign a; variable v;
+select a such that Follows(a, v)
+none
+5000
+15 - comment
+assign a; variable v;
+select a such that Follows(v, a)
+none
+5000
+16  - comment
+assign a; variable v;
+select v such that Follows(a, v)
+none
+5000
+17 - comment
+assign a; variable v;
+select v such that Follows(v, a)
+none 
+5000
+18 - comment
+assign a; constant  c;
+select a such that Follows(a, c)
+none
+5000
+19 - comment
+assign a; constant c;
+select a such that Follows(c, a)
+none
+5000
+20 - comment
+assign a; constant c;
+select c such that Follows(a, c)
+none
+5000
+21 - comment
+assign a; constant c;
+select c such that Follows(c, a)
+none
+5000
+22 - comment
+while w; variable v;
+select w such that Follows(w, v)
+none
+5000
+23 - comment
+while w; variable v;
+select w such that Follows(v, w)
+none
+5000
+24  - comment
+while w; variable v;
+select v such that Follows(w, v)
+none
+5000
+25 - comment
+while w; variable v;
+select v such that Follows(v, w)
+none 
+5000
+26 - comment
+while w; constant  c;
+select w such that Follows(w, c)
+none
+5000
+27 - comment
+while w; constant c;
+select w such that Follows(c, w)
+none
+5000
+28 - comment
+while w; constant c;
+select w such that Follows(w, c)
+none
+5000
+29 - comment
+while w; constant c;
+select c such that Follows(c, w)
+none
+5000
+30 - comment
+while w; variable v;
+select w such that Follows(w, v)
+none
+5000
+31 - comment
+if ifs; variable v;
+select ifs such that Follows(v, ifs)
+none
+5000
+32  - comment
+if ifs; variable v;
+select v such that Follows(ifs, v)
+none
+5000
+33 - comment
+if ifs; variable v;
+select v such that Follows(v, ifs)
+none 
+5000
+34 - comment
+if ifs; constant  c;
+select ifs such that Follows(ifs, c)
+none
+5000
+35 - comment
+if ifs; constant c;
+select ifs such that Follows(c, ifs)
+none
+5000
+36 - comment
+if ifs; constant c;
+select ifs such that Follows(ifs, c)
+none
+5000
+37 - comment
+if ifs; constant c;
+select c such that Follows(c, ifs)
+none
+5000
