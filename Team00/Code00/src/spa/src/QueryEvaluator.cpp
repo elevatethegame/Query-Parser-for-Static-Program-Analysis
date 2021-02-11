@@ -1,7 +1,7 @@
 #include "QueryEvaluator.h"
 #include "QueryInputType.h"
 
-QueryEvaluator::QueryEvaluator(PKB* pkb) {
+QueryEvaluator::QueryEvaluator(PKBInterface* pkb) {
 	aQuery = new Query();
 	aPKB = pkb;
 }

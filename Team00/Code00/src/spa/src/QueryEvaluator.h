@@ -4,13 +4,13 @@
 #include <string>
 #include "Query.h"
 #include "QueryInputType.h"
-#include "PKB.h"
+#include "PKBInterface.h"
 #include "ResultUtil.h"
 
 class QueryEvaluator {
 private:
 	Query* aQuery;
-	PKB* aPKB;
+	PKBInterface* aPKB;
 
 	set<string> evaluate();
 
@@ -25,7 +25,7 @@ private:
 	
 public:
 	
-	QueryEvaluator(PKB* pkb);
+	QueryEvaluator(PKBInterface* pkb);
 
 	~QueryEvaluator();
 
