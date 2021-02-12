@@ -16,7 +16,6 @@ private:
 
 public:
 	Query();
-	~Query();
 	void setSelectClause(Declaration* declaration);
 	void addRelationshipClause(RelationshipType relationshipType,
 		QueryInput* leftQueryInput, QueryInput* rightQueryInput);

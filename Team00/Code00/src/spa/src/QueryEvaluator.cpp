@@ -6,11 +6,6 @@ QueryEvaluator::QueryEvaluator(Query* query, PKBInterface* pkb) {
 	this->aPKB = pkb;
 }
 
-QueryEvaluator::~QueryEvaluator() {
-	delete aQuery;
-	delete aPKB;
-}
-
 ResultsTable* QueryEvaluator::evaluate() {
 	vector<RelationshipClause*>* relationshipClauses = aQuery->getRelationshipClauses();
 	vector<PatternClause*>* patternClauses = aQuery->getPatternClauses();

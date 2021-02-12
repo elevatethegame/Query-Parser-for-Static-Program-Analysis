@@ -1,11 +1,10 @@
 #include "Query.h"
 
 Query::Query() {
-	aRelationshipClauses = new vector<RelationshipClause*>;
-	aPatternClauses = new vector<PatternClause*>;
+	this->aRelationshipClauses = new vector<RelationshipClause*>;
+	this->aPatternClauses = new vector<PatternClause*>;
 }
 
-// API to be used by query parser 
 void Query::setSelectClause(Declaration* declaration) {
 	this->aSelectClause = new SelectClause(declaration);
 }
@@ -30,18 +29,4 @@ vector<RelationshipClause*>* Query::getRelationshipClauses() {
 
 vector<PatternClause*>* Query::getPatternClauses() {
 	return this->aPatternClauses;
-}
-
-Query::~Query() {
-	delete aSelectClause;
-	for (vector<RelationshipClause*>::iterator it = aRelationshipClauses->begin(); it != aRelationshipClauses->end(); it++) {
-		delete *it;
-	}
-
-	for (vector<PatternClause*>::iterator it = aPatternClauses->begin(); it != aPatternClauses->end(); it++) {
-		delete *it;
-	}
-
-	delete aRelationshipClauses;
-	delete aPatternClauses;
 }

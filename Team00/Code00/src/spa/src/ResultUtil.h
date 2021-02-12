@@ -23,6 +23,6 @@ private:
 	static ResultsTable* ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
 		ResultsTable* currentResults);
 
-	static ResultsTable* ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, string commonSynonym,
-		string uncommonSynonym, bool isLeftSynonymCommon, ResultsTable* currentResults);
+	static ResultsTable* ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		bool isLeftSynonymCommon, ResultsTable* currentResults);
 };

@@ -28,17 +28,17 @@ ResultsTable* ResultUtil::getCartesianProduct(unordered_map <string, set<string>
 		synonymIndex.insert({ synonym, synonymIndex.size() });
 		set<string> pkbResultValues = PKBResults.begin()->second;
 
-		for (set<string>::iterator pkbResultIt = pkbResultValues.begin(); pkbResultIt != pkbResultValues.end();
-			pkbResultIt++) {
-			string valueToBeAdded = *pkbResultIt;
+		for (vector<vector<string>>::iterator it = tableValues.begin(); it != tableValues.end(); it++) {
 
-			for (vector<vector<string>>::iterator it = tableValues.begin(); it != tableValues.end(); it++) {
+			for (set<string>::iterator pkbResultIt = pkbResultValues.begin(); pkbResultIt != pkbResultValues.end();
+				pkbResultIt++) {
 				vector<string> rowCopy(*it);
+				string valueToBeAdded = *pkbResultIt;
 				rowCopy.push_back(valueToBeAdded);
 				newTableValues.push_back(rowCopy);
 			}
+			
 		}
-		
 	}
 	else { // 2 synonyms
 		string leftSynonym = synonyms.at(0);
@@ -109,8 +109,8 @@ ResultsTable* ResultUtil::getNaturalJoin(unordered_map <string, set<string>> PKB
 		}
 		else { // exactly one synonym is common
 			string commonSynonym;
-			bool isLeftSynonymCommon = commonSynonyms.find(leftSynonym) != commonSynonyms.end();
-			currentResults = getNaturalJoinOneSynonymCommon(PKBResults, leftSynonym, rightSynonym, isLeftSynonymCommon,
+			bool isLeftSynonymCommon = (commonSynonyms.find(leftSynonym) != commonSynonyms.end());
+			currentResults = getNaturalJoinOneSynonymCommon(PKBResults, synonyms, isLeftSynonymCommon,
 				currentResults);
 		}
 
@@ -130,11 +130,20 @@ ResultsTable* ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string,
 	vector<vector<string>> tableValues = currentResults->getTableValues();
 	vector<vector<string>> newTableValues;
 
-	for (vector<vector<string>>::iterator it = tableValues.begin(); it != tableValues.end(); it++) {
-		vector<string> row = *it;
-		if (row.at(leftSynonymIndex) == leftSynonym && row.at(rightSynonymIndex) == rightSynonym) {
-			vector<string> rowCopy(row);
-			newTableValues.push_back(rowCopy);
+	for (unordered_map <string, set<string>>::iterator pkbResultsIt = PKBResults.begin(); pkbResultsIt != PKBResults.end();
+		pkbResultsIt++) {
+		string leftSynonymValue = pkbResultsIt->first;
+		set<string> rightSynonymValues = pkbResultsIt->second;
+
+		for (set<string>::iterator rowIt = rightSynonymValues.begin(); rowIt != rightSynonymValues.end(); rowIt++) {
+			string rightSynonymValue = *rowIt;
+			for (vector<vector<string>>::iterator it = tableValues.begin(); it != tableValues.end(); it++) {
+				vector<string> row = *it;
+				if (row.at(leftSynonymIndex) == leftSynonymValue && row.at(rightSynonymIndex) == rightSynonymValue) {
+					vector<string> rowCopy(row);
+					newTableValues.push_back(rowCopy);
+				}
+			}
 		}
 	}
 
@@ -142,9 +151,21 @@ ResultsTable* ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string,
 	return currentResults;
 }
 
-ResultsTable* ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, string commonSynonym,
-	string uncommonSynonym, bool isLeftSynonymCommon, ResultsTable* currentResults) {
+ResultsTable* ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	bool isLeftSynonymCommon, ResultsTable* currentResults) {
 	unordered_map<string, int> synonymIndex = currentResults->getSynonymIndexMap();
+	string leftSynonym = synonyms.at(0);
+	string rightSynonym = synonyms.at(1);
+	string commonSynonym;
+	string uncommonSynonym;
+	if (isLeftSynonymCommon) {
+		commonSynonym = leftSynonym;
+		uncommonSynonym = rightSynonym;
+	}
+	else {
+		commonSynonym = rightSynonym;
+		uncommonSynonym = leftSynonym;
+	}
 	int commonSynonymIndex = synonymIndex.find(commonSynonym)->second;
 	synonymIndex.insert({ uncommonSynonym, synonymIndex.size() });
 

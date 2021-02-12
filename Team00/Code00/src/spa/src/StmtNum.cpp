@@ -2,7 +2,7 @@
 
 using namespace std;
 
-StmtNum::StmtNum(string value) {
+StmtNum::StmtNum(int value) {
 	this->aQueryInputType = QueryInputType::STMT_NUM;
-	this->aValue = value;
+	this->aValue = to_string(value);
 }
