@@ -35,7 +35,7 @@ void ResultsTable::setTable(unordered_map<string, int> synonymIndex, vector<vect
 }
 
 bool ResultsTable::isTableEmpty() {
-	return this->aValues.size();
+	return (this->aValues.size() == 0);
 }
 
 void ResultsTable::populate(unordered_map<string, set<string>> PKBResult, vector<string> synonyms) {

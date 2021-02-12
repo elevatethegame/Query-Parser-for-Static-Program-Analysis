@@ -26,7 +26,5 @@ public:
 	
 	QueryEvaluator(Query* query, PKBInterface* pkb);
 
-	~QueryEvaluator();
-
 	ResultsTable* evaluate();
 };
