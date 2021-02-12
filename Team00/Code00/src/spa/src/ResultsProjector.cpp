@@ -1,6 +1,6 @@
 #include "ResultsProjector.h"
 
-void ResultsProjector::projectResults(ResultsTable* evaluatedResults, SelectClause* selectClause, PKBInterface* PKB, list<string> results) {
+void ResultsProjector::projectResults(ResultsTable* evaluatedResults, SelectClause* selectClause, PKBInterface* PKB, list<string>& results) {
 	if (evaluatedResults->isNoResult()) {
 		return;
 	}

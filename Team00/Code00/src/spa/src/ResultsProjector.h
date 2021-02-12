@@ -8,5 +8,5 @@
 
 class ResultsProjector {
 public:
-	static void projectResults(ResultsTable* evaluatedResults, SelectClause* selectClause, PKBInterface* PKB, list<string> results);
+	static void projectResults(ResultsTable* evaluatedResults, SelectClause* selectClause, PKBInterface* PKB, list<string>& results);
 };
