@@ -1,61 +1,53 @@
 #include "Query.h"
 #include "catch.hpp"
 
-RelationshipClause* createRelationshipClause();
-
-PatternClause* createPatternClause();
-
 TEST_CASE("Adding Relationship clause pointer to vector") {
 	Query query;
-	Declaration* declaration = new Declaration(QueryInputType::DECLARATION, EntityType::ASSIGN, "x");
-	SelectClause* selectClause = new SelectClause(declaration);
-	query.setSelectClause(selectClause);
+	QueryInput* leftQueryInput = new QueryInput();
+	QueryInput* rightQueryInput = new QueryInput();
+	Declaration* declaration = new Declaration(EntityType::ASSIGN, "x");
+	query.setSelectClause(declaration);
 	
 	SECTION("Adding to empty vector") {
 		REQUIRE(query.getRelationshipClauses()->size() == 0);
-		query.addRelationshipClause(createRelationshipClause());
+		query.addRelationshipClause(RelationshipType::FOLLOWS, leftQueryInput, rightQueryInput);
 		REQUIRE(query.getRelationshipClauses()->size() == 1);
+		REQUIRE(query.getRelationshipClauses()->at(0)->getRelationshipType() == RelationshipType::FOLLOWS);
 	}
 
 	SECTION("Adding to non empty vector") {
-		query.addRelationshipClause(createRelationshipClause());
+		QueryInput* leftQueryInput2 = new QueryInput();
+		QueryInput* rightQueryInput2 = new QueryInput();
+		query.addRelationshipClause(RelationshipType::FOLLOWS, leftQueryInput, rightQueryInput);
 		REQUIRE(query.getRelationshipClauses()->size() == 1);
-		query.addRelationshipClause(createRelationshipClause());
+		query.addRelationshipClause(RelationshipType::MODIFIES, leftQueryInput2, rightQueryInput2);
 		REQUIRE(query.getRelationshipClauses()->size() == 2);
+		REQUIRE(query.getRelationshipClauses()->at(0)->getRelationshipType() == RelationshipType::FOLLOWS);
+		REQUIRE(query.getRelationshipClauses()->at(1)->getRelationshipType() == RelationshipType::MODIFIES);
 	}
 }
 
 TEST_CASE("Adding Pattern clause pointer to vector") {
 	Query query;
-	Declaration* declaration = new Declaration(QueryInputType::DECLARATION, EntityType::ASSIGN, "x");
-	SelectClause* selectClause = new SelectClause(declaration);
-	query.setSelectClause(selectClause);
+	QueryInput* leftQueryInput = new QueryInput();
+	QueryInput* rightQueryInput = new QueryInput();
+	Expression* expression = new Expression("_");
+	Declaration* declaration = new Declaration(EntityType::ASSIGN, "x");
+	query.setSelectClause(declaration);
 
 	SECTION("Adding to empty vector") {
 		REQUIRE(query.getPatternClauses()->size() == 0);
-		query.addPatternClause(createPatternClause());
+		query.addPatternClause(leftQueryInput, rightQueryInput, expression);
 		REQUIRE(query.getPatternClauses()->size() == 1);
 	}
 
 	SECTION("Adding to non empty vector") {
-		query.addPatternClause(createPatternClause());
+		QueryInput* leftQueryInput2 = new QueryInput();
+		QueryInput* rightQueryInput2 = new QueryInput();
+		Expression* expression2 = new Expression("_");
+		query.addPatternClause(leftQueryInput, rightQueryInput, expression);
 		REQUIRE(query.getPatternClauses()->size() == 1);
-		query.addPatternClause(createPatternClause());
+		query.addPatternClause(leftQueryInput2, rightQueryInput2, expression2);
 		REQUIRE(query.getPatternClauses()->size() == 2);
 	}
-}
-
-RelationshipClause* createRelationshipClause() {
-	QueryInput* leftQueryInput = new QueryInput();
-	QueryInput* rightQueryInput = new QueryInput();
-	RelationshipClause* relationship = new RelationshipClause(RelationshipType::FOLLOWS, leftQueryInput, rightQueryInput);
-	return relationship;
-}
-
-PatternClause* createPatternClause() {
-	QueryInput* leftQueryInput = new QueryInput();
-	QueryInput* rightQueryInput = new QueryInput();
-	Expression* expression = new Expression("_");
-	PatternClause* pattern = new PatternClause(leftQueryInput, rightQueryInput, expression);
-	return pattern;
 }
