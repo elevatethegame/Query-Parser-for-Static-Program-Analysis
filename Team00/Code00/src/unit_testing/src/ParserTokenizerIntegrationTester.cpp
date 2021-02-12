@@ -147,3 +147,45 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 	REQUIRE(patternQueryInput->getValue() == "_");
 	REQUIRE(expression->getValue() == "_9000_");
 }
+
+TEST_CASE("Test Query with Select, Such That And Pattern Clause 2")
+{
+	std::string input = "while w; assign a; \nSelect w such that Parent*(w, a) pattern a(\"xyz\", _\"xyz\"_) ";
+	QueryParser queryParser = QueryParser{ input };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	INFO(Token::EntityTypeToString(synonyms["w"]));
+	INFO(Token::EntityTypeToString(synonyms["a"]));
+
+	REQUIRE(synonyms["w"] == EntityType::While);
+	REQUIRE(synonyms["a"] == EntityType::Assign);
+
+	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	REQUIRE(selectClDeclaration->getType() == QueryInputType::Declaration);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::While);
+	REQUIRE(selectClDeclaration->getValue() == "w");
+
+	RelationshipType relationshipType = queryParser.getSuchThatRelType();
+	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
+	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	REQUIRE(relationshipType == RelationshipType::ParentT);
+	REQUIRE(suchThatClLeftQueryInput->getType() == QueryInputType::Declaration);
+	REQUIRE(suchThatClLeftQueryInput->getValue() == "w");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::While);
+	REQUIRE(suchThatClRightQueryInput->getType() == QueryInputType::Declaration);
+	REQUIRE(suchThatClRightQueryInput->getValue() == "a");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::Assign);
+
+	std::shared_ptr<Declaration> patternClDeclaration = queryParser.getPatternDeclaration();
+	std::shared_ptr<QueryInput> patternQueryInput = queryParser.getPatternQueryInput();
+	std::shared_ptr<Expression> expression = queryParser.getPatternExpression();
+	REQUIRE(patternClDeclaration->getType() == QueryInputType::Declaration);
+	REQUIRE(patternClDeclaration->getValue() == "a");
+	REQUIRE(patternClDeclaration->getEntityType() == EntityType::Assign);
+	REQUIRE(patternQueryInput->getType() == QueryInputType::Ident);
+	REQUIRE(patternQueryInput->getValue() == "xyz");
+	REQUIRE(expression->getValue() == "_xyz_");
+}
+
+
