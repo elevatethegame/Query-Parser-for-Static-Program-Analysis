@@ -5,6 +5,7 @@
 #include "Tokenizer.h"
 #include <vector>
 #include <unordered_map>
+#include <set>
 #include "Declaration.h"
 #include "Any.h"
 #include "StmtNum.h"
@@ -39,8 +40,8 @@ private:
     bool suchThatClause();
     bool patternClause();
     void relRef();
-    std::shared_ptr<QueryInput> stmtRef();
-    std::shared_ptr<QueryInput> entRef();
+    std::shared_ptr<QueryInput> stmtRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
+    std::shared_ptr<QueryInput> entRef(std::set<EntityType> allowedDesignEntities);
     bool Modifies();
     bool Uses();
     bool Parent();
