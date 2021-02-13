@@ -1,16 +1,18 @@
 #pragma once
+
+#include <memory>
 #include "QueryInput.h"
 #include "Expression.h"
 
 class PatternClause {
 private:
-	QueryInput* aSynonym;
-	QueryInput* aQueryInput;
-	Expression* aExpression;
+	shared_ptr<QueryInput> aSynonym;
+	shared_ptr<QueryInput> aQueryInput;
+	shared_ptr<Expression> aExpression;
 
 public:
-	PatternClause(QueryInput* synonym, QueryInput* queryInput, Expression* expression);
-	QueryInput* getSynonym();
-	QueryInput* getQueryInput();
-	Expression* getExpression();
+	PatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression);
+	shared_ptr<QueryInput> getSynonym();
+	shared_ptr<QueryInput> getQueryInput();
+	shared_ptr<Expression> getExpression();
 };

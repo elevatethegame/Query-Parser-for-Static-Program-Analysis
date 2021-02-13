@@ -1,17 +1,18 @@
 #pragma once
 
+#include <memory>
 #include "RelationshipType.h"
 #include "QueryInput.h"
 
 class RelationshipClause {
 private:
 	RelationshipType aRelationshipType;
-	QueryInput* aLeftInput;
-	QueryInput* aRightInput;
+	shared_ptr<QueryInput> aLeftInput;
+	shared_ptr<QueryInput> aRightInput;
 
 public:
-	RelationshipClause(RelationshipType relationshipType, QueryInput* leftInput, QueryInput* rightInput);
+	RelationshipClause(RelationshipType relationshipType, shared_ptr<QueryInput> leftInput, shared_ptr<QueryInput> rightInput);
 	RelationshipType getRelationshipType();
-	QueryInput* getLeftInput();
-	QueryInput* getRightInput();
+	shared_ptr<QueryInput> getLeftInput();
+	shared_ptr<QueryInput> getRightInput();
 };

@@ -12,4 +12,5 @@ protected:
 public:
 	QueryInputType getQueryInputType();
 	string getValue();
+	virtual ~QueryInput();
 };

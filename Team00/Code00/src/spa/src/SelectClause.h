@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Declaration.h"
+#include <memory>
 
 class SelectClause {
 private:
-	Declaration* aDeclaration;
+	shared_ptr<Declaration> aDeclaration;
 
 public:
-	SelectClause(Declaration* declaration);
-	~SelectClause();
-	Declaration* getDeclaration();
+	SelectClause(shared_ptr<Declaration> declaration);
+	shared_ptr<Declaration> getDeclaration();
 };

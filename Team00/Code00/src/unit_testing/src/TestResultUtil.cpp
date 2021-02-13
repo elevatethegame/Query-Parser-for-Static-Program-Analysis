@@ -89,10 +89,10 @@ TEST_CASE("Getting cartesian product from two results") {
 		unordered_map<string, set<string>> pkbResult = { {"1", {"2", "3"}}, {"4", {"5"}} };
 		vector<vector<string>> table = { {"a", "c"}, {"b", "d"} };
 		unordered_map<string, int> indexMap = { {varSynonym, 0}, {whileSynonym, 1} };
-		ResultsTable* resultsTable = new ResultsTable();
+		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		ResultsTable* cartProdResult = ResultUtil::getCartesianProduct(pkbResult, { stmtSynonym, assignSynonym }, resultsTable);
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getCartesianProduct(pkbResult, { stmtSynonym, assignSynonym }, resultsTable);
 		
 		
 		vector<vector<string>> cartProdTable = cartProdResult->getTableValues();
@@ -111,10 +111,10 @@ TEST_CASE("Getting cartesian product from two results") {
 		unordered_map<string, set<string>> pkbResult = { { "dummy", {"1", "2", "3", "4"} } };
 		vector<vector<string>> table = { {"a", "c"}, {"b", "d"} };
 		unordered_map<string, int> indexMap = { {varSynonym, 0}, {whileSynonym, 1} };
-		ResultsTable* resultsTable = new ResultsTable();
+		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		ResultsTable* cartProdResult = ResultUtil::getCartesianProduct(pkbResult, { stmtSynonym }, resultsTable);
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getCartesianProduct(pkbResult, { stmtSynonym }, resultsTable);
 
 
 		vector<vector<string>> cartProdTable = cartProdResult->getTableValues();
@@ -141,10 +141,10 @@ TEST_CASE("Getting natural join from two results") {
 		unordered_map<string, set<string>> pkbResult = { { "dummy", {"1", "2", "3", "4"} } };
 		vector<vector<string>> table = { {"a", "2", "c"}, {"b", "10", "d"}, {"e", "2", "f"}, {"b", "4", "d"} };
 		unordered_map<string, int> indexMap = { {varSynonym, 0}, {stmtSynonym, 1}, {whileSynonym, 2} };
-		ResultsTable* resultsTable = new ResultsTable();
+		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		ResultsTable* cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym }, resultsTable, { stmtSynonym });
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym }, resultsTable, { stmtSynonym });
 
 
 		vector<vector<string>> cartProdTable = cartProdResult->getTableValues();
@@ -162,10 +162,10 @@ TEST_CASE("Getting natural join from two results") {
 		vector<vector<string>> table = { {"a", "1", "c", "10"}, {"b", "10", "d", "2"}, {"e", "4", "f", "2"}, {"b", "4", "d", "12"},
 			{"b", "10", "a", "222"}, {"ee", "1", "ff", "2"} };
 		unordered_map<string, int> indexMap = { {varSynonym, 0}, {stmtSynonym, 1}, {whileSynonym, 2}, {assignSynonym, 3 } };
-		ResultsTable* resultsTable = new ResultsTable();
+		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		ResultsTable* cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym, assignSynonym }, resultsTable, 
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym, assignSynonym }, resultsTable,
 			{ stmtSynonym, assignSynonym });
 
 
@@ -185,10 +185,10 @@ TEST_CASE("Getting natural join from two results") {
 		vector<vector<string>> table = { {"a", "1", "c", "10"}, {"b", "10", "d", "2"}, {"e", "14", "f", "2"}, {"b", "41", "d", "12"},
 			{"b", "10", "a", "222"}, {"ee", "1", "ff", "2"} };
 		unordered_map<string, int> indexMap = { {varSynonym, 0}, {stmtSynonym, 1}, {whileSynonym, 2}, {assignSynonym, 3 } };
-		ResultsTable* resultsTable = new ResultsTable();
+		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		ResultsTable* cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym, readSynonym }, resultsTable,
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym, readSynonym }, resultsTable,
 			{ stmtSynonym });
 
 
@@ -211,10 +211,10 @@ TEST_CASE("Getting natural join from two results") {
 		vector<vector<string>> table = { {"a", "1", "c", "10"}, {"b", "10", "d", "2"}, {"e", "14", "f", "2"}, {"b", "41", "d", "5"},
 			{"b", "10", "a", "222"}, {"ee", "1", "ff", "2"} };
 		unordered_map<string, int> indexMap = { {varSynonym, 0}, {assignSynonym, 1}, {whileSynonym, 2}, {readSynonym, 3 } };
-		ResultsTable* resultsTable = new ResultsTable();
+		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		ResultsTable* cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym, readSynonym }, resultsTable,
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym, readSynonym }, resultsTable,
 			{ readSynonym });
 
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <memory>
 #include "Declaration.h"
 #include "SelectClause.h"
 #include "RelationshipClause.h"
@@ -10,18 +11,18 @@ using namespace std;
 
 class Query {
 private:
-	SelectClause* aSelectClause;
-	vector<RelationshipClause*>* aRelationshipClauses;
-	vector<PatternClause*>* aPatternClauses;
+	shared_ptr<SelectClause> aSelectClause;
+	vector<shared_ptr<RelationshipClause>> aRelationshipClauses;
+	vector<shared_ptr<PatternClause>> aPatternClauses;
 
 public:
 	Query();
-	void setSelectClause(Declaration* declaration);
+	void setSelectClause(shared_ptr<Declaration> declaration);
 	void addRelationshipClause(RelationshipType relationshipType,
-		QueryInput* leftQueryInput, QueryInput* rightQueryInput);
-	void addPatternClause(QueryInput* synonym, QueryInput* queryInput, Expression* expression);
+		shared_ptr<QueryInput> leftQueryInput, shared_ptr<QueryInput> rightQueryInput);
+	void addPatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression);
 
-	SelectClause* getSelectClause();
-	vector<RelationshipClause*>* getRelationshipClauses();
-	vector<PatternClause*>* getPatternClauses();
+	shared_ptr<SelectClause> getSelectClause();
+	vector<shared_ptr<RelationshipClause>> getRelationshipClauses();
+	vector<shared_ptr<PatternClause>> getPatternClauses();
 };

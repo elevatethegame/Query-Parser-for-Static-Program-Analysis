@@ -1,9 +1,9 @@
 #include "SelectClause.h"
 
-SelectClause::SelectClause(Declaration* declaration) {
-	aDeclaration = declaration;
+SelectClause::SelectClause(shared_ptr<Declaration> declaration) {
+	this->aDeclaration = declaration;
 }
 
-Declaration* SelectClause::getDeclaration() {
-	return aDeclaration;
+shared_ptr<Declaration> SelectClause::getDeclaration() {
+	return this->aDeclaration;
 }
