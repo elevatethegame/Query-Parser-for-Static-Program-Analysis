@@ -17,8 +17,8 @@ set<string> ResultUtil::getCommonSynonyms(vector<string> PKBResultSynonyms, set<
 // used to merge 2 PKB results that have no common synonyms
 // synonyms assumed to be size 1 or 2
 // all inputs assumed to be non empty
-ResultsTable* ResultUtil::getCartesianProduct(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
-	ResultsTable* currentResults) {
+shared_ptr<ResultsTable> ResultUtil::getCartesianProduct(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	shared_ptr<ResultsTable> currentResults) {
 	unordered_map<string, int> synonymIndex = currentResults->getSynonymIndexMap();
 	vector<vector<string>> tableValues = currentResults->getTableValues();
 	vector<vector<string>> newTableValues;
@@ -71,8 +71,8 @@ ResultsTable* ResultUtil::getCartesianProduct(unordered_map <string, set<string>
 }
 
 // used to merge 2 PKB results that have some common synonym
-ResultsTable* ResultUtil::getNaturalJoin(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
-	ResultsTable* currentResults, set<string> commonSynonyms) {
+shared_ptr<ResultsTable> ResultUtil::getNaturalJoin(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	shared_ptr<ResultsTable> currentResults, set<string> commonSynonyms) {
 
 	unordered_map<string, int> synonymIndex = currentResults->getSynonymIndexMap();
 	vector<vector<string>> tableValues = currentResults->getTableValues();
@@ -119,8 +119,8 @@ ResultsTable* ResultUtil::getNaturalJoin(unordered_map <string, set<string>> PKB
 	return currentResults;
 }
 
-ResultsTable* ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
-	ResultsTable* currentResults) {
+shared_ptr<ResultsTable> ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	shared_ptr<ResultsTable> currentResults) {
 	unordered_map<string, int> synonymIndex = currentResults->getSynonymIndexMap();
 	string leftSynonym = synonyms.at(0);
 	string rightSynonym = synonyms.at(1);
@@ -151,8 +151,8 @@ ResultsTable* ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string,
 	return currentResults;
 }
 
-ResultsTable* ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
-	bool isLeftSynonymCommon, ResultsTable* currentResults) {
+shared_ptr<ResultsTable> ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	bool isLeftSynonymCommon, shared_ptr<ResultsTable> currentResults) {
 	unordered_map<string, int> synonymIndex = currentResults->getSynonymIndexMap();
 	string leftSynonym = synonyms.at(0);
 	string rightSynonym = synonyms.at(1);

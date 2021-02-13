@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include <set>
+#include <memory>
 #include "ResultsTable.h"
 
 using namespace std;
@@ -13,16 +14,16 @@ public:
 	
 	static set<string> getCommonSynonyms(vector<string> PKBResultSynonyms, set<string> currentResultSynonyms);
 
-	static ResultsTable* getCartesianProduct(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
-		ResultsTable* currentResults);
+	static shared_ptr<ResultsTable> getCartesianProduct(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		shared_ptr<ResultsTable> currentResults);
 
-	static ResultsTable* ResultUtil::getNaturalJoin(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
-		ResultsTable* currentResults, set<string> commonSynonyms);
+	static shared_ptr<ResultsTable> ResultUtil::getNaturalJoin(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		shared_ptr<ResultsTable> currentResults, set<string> commonSynonyms);
 
 private:
-	static ResultsTable* ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
-		ResultsTable* currentResults);
+	static shared_ptr<ResultsTable> ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		shared_ptr<ResultsTable> currentResults);
 
-	static ResultsTable* ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
-		bool isLeftSynonymCommon, ResultsTable* currentResults);
+	static shared_ptr<ResultsTable> ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		bool isLeftSynonymCommon, shared_ptr<ResultsTable> currentResults);
 };

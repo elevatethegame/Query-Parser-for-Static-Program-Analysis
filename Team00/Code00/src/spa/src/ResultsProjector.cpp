@@ -1,11 +1,11 @@
 #include "ResultsProjector.h"
 
-void ResultsProjector::projectResults(ResultsTable* evaluatedResults, SelectClause* selectClause, PKBInterface* PKB, list<string>& results) {
+void ResultsProjector::projectResults(shared_ptr<ResultsTable> evaluatedResults, shared_ptr<SelectClause> selectClause, shared_ptr<PKBInterface> PKB, list<string>& results) {
 	if (evaluatedResults->isNoResult()) {
 		return;
 	}
 	
-	Declaration* declaration = selectClause->getDeclaration();
+	shared_ptr<Declaration> declaration = selectClause->getDeclaration();
 	set<string> synonyms = evaluatedResults->getSynonyms();
 	string synonym = declaration->getValue();
 	if (synonyms.find(synonym) != synonyms.end()) {

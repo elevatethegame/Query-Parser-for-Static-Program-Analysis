@@ -1,6 +1,6 @@
 #include "RelationshipClause.h"
 
-RelationshipClause::RelationshipClause(RelationshipType relationshipType, QueryInput* leftInput, QueryInput* rightInput) {
+RelationshipClause::RelationshipClause(RelationshipType relationshipType, shared_ptr<QueryInput> leftInput, shared_ptr<QueryInput> rightInput) {
 	aRelationshipType = relationshipType;
 	aLeftInput = leftInput;
 	aRightInput = rightInput;
@@ -10,10 +10,10 @@ RelationshipType RelationshipClause::getRelationshipType() {
 	return aRelationshipType;
 }
 
-QueryInput* RelationshipClause::getLeftInput() {
+shared_ptr<QueryInput> RelationshipClause::getLeftInput() {
 	return aLeftInput;
 }
 
-QueryInput* RelationshipClause::getRightInput() {
+shared_ptr<QueryInput> RelationshipClause::getRightInput() {
 	return aRightInput;
 }

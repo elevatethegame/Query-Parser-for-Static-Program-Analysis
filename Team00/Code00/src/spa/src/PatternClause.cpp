@@ -1,19 +1,19 @@
 #include "PatternClause.h"
 
-PatternClause::PatternClause(QueryInput* synonym, QueryInput* queryInput, Expression* expression) {
-	aSynonym = synonym;
-	aQueryInput = queryInput;
-	aExpression = expression;
+PatternClause::PatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression) {
+	this->aSynonym = synonym;
+	this->aQueryInput = queryInput;
+	this->aExpression = expression;
 }
 
-QueryInput* PatternClause::getSynonym() {
-	return aSynonym;
+shared_ptr<QueryInput> PatternClause::getSynonym() {
+	return this->aSynonym;
 }
 
-QueryInput* PatternClause::getQueryInput() {
-	return aQueryInput;
+shared_ptr<QueryInput> PatternClause::getQueryInput() {
+	return this->aQueryInput;
 }
 
-Expression* PatternClause::getExpression() {
-	return aExpression;
+shared_ptr<Expression> PatternClause::getExpression() {
+	return this->aExpression;
 }
