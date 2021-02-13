@@ -98,7 +98,7 @@ TEST_CASE("PKB parentAndFollow") {
 	REQUIRE(expectedParent == resultParent);
 }
 
-TEST_CASE("PKB extarctStar") {
+TEST_CASE("PKB extarctStar 1") {
 	
 	PKB pkb = PKB(10);
 	// 1 2 3 4 {5 {6, 7} 8} 9, 10
@@ -141,4 +141,88 @@ TEST_CASE("PKB extarctStar") {
 
 	set<string> expected10{};
 	REQUIRE(expected10 == resultFollow["10"]);
+
+	unordered_map<string, set<string>> resultParent = pkb.getResultsOfRS(
+		RelationshipType::PARENT_S,
+		*(new Declaration(EntityType::STMT, "s1")),
+		*(new Declaration(EntityType::STMT, "s2")));
+
+	string b4[] = { "5", "6", "7", "8" };
+	REQUIRE(set<string>{ std::begin(b4), std::end(b4) } == resultParent["4"]);
+
+	string b5[] = { "6", "7" };
+	REQUIRE(set<string>{ std::begin(b5), std::end(b5) } == resultParent["5"]);
+
+	REQUIRE(set<string>{} == resultParent["1"]);
+	REQUIRE(set<string>{} == resultParent["6"]);
+	REQUIRE(set<string>{} == resultParent["10"]);
+}
+
+TEST_CASE("PKB extarctStar 2") {
+
+	PKB pkb = PKB(16);
+	// 1 2 {3, 4, 5 {6, 7, 8 {9, 10}} 11 {12 {13}} 14, 15} 16
+	REQUIRE(pkb.insertFollow(1, 2));
+	REQUIRE(pkb.insertParent(2, 3));
+	REQUIRE(pkb.insertParent(2, 4));
+	REQUIRE(pkb.insertFollow(3, 4));
+	REQUIRE(pkb.insertParent(2, 5));
+	REQUIRE(pkb.insertFollow(4, 5));
+	REQUIRE(pkb.insertParent(5, 6));
+	REQUIRE(pkb.insertParent(5, 7));
+	REQUIRE(pkb.insertFollow(6, 7));
+	REQUIRE(pkb.insertParent(5, 8));
+	REQUIRE(pkb.insertFollow(7, 8));
+	REQUIRE(pkb.insertParent(8, 9));
+	REQUIRE(pkb.insertParent(8, 10));
+	REQUIRE(pkb.insertFollow(9, 10));
+	REQUIRE(pkb.insertParent(2, 11));
+	REQUIRE(pkb.insertParent(11, 12));
+	REQUIRE(pkb.insertParent(12, 13));
+	REQUIRE(pkb.insertParent(2, 14));
+	REQUIRE(pkb.insertParent(2, 15));
+	REQUIRE(pkb.insertFollow(14, 15));
+
+	pkb.init();
+
+	unordered_map<string, set<string>> resultFollow = pkb.getResultsOfRS(
+		RelationshipType::FOLLOWS_S,
+		*(new Declaration(EntityType::STMT, "s1")),
+		*(new Declaration(EntityType::STMT, "s2")));
+
+	string a1[] = { "2", "16" };
+	REQUIRE(set<string> { std::begin(a1), std::end(a1) } == resultFollow["1"]);
+
+	string a3[] = { "4", "5", "11", "14", "15" };
+	REQUIRE(set<string> { std::begin(a3), std::end(a3) } == resultFollow["3"]);
+
+	string a6[] = { "7", "8" };
+	REQUIRE(set<string> { std::begin(a6), std::end(a6) } == resultFollow["6"]);
+
+	string a11[] = { "14", "15" };
+	REQUIRE(set<string> { std::begin(a11), std::end(a11) } == resultFollow["11"]);
+
+	set<string> expected12{};
+	REQUIRE(expected12 == resultFollow["12"]);
+
+	unordered_map<string, set<string>> resultParent = pkb.getResultsOfRS(
+		RelationshipType::PARENT_S,
+		*(new Declaration(EntityType::STMT, "s1")),
+		*(new Declaration(EntityType::STMT, "s2")));
+
+	string b2[] = { "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
+	REQUIRE(set<string>{ std::begin(b2), std::end(b2) } == resultParent["2"]);
+
+	string b5[] = { "6", "7", "8", "9", "10" };
+	REQUIRE(set<string>{ std::begin(b5), std::end(b5) } == resultParent["5"]);
+
+	string b11[] = { "12", "13" };
+	REQUIRE(set<string>{ std::begin(b11), std::end(b11) } == resultParent["11"]);
+
+	string b12[] = { "13" };
+	REQUIRE(set<string>{ std::begin(b12), std::end(b12) } == resultParent["12"]);
+
+	REQUIRE(set<string>{} == resultParent["1"]);
+	REQUIRE(set<string>{} == resultParent["6"]);
+	REQUIRE(set<string>{} == resultParent["13"]);
 }
