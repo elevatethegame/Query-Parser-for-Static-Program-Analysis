@@ -240,6 +240,19 @@ void PKB::extractFollowStar() {
 }
 
 void PKB::extractParentStar() {
+	int p = RelationshipType::PARENT;
+	int ps = RelationshipType::PARENT_S;
+	for (string s : this->relationByKeys[p]) {
+		relationByKeys[ps].insert(s);
+		set<string> res = this->relationsBy[p][s];
+		while (!res.empty()) { // parent*(_, s)
+			string parent = *(res.begin());
+			this->relations[ps][parent].insert(s);
+			this->relationsBy[ps][s].insert(parent);
+			this->relationKeys[ps].insert(parent);
+			res = this->relationsBy[p][parent];
+		}
+	}
 }
 
 void PKB::extractUses() {
