@@ -147,8 +147,7 @@ bool PKB::getBooleanResultOfRS(
 	if (t1 == QueryInputType::DECLARATION || 
 		t2 == QueryInputType::DECLARATION) { // eg. uses(1, v)
 		return false;
-	} else if (t1 == QueryInputType::STMT_NUM &&
-		t2 == QueryInputType::STMT_NUM){ // eg. follows*(1, 3)
+	} else if (t1 != QueryInputType::ANY && t2 != QueryInputType::ANY){ // eg. follows*(1, 3)
 		set<string> results = this->relations[type][input1.getValue()];
 		return (results.find(input2.getValue()) != results.end());
 	} else if (t1 == QueryInputType::ANY && 
@@ -256,7 +255,35 @@ void PKB::extractParentStar() {
 }
 
 void PKB::extractUses() {
+	int ps = RelationshipType::PARENT_S;
+	int u = RelationshipType::USES;
+	for (string s : this->relationKeys[ps]) {
+		for (string c : this->relations[ps][s]) {
+			set<string> used = this->relations[u][c];
+			if (!used.empty()) {
+				this->relationKeys[u].insert(s);
+			}
+			for (string v : used) {
+				this->relations[u][s].insert(v);
+				this->relationsBy[u][v].insert(s);
+			}
+		}
+	}
 }
 
 void PKB::extractModifies() {
+	int ps = RelationshipType::PARENT_S;
+	int m = RelationshipType::MODIFIES;
+	for (string s : this->relationKeys[ps]) {
+		for (string c : this->relations[ps][s]) {
+			set<string> modified = this->relations[m][c];
+			if (!modified.empty()) {
+				this->relationKeys[m].insert(s);
+			}
+			for (string v : modified) {
+				this->relations[m][s].insert(v);
+				this->relationsBy[m][v].insert(s);
+			}
+		}
+	}
 }
