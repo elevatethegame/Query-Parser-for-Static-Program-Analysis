@@ -105,6 +105,13 @@ bool QueryParser::declaration()
         std::cout << synToken->getValue() << "\n";
         while (accept(TokenTypes::Comma)) {
             synToken = std::move(expect(TokenTypes::Identifier));
+            auto it = synonyms.find(synToken->getValue());
+            // Throw an error if synonyms are redeclared as a different entity type
+            if (it != synonyms.end() && it->second != designEntity->getEntityType()) {
+                std::string errorMsg = "Synonym " + synToken->getValue() + " with " + Token::EntityTypeToString(it->second)
+                    + " being redeclared as " + Token::EntityTypeToString(designEntity->getEntityType());
+                throw std::exception(errorMsg.c_str());
+            }
             synonyms[synToken->getValue()] = designEntity->getEntityType();
             std::cout << synToken->getValue() << "\n";
             std::cout << Token::EntityTypeToString(designEntity->getEntityType()) << "\n";
@@ -136,12 +143,12 @@ bool QueryParser::patternClause()
         }
         EntityType synonymType = it->second;
         if (synonymType != EntityType::Assign) {  // Only allow entity type of Assignment for pattern clause
-            std::string errorMsg = "Synonym " + synToken->getValue() + " not allowed, of " + Token::EntityTypeToString(synonymType);
+            std::string errorMsg = "Synonym " + synToken->getValue() + " not allowed, has " + Token::EntityTypeToString(synonymType);
             throw std::exception(errorMsg.c_str());
         }
         auto synonym = std::make_shared<Declaration>(QueryInputType::Declaration, synToken->getValue(), synonyms[synToken->getValue()]);
         expect(TokenTypes::LeftParen);
-        std::shared_ptr<QueryInput> queryInput = entRef(std::set<EntityType>({ }));
+        std::shared_ptr<QueryInput> queryInput = entRef(std::set<EntityType>({ EntityType::Variable, EntityType::Constant }));
         expect(TokenTypes::Comma);
         std::shared_ptr<Expression> expression = expressionSpec();
         expect(TokenTypes::RightParen);
@@ -184,13 +191,17 @@ std::shared_ptr<QueryInput> QueryParser::stmtRef(std::set<EntityType> allowedDes
         }
         EntityType synonymType = it->second;
         if (allowedDesignEntities.find(synonymType) == allowedDesignEntities.end()) {
-            std::string errorMsg = "Synonym " + token->getValue() + " not allowed, of " + Token::EntityTypeToString(synonymType);
+            std::string errorMsg = "Synonym " + token->getValue() + " not allowed, has " + Token::EntityTypeToString(synonymType);
             throw std::exception(errorMsg.c_str());
         }
         return std::make_shared<Declaration>(QueryInputType::Declaration, token->getValue(), synonyms[token->getValue()]);
     }
-    if (acceptsUnderscore && accept(TokenTypes::Underscore)) {
-        return std::make_shared<Any>(QueryInputType::Any, token->getValue());
+    token = std::move(accept(TokenTypes::Underscore));
+    if (token) {
+        if (acceptsUnderscore) {
+            return std::make_shared<Any>(QueryInputType::Any, token->getValue());
+        }
+        throw std::invalid_argument("Unexpected token encountered when parsing stmtRef: " + token->toString());
     }
     token = std::move(accept(TokenTypes::Integer));
     if (token) {
@@ -210,7 +221,7 @@ std::shared_ptr<QueryInput> QueryParser::entRef(std::set<EntityType> allowedDesi
         }
         EntityType synonymType = it->second;
         if (allowedDesignEntities.find(synonymType) == allowedDesignEntities.end()) {
-            std::string errorMsg = "Synonym " + token->getValue() + " not allowed, of " + Token::EntityTypeToString(synonymType);
+            std::string errorMsg = "Synonym " + token->getValue() + " not allowed, has " + Token::EntityTypeToString(synonymType);
             throw std::exception(errorMsg.c_str());
         }
         return std::make_shared<Declaration>(QueryInputType::Declaration, token->getValue(), synonyms[token->getValue()]);
@@ -349,7 +360,7 @@ std::shared_ptr<Expression> QueryParser::expressionSpec()
     std::unique_ptr<Token> token = std::move(subExpression());
     if (token) {
         expect(TokenTypes::Underscore);
-        return std::make_shared<Expression>("_" + token->getValue() + "_");
+        return std::make_shared<Expression>(token->getValue());
     }
     return std::make_shared<Expression>("_");
 }
