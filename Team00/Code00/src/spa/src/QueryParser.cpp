@@ -134,6 +134,11 @@ bool QueryParser::patternClause()
             std::string errorMsg = "Undeclared synonym encountered in Pattern clause: " + synToken->getValue();
             throw std::exception(errorMsg.c_str());
         }
+        EntityType synonymType = it->second;
+        if (synonymType != EntityType::Assign) {  // Only allow entity type of Assignment for pattern clause
+            std::string errorMsg = "Synonym " + synToken->getValue() + " not allowed, of " + Token::EntityTypeToString(synonymType);
+            throw std::exception(errorMsg.c_str());
+        }
         auto synonym = std::make_shared<Declaration>(QueryInputType::Declaration, synToken->getValue(), synonyms[synToken->getValue()]);
         expect(TokenTypes::LeftParen);
         std::shared_ptr<QueryInput> queryInput = entRef(std::set<EntityType>({ }));
