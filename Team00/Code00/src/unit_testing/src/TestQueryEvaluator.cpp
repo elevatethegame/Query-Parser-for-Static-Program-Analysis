@@ -67,8 +67,8 @@ TEST_CASE("Evaluating query with only one relationship clause") {
 		TestResultsTableUtil::checkTable(actualTable, expectedTable);
 	}
 	SECTION("relationship clause has no synonym input, evaluates to non empty results") {
-		shared_ptr<QueryInput> eight = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(8));
-		shared_ptr<QueryInput> seven = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(7));
+		shared_ptr<QueryInput> eight = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>("8"));
+		shared_ptr<QueryInput> seven = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>("7"));
 		query->addRelationshipClause(RelationshipType::FOLLOWS_T, seven, eight);
 
 		unordered_map<string, set<string>> wrongResult = { { "dummy", {"11", "12", "13", "14", "22", "23", "24"}} };
@@ -121,8 +121,8 @@ TEST_CASE("Evaluating query with only one relationship clause") {
 		TestResultsTableUtil::checkTable(actualTable, expectedTable);
 	}
 	SECTION("relationship clause has no synonym input, evaluates to empty results") {
-		shared_ptr<QueryInput> eight = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(8));
-		shared_ptr<QueryInput> seven = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(7));
+		shared_ptr<QueryInput> eight = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>("8"));
+		shared_ptr<QueryInput> seven = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>("7"));
 		query->addRelationshipClause(RelationshipType::FOLLOWS_T, seven, eight);
 
 		unordered_map<string, set<string>> wrongResult = { { "dummy", {"11", "12", "13", "14", "22", "23", "24"}} };
