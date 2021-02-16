@@ -123,7 +123,7 @@ bool PKB::insertDirectModifies(const int& index, const string& variable) {
 	}
 }
 
-bool PKB::insertExpression(const int& index, const long& expression) {
+bool PKB::insertExpression(const int& index, const string& expression) {
 	if (index <= 0 || index > this->number) {
 		return false;
 	} else {
@@ -212,7 +212,34 @@ unordered_map<string, set<string>> PKB::getResultsOfRS(
 
 unordered_map<string, set<string>> PKB::getResultsOfPattern(
 	const EntityType& type, QueryInput input, Expression expression) {
-	return unordered_map<string, set<string>>();
+	string exp = expression.getValue();
+	set<string> res = this->expressions[exp];
+	unordered_map<string, set<string>> ans;
+	if (type != EntityType::ASSIGN && type != EntityType::STMT) {
+		return ans;
+	}
+	switch (input.getQueryInputType()) {
+	case QueryInputType::ANY: { // eg. pattern a(_, _"x"_)
+		ans[""] = res;
+		break;
+	}
+	case QueryInputType::DECLARATION: { // eg. pattern a(v, _"x"_)
+		for (string s : res) {
+			ans[s] = this->relations[MODIFIES][s];
+		}
+		break;
+	}
+	case QueryInputType::INDENT: { // eg. pattern a("x", _"x"_)
+		for (string s : res) {
+			if (input.getValue() == *(relations[MODIFIES][s].begin())) {
+				ans[""].insert(s);
+			}
+		}
+		break;
+	}
+	default: { } // STMT_NUM
+	}
+	return ans;
 }
 
 

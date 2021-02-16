@@ -107,7 +107,7 @@ public:
 	*
 	* @return a boolean indicating whether the operation is successful
 	*/
-	bool insertExpression(const int& index, const long& expression);
+	bool insertExpression(const int& index, const string& expression);
 
 	/**
 	* Retrieves indices of all statements of some type as string
@@ -152,8 +152,9 @@ public:
 	* @param input the LHS of a pattern clause
 	* @param expression the RHS of a pattern clause
 	*
-	* @return a map of results (stmt_index, set<input_value>), 
-	* or empty if the input is neither Indent nor Declaration
+	* @return a map of results (stmt_index, set<input_value>) if input is a Declaration, 
+	* or a map with a dummy key and a set of indices if input is Any or Indent, or empty
+	* 
 	*/
 	unordered_map<string, set<string>> getResultsOfPattern(
 		const EntityType& type, QueryInput input, Expression expression);
@@ -171,7 +172,7 @@ private:
 	
 	unordered_map<string, set<string>> relationsBy[6]; // by-relationship maps
 	
-	unordered_map<long, set<string>> expressions; // map from expression to indices
+	unordered_map<string, set<string>> expressions; // map from expression to indices
 	
 	set<string> relationKeys[6]; // key set for relationships
 

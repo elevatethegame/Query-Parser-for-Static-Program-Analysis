@@ -277,3 +277,54 @@ TEST_CASE("PKB extarctStar 2") {
 	REQUIRE(set<string>{ std::begin(d3), std::end(d3) } == resultModifies3);
 
 }
+
+TEST_CASE("PKB pattern") {
+	
+	PKB pkb = PKB(10);
+	// 3. x = x + y + 1
+	// 4. y = z + a + 1
+	// 5. x = count - 1;
+	// 8. z = a + x * y - 10;
+	REQUIRE(pkb.insertDirectModifies(3, "x"));
+	REQUIRE(pkb.insertDirectModifies(4, "y"));
+	REQUIRE(pkb.insertDirectModifies(5, "x"));
+	REQUIRE(pkb.insertDirectModifies(8, "z"));
+	REQUIRE(pkb.insertExpression(3, "x"));
+	REQUIRE(pkb.insertExpression(3, "y"));
+	REQUIRE(pkb.insertExpression(3, "1"));
+	REQUIRE(pkb.insertExpression(4, "z"));
+	REQUIRE(pkb.insertExpression(4, "z"));
+	REQUIRE(pkb.insertExpression(4, "a"));
+	REQUIRE(pkb.insertExpression(4, "1"));
+	REQUIRE(pkb.insertExpression(5, "count"));
+	REQUIRE(pkb.insertExpression(5, "1"));
+	REQUIRE(pkb.insertExpression(8, "a"));
+	REQUIRE(pkb.insertExpression(8, "x"));
+	REQUIRE(pkb.insertExpression(8, "y"));
+	REQUIRE(pkb.insertExpression(8, "10"));
+
+	unordered_map<string, set<string>> resultPattern = 
+		pkb.getResultsOfPattern(EntityType::ASSIGN,
+		*(new Declaration(EntityType::VAR, "v")), *(new Expression("1")));
+
+	REQUIRE(set<string>{ "x" } == resultPattern["3"]);
+	REQUIRE(set<string>{ "y" } == resultPattern["4"]);
+	REQUIRE(set<string>{ } == resultPattern["8"]);
+	
+	set<string> result1 = pkb.getResultsOfPattern(EntityType::ASSIGN,
+			*(new Any()), *(new Expression("x")))[""];
+	REQUIRE(set<string>{ "3", "8" } == result1);
+
+	set<string> result2 = pkb.getResultsOfPattern(EntityType::ASSIGN,
+		*(new Any()), *(new Expression("y")))[""];
+	REQUIRE(set<string>{ "3", "8" } == result2);
+
+	set<string> result3 = pkb.getResultsOfPattern(EntityType::ASSIGN,
+		*(new Indent("x")), *(new Expression("1")))[""];
+	REQUIRE(set<string>{ "3", "5" } == result3);
+
+	set<string> result4 = pkb.getResultsOfPattern(EntityType::ASSIGN,
+		*(new StmtNum(3)), *(new Expression("1")))[""];
+	REQUIRE(set<string>{ } == result4);
+
+}
