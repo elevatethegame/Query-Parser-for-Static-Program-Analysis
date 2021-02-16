@@ -1,6 +1,6 @@
 #include "PKB.h"
 #include "StmtNum.h"
-#include "Indent.h"
+#include "Ident.h"
 #include "Any.h"
 
 #include "catch.hpp"
@@ -83,7 +83,7 @@ TEST_CASE("PKB parentAndFollow") {
 	REQUIRE_FALSE(pkb.getBooleanResultOfRS(RelationshipType::PARENT,
 		*(new Any()), *(new Declaration(EntityType::CALL, "c"))));
 	REQUIRE_FALSE(pkb.getBooleanResultOfRS(RelationshipType::PARENT,
-		*(new Any()), *(new Indent("dummyIndent"))));
+		*(new Any()), *(new Ident("dummyIdent"))));
 
 	set<string> resultFollow = pkb.getResultsOfRS(FOLLOWS,
 		*(new Any()), *(new Declaration(EntityType::STMT, "s")))[""];
@@ -240,19 +240,19 @@ TEST_CASE("PKB extarctStar 2") {
 	REQUIRE(set<string>{} == resultParent["6"]);
 	REQUIRE(set<string>{} == resultParent["13"]);
 
-	REQUIRE(pkb.getBooleanResultOfRS(MODIFIES, *(new StmtNum(3)), *(new Indent("x"))));
-	REQUIRE(pkb.getBooleanResultOfRS(MODIFIES, *(new StmtNum(5)), *(new Indent("t"))));
-	REQUIRE(pkb.getBooleanResultOfRS(USES, *(new StmtNum(8)), *(new Indent("c"))));
+	REQUIRE(pkb.getBooleanResultOfRS(MODIFIES, *(new StmtNum(3)), *(new Ident("x"))));
+	REQUIRE(pkb.getBooleanResultOfRS(MODIFIES, *(new StmtNum(5)), *(new Ident("t"))));
+	REQUIRE(pkb.getBooleanResultOfRS(USES, *(new StmtNum(8)), *(new Ident("c"))));
 	REQUIRE(pkb.getBooleanResultOfRS(USES, *(new StmtNum(11)), *(new Any())));
-	REQUIRE(pkb.getBooleanResultOfRS(USES, *(new Any()), *(new Indent("z"))));
+	REQUIRE(pkb.getBooleanResultOfRS(USES, *(new Any()), *(new Ident("z"))));
 	
 	set<string> resultUses1 = pkb.getResultsOfRS(USES,
-		*(new Declaration(EntityType::STMT, "s")), *(new Indent("t")))[""];
+		*(new Declaration(EntityType::STMT, "s")), *(new Ident("t")))[""];
 	string c1[] = { "2", "11", "12" };
 	REQUIRE(set<string>{ std::begin(c1), std::end(c1) } == resultUses1);
 	
 	set<string> resultUses2 = pkb.getResultsOfRS(USES,
-		*(new Declaration(EntityType::STMT, "s")), *(new Indent("z")))[""];
+		*(new Declaration(EntityType::STMT, "s")), *(new Ident("z")))[""];
 	string c2[] = { "2", "5", "8", "9", "11", "12" };
 	REQUIRE(set<string>{ std::begin(c2), std::end(c2) } == resultUses2);
 	
@@ -262,12 +262,12 @@ TEST_CASE("PKB extarctStar 2") {
 	REQUIRE(set<string>{ std::begin(c3), std::end(c3) } == resultUses3);
 
 	set<string> resultModifies1 = pkb.getResultsOfRS(MODIFIES,
-		*(new Declaration(EntityType::STMT, "s")), *(new Indent("t")))[""];
+		*(new Declaration(EntityType::STMT, "s")), *(new Ident("t")))[""];
 	string d1[] = { "2", "5", "8", "9" };
 	REQUIRE(set<string>{ std::begin(d1), std::end(d1) } == resultModifies1);
 
 	set<string> resultModifies2 = pkb.getResultsOfRS(MODIFIES,
-		*(new Declaration(EntityType::STMT, "s")), *(new Indent("y")))[""];
+		*(new Declaration(EntityType::STMT, "s")), *(new Ident("y")))[""];
 	string d2[] = { "2", "5", "6", "15" };
 	REQUIRE(set<string>{ std::begin(d2), std::end(d2) } == resultModifies2);
 
@@ -320,7 +320,7 @@ TEST_CASE("PKB pattern") {
 	REQUIRE(set<string>{ "3", "8" } == result2);
 
 	set<string> result3 = pkb.getResultsOfPattern(EntityType::ASSIGN,
-		*(new Indent("x")), *(new Expression("1")))[""];
+		*(new Ident("x")), *(new Expression("1")))[""];
 	REQUIRE(set<string>{ "3", "5" } == result3);
 
 	set<string> result4 = pkb.getResultsOfPattern(EntityType::ASSIGN,
