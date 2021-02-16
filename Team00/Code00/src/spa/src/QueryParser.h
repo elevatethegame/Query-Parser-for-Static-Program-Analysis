@@ -11,7 +11,6 @@
 #include "StmtNum.h"
 #include "Ident.h"
 #include "Expression.h"
-#include "RelationshipType.h"
 #include "QueryInterface.h"
 
 class QueryParser
@@ -31,7 +30,7 @@ private:
     std::shared_ptr<Declaration> patternDeclaration;
     std::shared_ptr<QueryInput> patternQueryInput;
     std::shared_ptr<Expression> patternExpression;
-    RelationshipType suchThatRelType = RelationshipType::Null;
+    RelationshipType suchThatRelationshipType = RelationshipType::NONE;
     std::shared_ptr<QueryInput> suchThatLeftQueryInput;
     std::shared_ptr<QueryInput> suchThatRightQueryInput;
 
@@ -67,7 +66,7 @@ public:
     std::shared_ptr<Declaration> getPatternDeclaration();
     std::shared_ptr<QueryInput> getPatternQueryInput();
     std::shared_ptr<Expression> getPatternExpression();
-    RelationshipType getSuchThatRelType();
+    RelationshipType getSuchThatRelationshipType();
     std::shared_ptr<QueryInput> getSuchThatLeftQueryInput();
     std::shared_ptr<QueryInput> getSuchThatRightQueryInput();
 
