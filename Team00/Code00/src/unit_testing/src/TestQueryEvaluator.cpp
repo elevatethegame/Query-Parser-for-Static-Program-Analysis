@@ -69,7 +69,7 @@ TEST_CASE("Evaluating query with only one relationship clause") {
 	SECTION("relationship clause has no synonym input, evaluates to non empty results") {
 		shared_ptr<QueryInput> eight = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(8));
 		shared_ptr<QueryInput> seven = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(7));
-		query->addRelationshipClause(RelationshipType::FOLLOWS_S, seven, eight);
+		query->addRelationshipClause(RelationshipType::FOLLOWS_T, seven, eight);
 
 		unordered_map<string, set<string>> wrongResult = { { "dummy", {"11", "12", "13", "14", "22", "23", "24"}} };
 		pkb->setGetResultsOfRSReturnValue(wrongResult);
@@ -123,7 +123,7 @@ TEST_CASE("Evaluating query with only one relationship clause") {
 	SECTION("relationship clause has no synonym input, evaluates to empty results") {
 		shared_ptr<QueryInput> eight = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(8));
 		shared_ptr<QueryInput> seven = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(7));
-		query->addRelationshipClause(RelationshipType::FOLLOWS_S, seven, eight);
+		query->addRelationshipClause(RelationshipType::FOLLOWS_T, seven, eight);
 
 		unordered_map<string, set<string>> wrongResult = { { "dummy", {"11", "12", "13", "14", "22", "23", "24"}} };
 		pkb->setGetResultsOfRSReturnValue(wrongResult);
@@ -296,7 +296,7 @@ TEST_CASE("Evaluating query with both relationship and pattern clause") {
 	SECTION("Clauses have no common synonym, all evaluates to non empty results") {
 		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
 		shared_ptr<QueryInput> wh = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
-		query->addRelationshipClause(RelationshipType::PARENT_S, stmt, wh);
+		query->addRelationshipClause(RelationshipType::PARENT_T, stmt, wh);
 		unordered_map<string, set<string>> rsClauseResult = { { "1", {"12", "13"} }, { "24", {"25","26"} } };
 		pkb->setGetResultsOfRSReturnValue(rsClauseResult);
 

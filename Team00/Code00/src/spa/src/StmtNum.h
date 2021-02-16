@@ -5,5 +5,5 @@ using namespace std;
 
 class StmtNum : public QueryInput {
 public:
-	StmtNum(int value);
+	StmtNum(std::string value);
 };
