@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "QueryInterface.h"
 #include "Declaration.h"
 #include "SelectClause.h"
 #include "RelationshipClause.h"
@@ -9,7 +10,7 @@
 
 using namespace std;
 
-class Query {
+class Query : public QueryInterface{
 private:
 	shared_ptr<SelectClause> aSelectClause;
 	vector<shared_ptr<RelationshipClause>> aRelationshipClauses;

@@ -1,7 +1,7 @@
 #include "QueryEvaluator.h"
 #include "QueryInputType.h"
 
-QueryEvaluator::QueryEvaluator(shared_ptr<Query> query, shared_ptr<PKBInterface> pkb) {
+QueryEvaluator::QueryEvaluator(shared_ptr<QueryInterface> query, shared_ptr<PKBInterface> pkb) {
 	this->aQuery = query;
 	this->aPKB = pkb;
 }

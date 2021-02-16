@@ -1,13 +1,14 @@
 #include "QueryEvaluator.h"
 #include "Any.h"
 #include "StmtNum.h"
+#include "Query.h"
 #include "TestResultsTableUtil.h"
 #include "PKBStub.h"
 #include "catch.hpp"
 
 TEST_CASE("Evaluating query with select clause only, No optional clauses") {
 	shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
-	shared_ptr<Query> query = make_shared<Query>();
+	shared_ptr<QueryInterface> query = dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
 	shared_ptr<Declaration> declaration = make_shared<Declaration>(EntityType::ASSIGN, "a");
 	query->setSelectClause(declaration);
 	pkb->setGetEntitiesReturnValue({ "1", "2", "3", "4" });
@@ -24,7 +25,7 @@ TEST_CASE("Evaluating query with only one relationship clause") {
 	string assignSynonym = "a";
 
 	shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
-	shared_ptr<Query> query = make_shared<Query>();
+	shared_ptr<QueryInterface> query = dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
 	shared_ptr<Declaration> declaration = make_shared<Declaration>(EntityType::ASSIGN, "a");
 	query->setSelectClause(declaration);
 	pkb->setGetEntitiesReturnValue({ "1", "2", "3", "4" });
@@ -147,7 +148,7 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 	string ifSynonym = "if";
 
 	shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
-	shared_ptr<Query> query = make_shared<Query>();
+	shared_ptr<QueryInterface> query = dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
 	shared_ptr<Declaration> declaration = make_shared<Declaration>(EntityType::ASSIGN, "a");
 	query->setSelectClause(declaration);
 	pkb->setGetEntitiesReturnValue({ "1", "2", "3", "4" });
@@ -235,7 +236,7 @@ TEST_CASE("Evaluating query with both relationship and pattern clause") {
 	string ifSynonym = "if";
 
 	shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
-	shared_ptr<Query> query = make_shared<Query>();
+	shared_ptr<QueryInterface> query = dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
 	shared_ptr<Declaration> declaration = make_shared<Declaration>(EntityType::ASSIGN, "a");
 	query->setSelectClause(declaration);
 	pkb->setGetEntitiesReturnValue({ "1", "2", "3", "4" });
