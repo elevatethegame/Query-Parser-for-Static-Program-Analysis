@@ -1,4 +1,8 @@
 #include "TestWrapper.h"
+#include "QueryParser.h"
+#include "ResultsProjector.h"
+#include "QueryInterface.h"
+#include "QueryEvaluator.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -10,9 +14,10 @@ AbstractWrapper* WrapperFactory::createWrapper() {
 volatile bool AbstractWrapper::GlobalStop = false;
 
 // a default constructor
-TestWrapper::TestWrapper() {
+TestWrapper::TestWrapper() { 
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
+	
 }
 
 // method for parsing the SIMPLE source
