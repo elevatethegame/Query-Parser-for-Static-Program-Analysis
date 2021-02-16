@@ -63,7 +63,7 @@ void QueryParser::selectClause()
         std::string errorMsg = "Undeclared synonym encountered in Select clause: " + selectedSynToken->getValue();
         throw std::exception(errorMsg.c_str());
     }
-    auto declaration = std::make_shared<Declaration>(selectedSynToken->getValue(), synonyms[selectedSynToken->getValue()]);
+    auto declaration = std::make_shared<Declaration>(synonyms[selectedSynToken->getValue()], selectedSynToken->getValue());
     selectClauseDeclaration = declaration;
     query->setSelectClause(declaration);
     // Can have zero or one such that clause
@@ -129,7 +129,7 @@ bool QueryParser::patternClause()
             std::string errorMsg = "Synonym " + synToken->getValue() + " not allowed, has " + Token::EntityTypeToString(synonymType);
             throw std::exception(errorMsg.c_str());
         }
-        auto synonym = std::make_shared<Declaration>(synToken->getValue(), synonyms[synToken->getValue()]);
+        auto synonym = std::make_shared<Declaration>(synonyms[synToken->getValue()], synToken->getValue());
         expect(TokenTypes::LeftParen);
         std::shared_ptr<QueryInput> queryInput = entRef(std::set<EntityType>({ EntityType::VAR, EntityType::CONST }));
         expect(TokenTypes::Comma);
@@ -177,7 +177,7 @@ std::shared_ptr<QueryInput> QueryParser::stmtRef(std::set<EntityType> allowedDes
             std::string errorMsg = "Synonym " + token->getValue() + " not allowed, has " + Token::EntityTypeToString(synonymType);
             throw std::exception(errorMsg.c_str());
         }
-        return std::make_shared<Declaration>(token->getValue(), synonyms[token->getValue()]);
+        return std::make_shared<Declaration>(synonyms[token->getValue()], token->getValue());
     }
     token = std::move(accept(TokenTypes::Underscore));
     if (token) {
@@ -207,7 +207,7 @@ std::shared_ptr<QueryInput> QueryParser::entRef(std::set<EntityType> allowedDesi
             std::string errorMsg = "Synonym " + token->getValue() + " not allowed, has " + Token::EntityTypeToString(synonymType);
             throw std::exception(errorMsg.c_str());
         }
-        return std::make_shared<Declaration>(token->getValue(), synonyms[token->getValue()]);
+        return std::make_shared<Declaration>(synonyms[token->getValue()], token->getValue());
     }
     token = std::move(accept(TokenTypes::Underscore));
     if (token) {
