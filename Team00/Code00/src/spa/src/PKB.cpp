@@ -179,7 +179,7 @@ unordered_map<string, set<string>> PKB::getResultsOfRS(
 			ans[""] = this->relationsBy[type][input2.getValue()];
 			break;
 		}
-		case QueryInputType::INDENT: { // eg. modifies(s, "x")
+		case QueryInputType::IDENT: { // eg. modifies(s, "x")
 			ans[""] = this->relationsBy[type][input2.getValue()];
 			break;
 		}
@@ -195,7 +195,7 @@ unordered_map<string, set<string>> PKB::getResultsOfRS(
 			ans[""] = this->relations[type][input1.getValue()];
 			break;
 		}
-		case QueryInputType::INDENT: { // eg. modifies("main", v)
+		case QueryInputType::IDENT: { // eg. modifies("main", v)
 			ans[""] = this->relations[type][input1.getValue()];
 			break;
 		}
@@ -229,7 +229,7 @@ unordered_map<string, set<string>> PKB::getResultsOfPattern(
 		}
 		break;
 	}
-	case QueryInputType::INDENT: { // eg. pattern a("x", _"x"_)
+	case QueryInputType::IDENT: { // eg. pattern a("x", _"x"_)
 		for (string s : res) {
 			if (input.getValue() == *(relations[MODIFIES][s].begin())) {
 				ans[""].insert(s);

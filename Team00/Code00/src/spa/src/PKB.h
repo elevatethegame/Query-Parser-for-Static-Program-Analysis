@@ -153,7 +153,7 @@ public:
 	* @param expression the RHS of a pattern clause
 	*
 	* @return a map of results (stmt_index, set<input_value>) if input is a Declaration, 
-	* or a map with a dummy key and a set of indices if input is Any or Indent, or empty
+	* or a map with a dummy key and a set of indices if input is Any or Ident, or empty
 	* 
 	*/
 	unordered_map<string, set<string>> getResultsOfPattern(

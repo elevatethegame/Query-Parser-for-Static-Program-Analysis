@@ -3,6 +3,6 @@
 enum class QueryInputType {
 	DECLARATION,
 	STMT_NUM,
-	INDENT,
+	IDENT,
 	ANY
 };

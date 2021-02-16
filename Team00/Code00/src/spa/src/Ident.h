@@ -4,7 +4,7 @@
 
 using namespace std;
 
-class Indent : public QueryInput {
+class Ident : public QueryInput {
 public:
-	Indent(string value);
+	Ident(string value);
 };
