@@ -5,25 +5,9 @@
 #include <iterator>  // for std::begin, std::end
 #include <iostream>
 
-// QE APIs, placed here temporarily for convenience of reference and stubbing ==============================================
-
-void setSelectClause(std::shared_ptr<Declaration> declaration) {
-
-}
-
-void setRelationshipClause(RelationshipType relationshipType,
-    std::shared_ptr<QueryInput> leftQueryInput, std::shared_ptr<QueryInput> rightQueryInput) {
-
-}
-
-void setPatternClause(std::shared_ptr<QueryInput> synonym,
-    std::shared_ptr<QueryInput> queryInput, std::shared_ptr<Expression> expression) {
-
-}
-
 // =========================================================================================================================
 
-QueryParser::QueryParser(const std::string givenInput) : tokenizer(givenInput)
+QueryParser::QueryParser(const std::string givenInput, std::shared_ptr<QueryInterface> query) : tokenizer(givenInput), query(query)
 {
 
 }
@@ -82,7 +66,7 @@ void QueryParser::selectClause()
     auto declaration = std::make_shared<Declaration>(QueryInputType::Declaration,
         selectedSynToken->getValue(), synonyms[selectedSynToken->getValue()]);
     selectClauseDeclaration = declaration;
-    setSelectClause(declaration);
+    query->setSelectClause(declaration);
     // Can have zero or one such that clause
     suchThatClause();
     // Can have zero or one pattern clause
@@ -155,7 +139,7 @@ bool QueryParser::patternClause()
         patternDeclaration = synonym;
         patternQueryInput = queryInput;
         patternExpression = expression;
-        setPatternClause(synonym, queryInput, expression);
+        query->addPatternClause(synonym, queryInput, expression);
         return true;
     }
     return false;
@@ -253,7 +237,7 @@ bool QueryParser::Modifies()
         suchThatRelType = RelationshipType::Modifies;
         suchThatLeftQueryInput = leftQueryInput;
         suchThatRightQueryInput = rightQueryInput;
-        setRelationshipClause(RelationshipType::Modifies, leftQueryInput, rightQueryInput);
+        query->addRelationshipClause(RelationshipType::Modifies, leftQueryInput, rightQueryInput);
         return true;
     }
     return false;
@@ -272,7 +256,7 @@ bool QueryParser::Uses()
         suchThatRelType = RelationshipType::Uses;
         suchThatLeftQueryInput = leftQueryInput;
         suchThatRightQueryInput = rightQueryInput;
-        setRelationshipClause(RelationshipType::Uses, leftQueryInput, rightQueryInput);
+        query->addRelationshipClause(RelationshipType::Uses, leftQueryInput, rightQueryInput);
         return true;
     }
     return false;
@@ -294,7 +278,7 @@ bool QueryParser::Parent()
             suchThatRelType = RelationshipType::ParentT;
             suchThatLeftQueryInput = leftQueryInput;
             suchThatRightQueryInput = rightQueryInput;
-            setRelationshipClause(RelationshipType::ParentT, leftQueryInput, rightQueryInput);
+            query->addRelationshipClause(RelationshipType::ParentT, leftQueryInput, rightQueryInput);
         }
         else {
             expect(TokenTypes::LeftParen);
@@ -309,7 +293,7 @@ bool QueryParser::Parent()
             suchThatRelType = RelationshipType::Parent;
             suchThatLeftQueryInput = leftQueryInput;
             suchThatRightQueryInput = rightQueryInput;
-            setRelationshipClause(RelationshipType::Parent, leftQueryInput, rightQueryInput);
+            query->addRelationshipClause(RelationshipType::Parent, leftQueryInput, rightQueryInput);
         }
         return true;
     }
@@ -332,7 +316,7 @@ bool QueryParser::Follows()
             suchThatRelType = RelationshipType::FollowsT;
             suchThatLeftQueryInput = leftQueryInput;
             suchThatRightQueryInput = rightQueryInput;
-            setRelationshipClause(RelationshipType::FollowsT, leftQueryInput, rightQueryInput);
+            query->addRelationshipClause(RelationshipType::FollowsT, leftQueryInput, rightQueryInput);
         }
         else {
             expect(TokenTypes::LeftParen);
@@ -347,7 +331,7 @@ bool QueryParser::Follows()
             suchThatRelType = RelationshipType::Follows;
             suchThatLeftQueryInput = leftQueryInput;
             suchThatRightQueryInput = rightQueryInput;
-            setRelationshipClause(RelationshipType::Follows, leftQueryInput, rightQueryInput);
+            query->addRelationshipClause(RelationshipType::Follows, leftQueryInput, rightQueryInput);
         }
         return true;
     }

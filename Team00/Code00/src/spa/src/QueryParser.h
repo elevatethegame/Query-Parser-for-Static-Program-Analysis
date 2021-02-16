@@ -12,6 +12,7 @@
 #include "Ident.h"
 #include "Expression.h"
 #include "RelationshipType.h"
+#include "QueryInterface.h"
 
 class QueryParser
 {
@@ -19,8 +20,12 @@ private:
 
     std::unique_ptr<Token> currToken;
     Tokenizer tokenizer;
+    // Object to pass to Query Evaluator
+    std::shared_ptr<QueryInterface> query;
+
     // To check whether all synonyms in select, such that and pattern clauses have been declared
     std::unordered_map<std::string, EntityType> synonyms;
+    
     // Store for testing
     std::shared_ptr<Declaration> selectClauseDeclaration;
     std::shared_ptr<Declaration> patternDeclaration;
@@ -52,7 +57,7 @@ private:
 
 public:
 
-    QueryParser(const std::string givenInput);
+    QueryParser(const std::string givenInput, std::shared_ptr<QueryInterface> query);
 
     void parse();
 
