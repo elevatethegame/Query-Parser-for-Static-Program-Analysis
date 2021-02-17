@@ -35,6 +35,15 @@ struct KeyComp {
 };
 */
 
+struct EnumClassHash
+{
+	template <typename T>
+	std::size_t operator()(T t) const
+	{
+		return static_cast<std::size_t>(t);
+	}
+};
+
 class PKB : public PKBInterface {
 
 public:
@@ -130,7 +139,7 @@ public:
 	* if there is any Declaration in inputs, returns false
 	*/
 	bool getBooleanResultOfRS(const RelationshipType& type, 
-		QueryInput input1, QueryInput input2);
+		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
 	/**
 	* Retrieves results of a given relationship query
@@ -143,8 +152,8 @@ public:
 	* or a map of (input1_value, set<input2_value>) if there are two,
 	* or an empty map if neither of the inputs is a Declaration
 	*/
-	unordered_map<string, set<string>> getResultsOfRS(
-		const RelationshipType& type, QueryInput input1, QueryInput input2);
+	unordered_map<string, set<string>> getResultsOfRS(const RelationshipType& type, 
+		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
 	/**
 	* Retrieves results of a pattern query
@@ -158,7 +167,7 @@ public:
 	* 
 	*/
 	unordered_map<string, set<string>> getResultsOfPattern(
-		const EntityType& type, QueryInput input, Expression expression);
+		const EntityType& type, shared_ptr<QueryInput> input, Expression expression);
 
 
 private:
@@ -167,7 +176,7 @@ private:
 	
 	unordered_map<string, EntityType> types; // map from index to type
 	
-	unordered_map<EntityType, set<string>> stmts; // map from type to indices
+	unordered_map<EntityType, set<string>, EnumClassHash> stmts; // map from type to indices
 
 	unordered_map<string, set<string>> relations[6]; // relationship maps
 	
@@ -187,4 +196,9 @@ private:
 
 	void extractModifies();
 
+	void PKB::filterSetOfType(const EntityType& type, set<string> *res);
+
+	void PKB::filterMapOfType(
+		const EntityType& t1, const EntityType& t2, 
+		unordered_map<string, set<string>>* res);
 };

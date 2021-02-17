@@ -41,7 +41,7 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluateRelationshipClauses(vector<shar
 		if (leftQueryInput->getQueryInputType() != QueryInputType::DECLARATION &&
 			rightQueryInput->getQueryInputType() != QueryInputType::DECLARATION) {
 			bool hasResults = aPKB->getBooleanResultOfRS(relationshipClause->getRelationshipType(),
-				*leftQueryInput, *rightQueryInput);
+				leftQueryInput, rightQueryInput);
 			if (!hasResults) {
 				// clause returns no results, no need to further evaluate
 				currentResults->setIsNoResult();
@@ -53,7 +53,7 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluateRelationshipClauses(vector<shar
 		}
 
 		unordered_map<string, set<string>> PKBResults = aPKB->getResultsOfRS(relationshipClause->getRelationshipType(),
-			*leftQueryInput, *rightQueryInput);
+			leftQueryInput, rightQueryInput);
 
 		if (PKBResults.size() == 0) {
 			currentResults->setIsNoResult();
@@ -96,7 +96,7 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluatePatternClauses(vector<shared_pt
 		shared_ptr<QueryInput> queryInput = patternClause->getQueryInput();
 		shared_ptr<Expression> expression = patternClause->getExpression();
 
-		unordered_map<string, set<string>> PKBResults = aPKB->getResultsOfPattern(synonym->getEntityType(), *queryInput, *expression);
+		unordered_map<string, set<string>> PKBResults = aPKB->getResultsOfPattern(synonym->getEntityType(), queryInput, *expression);
 
 		if (PKBResults.size() == 0) {
 			currentResults->setIsNoResult();
