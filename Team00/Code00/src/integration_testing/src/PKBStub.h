@@ -14,11 +14,11 @@ public:
 	set<string> getEntities(const EntityType& type);
 
 	unordered_map<string, set<string>> getResultsOfRS(
-		const RelationshipType& type, const QueryInput& input1, const QueryInput& input2);
+		const RelationshipType& type, QueryInput input1, QueryInput input2);
 
 
 	bool getBooleanResultOfRS(const RelationshipType& type,
-		const QueryInput& input1, const QueryInput& input2);
+		QueryInput input1, QueryInput input2);
 
 	unordered_map<string, set<string>> getResultsOfPattern(
 		const EntityType& type, QueryInput input, Expression expression);

@@ -6,6 +6,7 @@
 #include <set>
 #include <unordered_map>
 
+#include "PKBInterface.h"
 #include "EntityType.h"
 #include "RelationshipType.h"
 #include "QueryInput.h"
@@ -34,7 +35,7 @@ struct KeyComp {
 };
 */
 
-class PKB {
+class PKB : public PKBInterface {
 
 public:
 	/**
