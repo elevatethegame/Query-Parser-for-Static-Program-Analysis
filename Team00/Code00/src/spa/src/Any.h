@@ -7,4 +7,5 @@ using namespace std;
 class Any: public QueryInput {
 public:
 	Any();
+	Any(string value);
 };
