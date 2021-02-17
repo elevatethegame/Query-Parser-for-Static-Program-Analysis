@@ -2,9 +2,9 @@
 
 enum RelationshipType {
 	FOLLOWS = 0,
-	FOLLOWS_S = 1,
+	FOLLOWS_T = 1,
 	PARENT = 2,
-	PARENT_S = 3,
+	PARENT_T = 3,
 	USES = 4,
 	MODIFIES = 5
 };

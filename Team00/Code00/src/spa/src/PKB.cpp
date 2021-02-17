@@ -245,7 +245,7 @@ unordered_map<string, set<string>> PKB::getResultsOfPattern(
 
 void PKB::extractFollowStar() {
 	int p = RelationshipType::PARENT;
-	int fs = RelationshipType::FOLLOWS_S;
+	int fs = RelationshipType::FOLLOWS_T;
 	for (int i = 1; i < this->number; i++) {
 		for (int j = i + 1; j <= this->number; j++) {
 			string former = to_string(i);
@@ -267,7 +267,7 @@ void PKB::extractFollowStar() {
 
 void PKB::extractParentStar() {
 	int p = RelationshipType::PARENT;
-	int ps = RelationshipType::PARENT_S;
+	int ps = RelationshipType::PARENT_T;
 	for (string s : this->relationByKeys[p]) {
 		relationByKeys[ps].insert(s);
 		set<string> res = this->relationsBy[p][s];
@@ -282,7 +282,7 @@ void PKB::extractParentStar() {
 }
 
 void PKB::extractUses() {
-	int ps = RelationshipType::PARENT_S;
+	int ps = RelationshipType::PARENT_T;
 	int u = RelationshipType::USES;
 	for (string s : this->relationKeys[ps]) {
 		for (string c : this->relations[ps][s]) {
@@ -299,7 +299,7 @@ void PKB::extractUses() {
 }
 
 void PKB::extractModifies() {
-	int ps = RelationshipType::PARENT_S;
+	int ps = RelationshipType::PARENT_T;
 	int m = RelationshipType::MODIFIES;
 	for (string s : this->relationKeys[ps]) {
 		for (string c : this->relations[ps][s]) {
