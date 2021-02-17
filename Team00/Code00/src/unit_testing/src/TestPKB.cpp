@@ -115,7 +115,7 @@ TEST_CASE("PKB extarctStar 1") {
 	pkb.init();
 
 	unordered_map<string, set<string>> resultFollow = pkb.getResultsOfRS(
-		RelationshipType::FOLLOWS_S, 
+		RelationshipType::FOLLOWS_T, 
 		*(new Declaration(EntityType::STMT, "s1")), 
 		*(new Declaration(EntityType::STMT, "s2")));
 	
@@ -143,7 +143,7 @@ TEST_CASE("PKB extarctStar 1") {
 	REQUIRE(expected10 == resultFollow["10"]);
 
 	unordered_map<string, set<string>> resultParent = pkb.getResultsOfRS(
-		RelationshipType::PARENT_S,
+		RelationshipType::PARENT_T,
 		*(new Declaration(EntityType::STMT, "s1")),
 		*(new Declaration(EntityType::STMT, "s2")));
 
@@ -200,7 +200,7 @@ TEST_CASE("PKB extarctStar 2") {
 	pkb.init();
 
 	unordered_map<string, set<string>> resultFollow = pkb.getResultsOfRS(
-		RelationshipType::FOLLOWS_S,
+		RelationshipType::FOLLOWS_T,
 		*(new Declaration(EntityType::STMT, "s1")),
 		*(new Declaration(EntityType::STMT, "s2")));
 
@@ -220,7 +220,7 @@ TEST_CASE("PKB extarctStar 2") {
 	REQUIRE(expected12 == resultFollow["12"]);
 
 	unordered_map<string, set<string>> resultParent = pkb.getResultsOfRS(
-		RelationshipType::PARENT_S,
+		RelationshipType::PARENT_T,
 		*(new Declaration(EntityType::STMT, "s1")),
 		*(new Declaration(EntityType::STMT, "s2")));
 
