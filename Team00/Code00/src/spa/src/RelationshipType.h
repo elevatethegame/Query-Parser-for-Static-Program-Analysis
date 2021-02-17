@@ -6,5 +6,7 @@ enum RelationshipType {
 	PARENT = 2,
 	PARENT_T = 3,
 	USES = 4,
-	MODIFIES = 5
+	MODIFIES = 5,
+	NONE = 6
 };
+

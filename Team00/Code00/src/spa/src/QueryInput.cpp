@@ -9,3 +9,5 @@ QueryInputType QueryInput::getQueryInputType() {
 string QueryInput::getValue() {
 	return this->aValue;
 }
+
+QueryInput::~QueryInput() {}
