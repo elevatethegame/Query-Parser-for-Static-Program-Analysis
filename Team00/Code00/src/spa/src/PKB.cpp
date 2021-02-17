@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <set>
+#include <algorithm>
+#include <memory>
 #include <unordered_map>
 
 #include "PKB.h"
@@ -140,47 +142,51 @@ set<string> PKB::getEntities(const EntityType& type) {
 	}
 }
 
-bool PKB::getBooleanResultOfRS(
-	const RelationshipType& type, QueryInput input1, QueryInput input2) {
-	QueryInputType t1 = input1.getQueryInputType();
-	QueryInputType t2 = input2.getQueryInputType();
+bool PKB::getBooleanResultOfRS(const RelationshipType& type, 
+	shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
+	QueryInputType t1 = input1->getQueryInputType();
+	QueryInputType t2 = input2->getQueryInputType();
 	if (t1 == QueryInputType::DECLARATION || 
 		t2 == QueryInputType::DECLARATION) { // eg. uses(1, v)
 		return false;
 	} else if (t1 != QueryInputType::ANY && t2 != QueryInputType::ANY){ // eg. follows*(1, 3)
-		set<string> results = this->relations[type][input1.getValue()];
-		return (results.find(input2.getValue()) != results.end());
+		set<string> results = this->relations[type][input1->getValue()];
+		return (results.find(input2->getValue()) != results.end());
 	} else if (t1 == QueryInputType::ANY && 
 		t2 == QueryInputType::ANY) { // eg. parent(_, _)
 		return !this->relations[type].empty();
 	} else if (t1 == QueryInputType::ANY) { // eg. follows(_, 3)
-		return !this->relationsBy[type][input2.getValue()].empty();
+		return !this->relationsBy[type][input2->getValue()].empty();
 	} else if (t2 == QueryInputType::ANY) { // eg. uses(1, _)
-		return !this->relations[type][input1.getValue()].empty();
+		return !this->relations[type][input1->getValue()].empty();
 	} else { // otherwise
 		return false;
 	}
 }
 
-unordered_map<string, set<string>> PKB::getResultsOfRS(
-	const RelationshipType& type, QueryInput input1, QueryInput input2) {
-	QueryInputType t1 = input1.getQueryInputType();
-	QueryInputType t2 = input2.getQueryInputType();
+unordered_map<string, set<string>> PKB::getResultsOfRS(const RelationshipType& type,
+	shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
+	QueryInputType t1 = input1->getQueryInputType();
+	QueryInputType t2 = input2->getQueryInputType();
 	unordered_map<string, set<string>> ans;
 	if (t1 != QueryInputType::DECLARATION &&
 		t2 != QueryInputType::DECLARATION) { // eg. uses(1, 2)
 		return ans;
 	} else if (t1 == QueryInputType::DECLARATION &&
 		t2 == QueryInputType::DECLARATION) { // eg. follows*(s1, s2)
-		return this->relations[type];
+		ans = this->relations[type];
+		shared_ptr<Declaration> d1 = dynamic_pointer_cast<Declaration>(input1);
+		shared_ptr<Declaration> d2 = dynamic_pointer_cast<Declaration>(input2);
+		filterMapOfType(d1->getEntityType(), d2->getEntityType(), &ans);
+		return ans;
 	} else if (t1 == QueryInputType::DECLARATION) {
 		switch (t2) {
 		case QueryInputType::STMT_NUM: { // eg. parent*(s, 3)
-			ans[""] = this->relationsBy[type][input2.getValue()];
+			ans[""] = this->relationsBy[type][input2->getValue()];
 			break;
 		}
 		case QueryInputType::IDENT: { // eg. modifies(s, "x")
-			ans[""] = this->relationsBy[type][input2.getValue()];
+			ans[""] = this->relationsBy[type][input2->getValue()];
 			break;
 		}
 		case QueryInputType::ANY: { // eg. follows*(s, _)
@@ -188,15 +194,17 @@ unordered_map<string, set<string>> PKB::getResultsOfRS(
 			break;
 		}
 		}
+		shared_ptr<Declaration> d = dynamic_pointer_cast<Declaration>(input1);
+		filterSetOfType(d->getEntityType(), &(ans[""]));
 		return ans;
 	} else if (t2 == QueryInputType::DECLARATION) {
 		switch (t1) {
 		case QueryInputType::STMT_NUM: { // eg. parent*(3, s)
-			ans[""] = this->relations[type][input1.getValue()];
+			ans[""] = this->relations[type][input1->getValue()];
 			break;
 		}
 		case QueryInputType::IDENT: { // eg. modifies("main", v)
-			ans[""] = this->relations[type][input1.getValue()];
+			ans[""] = this->relations[type][input1->getValue()];
 			break;
 		}
 		case QueryInputType::ANY: { // eg. follows*(_, s)
@@ -204,37 +212,43 @@ unordered_map<string, set<string>> PKB::getResultsOfRS(
 			break;
 		}
 		}
+		shared_ptr<Declaration> d = dynamic_pointer_cast<Declaration>(input2);
+		filterSetOfType(d->getEntityType(), &(ans[""]));
 		return ans;
 	} else { // otherwise
 		return ans;
 	}
 }
 
-unordered_map<string, set<string>> PKB::getResultsOfPattern(
-	const EntityType& type, QueryInput input, Expression expression) {
+unordered_map<string, set<string>> PKB::getResultsOfPattern(const EntityType& type, 
+	shared_ptr<QueryInput> input, Expression expression) {
 	string exp = expression.getValue();
 	set<string> res = this->expressions[exp];
 	unordered_map<string, set<string>> ans;
 	if (type != EntityType::ASSIGN && type != EntityType::STMT) {
 		return ans;
 	}
-	switch (input.getQueryInputType()) {
+	switch (input->getQueryInputType()) {
 	case QueryInputType::ANY: { // eg. pattern a(_, _"x"_)
 		ans[""] = res;
+		// filterSetOfType(type, &(ans[""]));
 		break;
 	}
 	case QueryInputType::DECLARATION: { // eg. pattern a(v, _"x"_)
 		for (string s : res) {
+			// if (this->types[s] == type) {
 			ans[s] = this->relations[MODIFIES][s];
+			// }
 		}
 		break;
 	}
 	case QueryInputType::IDENT: { // eg. pattern a("x", _"x"_)
 		for (string s : res) {
-			if (input.getValue() == *(relations[MODIFIES][s].begin())) {
+			if (input->getValue() == *(relations[MODIFIES][s].begin())) {
 				ans[""].insert(s);
 			}
 		}
+		// filterSetOfType(type, &(ans[""]));
 		break;
 	}
 	default: { } // STMT_NUM
@@ -313,4 +327,47 @@ void PKB::extractModifies() {
 			}
 		}
 	}
+}
+
+void PKB::filterSetOfType(const EntityType& type, set<string>* res) {
+	if (type == EntityType::VAR || type == EntityType::CONST ||
+		type == EntityType::STMT || type == EntityType::PROC) {
+		return;
+	}
+	set<string> ans = *res;
+	for (auto& x : *res) {
+		if (this->types[x] != type) {
+			ans.erase(x);
+		}
+	}
+	*res = ans;
+}
+
+void PKB::filterMapOfType(
+	const EntityType& t1, const EntityType& t2,
+	unordered_map<string, set<string>>* res) {
+	if (t1 == EntityType::VAR || t1 == EntityType::CONST ||
+		t1 == EntityType::STMT || t1 == EntityType::PROC) {
+		filterSetOfType(t2, &((*res)[""]));
+	} else if (t2 == EntityType::VAR || t2 == EntityType::CONST ||
+		t2 == EntityType::STMT || t2 == EntityType::PROC) {
+		unordered_map<string, set<string>> ans = *res;
+		for (auto& x : *res) { 
+			if (this->types[x.first] != t1) {
+				ans.erase(x.first);
+			}
+		}
+		*res = ans;
+	} else {
+		unordered_map<string, set<string>> ans = *res;
+		for (auto& x : *res) {
+			if (this->types[x.first] != t1) {
+				ans.erase(x.first);
+			} else {
+				filterSetOfType(t2, &ans[x.first]);
+			}
+		}
+		*res = ans;
+	}
+
 }

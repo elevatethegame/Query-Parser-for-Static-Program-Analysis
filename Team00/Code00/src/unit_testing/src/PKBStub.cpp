@@ -5,18 +5,18 @@ set<string> PKBStub::getEntities(const EntityType& type) {
 }
 
 unordered_map<string, set<string>> PKBStub::getResultsOfRS(
-	const RelationshipType& type, QueryInput input1, QueryInput input2) {
+	const RelationshipType& type, shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
 	return this->relationshipClauseReturnValue;
 }
 
 
 bool PKBStub::getBooleanResultOfRS(const RelationshipType& type,
-	QueryInput input1, QueryInput input2) {
+	shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
 	return this->boolReturnValue;
 }
 
 unordered_map<string, set<string>> PKBStub::getResultsOfPattern(
-	const EntityType& type, QueryInput input, Expression expressio) {
+	const EntityType& type, shared_ptr<QueryInput> input, Expression expressio) {
 	return this->patternClauseReturnValue;
 }
 

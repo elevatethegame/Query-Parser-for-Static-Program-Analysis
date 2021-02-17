@@ -1,5 +1,6 @@
 #pragma once
 #include "PKBInterface.h"
+#include <memory>
 
 class PKBStub : public PKBInterface {
 public:
@@ -13,15 +14,15 @@ public:
 
 	set<string> getEntities(const EntityType& type);
 
-	unordered_map<string, set<string>> getResultsOfRS(
-		const RelationshipType& type, QueryInput input1, QueryInput input2);
+	unordered_map<string, set<string>> getResultsOfRS(const RelationshipType& type, 
+		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
 
 	bool getBooleanResultOfRS(const RelationshipType& type,
-		QueryInput input1, QueryInput input2);
+		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
 	unordered_map<string, set<string>> getResultsOfPattern(
-		const EntityType& type, QueryInput input, Expression expression);
+		const EntityType& type, shared_ptr<QueryInput> input, Expression expression);
 
 	// setter methods to set the return values for each different test case
 
