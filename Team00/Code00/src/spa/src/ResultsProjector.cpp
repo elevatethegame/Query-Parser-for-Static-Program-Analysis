@@ -4,16 +4,22 @@ void ResultsProjector::projectResults(shared_ptr<ResultsTable> evaluatedResults,
 	if (evaluatedResults->isNoResult()) {
 		return;
 	}
-	
+
 	shared_ptr<Declaration> declaration = selectClause->getDeclaration();
 	set<string> synonyms = evaluatedResults->getSynonyms();
 	string synonym = declaration->getValue();
+	set<string> setResults;
 	if (synonyms.find(synonym) != synonyms.end()) {
 		vector<vector<string>> resultValues = evaluatedResults->getTableValues();
 		unordered_map<string, int> synonymIndexMap = evaluatedResults->getSynonymIndexMap();
 		int synonymIndex = synonymIndexMap.find(synonym)->second;
 		for (vector<vector<string>>::iterator it = resultValues.begin(); it != resultValues.end(); it++) {
-			results.push_back(it->at(synonymIndex));
+			string resultValue = it->at(synonymIndex);
+			if (setResults.find(resultValue) == setResults.end()) {
+				setResults.insert(resultValue);
+				results.push_back(resultValue);
+			}
+
 		}
 		return;
 	}
