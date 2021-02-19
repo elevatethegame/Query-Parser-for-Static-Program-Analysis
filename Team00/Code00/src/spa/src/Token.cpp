@@ -180,7 +180,7 @@ std::string Token::toString()
 }
 
 EntityType Token::getEntityType() {
-    if (type != TokenTypes::DesignEntity) return EntityType::NONE;
+    if (type != TokenTypes::DesignEntity) return EntityType::NONETYPE;
     std::unordered_map<std::string, EntityType> stringToCase = { {"stmt", EntityType::STMT}, {"read", EntityType::READ},
         {"print", EntityType::PRINT}, {"while", EntityType::WHILE}, {"if", EntityType::IF}, {"assign", EntityType::ASSIGN},
         {"variable", EntityType::VAR}, {"constant", EntityType::CONST}, {"procedure", EntityType::PROC} };

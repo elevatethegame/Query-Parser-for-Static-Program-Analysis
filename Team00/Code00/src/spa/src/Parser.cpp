@@ -192,9 +192,9 @@ ParseError Parser::parseReadStatement(SIMPLETokenStream &stream, int parentState
 	int thisStatementIndex = this->startNewStatement(parentStatementIndex, EntityType::READ);
 
 	SIMPLEToken variable;
-	auto error = consumeTerminal("read", stream)
-		.combineWith(consumeToken(TokenType::name, stream, variable))
-		.combineWith(consumeTerminal(";", stream));
+	auto error = consumeTerminal("read", stream);
+	error = error.combineWith(consumeToken(TokenType::name, stream, variable));
+	error = error.combineWith(consumeTerminal(";", stream));
 
 	if (error.hasError()) {
 		return error;

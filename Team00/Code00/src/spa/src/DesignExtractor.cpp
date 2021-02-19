@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 using namespace std;
 
@@ -51,23 +52,29 @@ void DesignExtractor::insertModifies(int index, const string& value) {
 	this->modifies[index].emplace_back(value);
 }
 
-PKB DesignExtractor::extractToPKB() {
-	PKB result(this->numberOfStatement);
+shared_ptr<PKB> DesignExtractor::extractToPKB() {
+	auto result = make_shared<PKB>(this->numberOfStatement);
 	for (int i = 1; i <= numberOfStatement; i++) {
-		result.setStatementType(i, types[i]);
+		result->setStatementType(i, types[i]);
 		for (auto parent: parents[i]) {
-			result.insertParent(parent, i);
+			result->insertParent(parent, i);
 		}
 		for (auto follow: follows[i]) {
-			result.insertFollow(follow, i);
+			result->insertFollow(follow, i);
 		}
 		for (auto variable: modifies[i]) {
-			result.insertDirectModifies(i, variable);
+			result->insertDirectModifies(i, variable);
 		}	
 		set<string> S;
-		copy(S.begin(), S.end(), std::back_inserter(uses[i]));
-		result.insertDirectUses(i, S);
+		for (auto variable : uses[i]) {
+			S.insert(variable);
+		}
+		result->insertDirectUses(i, S);
+		for (auto expression : expressions[i]) {
+			result->insertExpression(i, expression.getValue());
+		}
 	}
+
 	return result;
 }
 

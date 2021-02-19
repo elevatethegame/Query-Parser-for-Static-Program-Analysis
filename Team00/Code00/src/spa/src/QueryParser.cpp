@@ -85,7 +85,7 @@ bool QueryParser::declaration()
             throw std::exception(errorMsg.c_str());
         }
         synonyms[synToken->getValue()] = designEntity->getEntityType();
-        std::cout << synToken->getValue() << "\n";
+        // std::cout << synToken->getValue() << "\n";
         while (accept(TokenTypes::Comma)) {
             synToken = std::move(expect(TokenTypes::Identifier));
             auto it = synonyms.find(synToken->getValue());
@@ -96,8 +96,8 @@ bool QueryParser::declaration()
                 throw std::exception(errorMsg.c_str());
             }
             synonyms[synToken->getValue()] = designEntity->getEntityType();
-            std::cout << synToken->getValue() << "\n";
-            std::cout << Token::EntityTypeToString(designEntity->getEntityType()) << "\n";
+            // std::cout << synToken->getValue() << "\n";
+            // std::cout << Token::EntityTypeToString(designEntity->getEntityType()) << "\n";
         }
         expect(TokenTypes::Semicolon);
         return true;
