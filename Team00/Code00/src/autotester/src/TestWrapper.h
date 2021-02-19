@@ -10,6 +10,7 @@
 
 class TestWrapper : public AbstractWrapper {
  public:
+
   // default constructor
   TestWrapper();
   
