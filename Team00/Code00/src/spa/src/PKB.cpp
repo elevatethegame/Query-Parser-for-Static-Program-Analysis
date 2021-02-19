@@ -16,7 +16,7 @@ using namespace std;
 
 PKB::PKB(const int& n) : number(n) {
 	for (int i = 1; i <= n; i++) {
-		this->stmts[EntityType::STMT].insert(to_string(i));
+		this->entities[EntityType::STMT].insert(to_string(i));
 	}
 }
 
@@ -39,7 +39,7 @@ bool PKB::setStatementType(const int& index, const EntityType& type) {
 			return false;
 		} else {
 			this->types[indexString] = type;
-			this->stmts[type].insert(indexString);
+			this->entities[type].insert(indexString);
 			return true;
 		}
 	}
@@ -106,6 +106,7 @@ bool PKB::insertDirectUses(const int& index, const set<string>& variables) {
 		for (string v : variables) {
 			this->relationsBy[t][v].insert(indexString);
 			this->relationByKeys[t].insert(v);
+			this->insertVariable(v);
 		}
 		return true;
 	}
@@ -121,7 +122,7 @@ bool PKB::insertDirectModifies(const int& index, const string& variable) {
 		this->relationsBy[t][variable].insert(indexString);
 		this->relationKeys[t].insert(indexString);
 		this->relationByKeys[t].insert(variable);
-		return true;
+		return true && this->insertVariable(variable);
 	}
 }
 
@@ -134,11 +135,16 @@ bool PKB::insertExpression(const int& index, const string& expression) {
 	}
 }
 
+bool PKB::insertVariable(const string& variable) {
+	this->entities[EntityType::VAR].insert(variable);
+	return true;
+}
+
 set<string> PKB::getEntities(const EntityType& type) {
-	if (type == EntityType::VAR || type == EntityType::CONST || type == EntityType::PROC) {
+	if (type == EntityType::CONST) {
 		return set<string>();
 	} else {
-		return this->stmts[type];
+		return this->entities[type];
 	}
 }
 
@@ -227,6 +233,8 @@ unordered_map<string, set<string>> PKB::getResultsOfPattern(const EntityType& ty
 	unordered_map<string, set<string>> ans;
 	if (type != EntityType::ASSIGN && type != EntityType::STMT) {
 		return ans;
+	} else if (exp == "_") {
+		res = this->getEntities(EntityType::ASSIGN);
 	}
 	switch (input->getQueryInputType()) {
 	case QueryInputType::ANY: { // eg. pattern a(_, _"x"_)

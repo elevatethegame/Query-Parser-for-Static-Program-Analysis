@@ -361,7 +361,7 @@ TEST_CASE("PKB factorPattern") {
 TEST_CASE("PKB iter1SimTest") {
 
 	PKB pkb = PKB(16);
-	// 1 2 {3, 4, 5 {6, 7, 8 {9, 10}} 11 {12, 13}} 14, 15} 16
+	// 1 2 {3, 4, 5 {6, 7, 8 {9, 10}} 11 {12, 13} 14, 15} 16
 	// 1 read x
 	REQUIRE(pkb.setStatementType(1, EntityType::READ));
 	REQUIRE(pkb.insertDirectModifies(1, "x"));
@@ -452,9 +452,13 @@ TEST_CASE("PKB iter1SimTest") {
 
 	pkb.init();
 
-	set<string> resultEntities = pkb.getEntities(EntityType::ASSIGN);
-	string res[] = { "3", "6", "7", "9", "10", "12", "15" };
-	REQUIRE(set<string> { std::begin(res), std::end(res)} == resultEntities);
+	set<string> resultAssigns = pkb.getEntities(EntityType::ASSIGN);
+	string resAssign[] = { "3", "6", "7", "9", "10", "12", "15" };
+	REQUIRE(set<string> { std::begin(resAssign), std::end(resAssign)} == resultAssigns);
+
+	set<string> resultVars = pkb.getEntities(EntityType::VAR);
+	string resVar[] = { "x", "y", "z", "a", "b", "c", "t", "m" };
+	REQUIRE(set<string> { std::begin(resVar), std::end(resVar)} == resultVars);
 
 	unordered_map<string, set<string>> resultFollow = pkb.getResultsOfRS(
 		RelationshipType::FOLLOWS_T,
