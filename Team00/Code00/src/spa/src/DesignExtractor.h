@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 using namespace std;
 
@@ -24,7 +25,7 @@ public:
 
 	void insertExpression(int id, const Expression& expression);
 
-	PKB extractToPKB();
+	shared_ptr<PKB> extractToPKB();
 
 	vector<string> getUses(int index) const;
 
