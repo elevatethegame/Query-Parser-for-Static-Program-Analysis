@@ -110,7 +110,7 @@ public:
 	bool insertDirectModifies(const int& index, const string& variable);
 
 	/**
-	* Inserts a hashed expression of an assign statement into PKB
+	* Inserts an expression of an assign statement into PKB
 	*
 	* @param index the index of the given statement
 	* @param expression hashed value of the RHS of the statement
@@ -118,6 +118,15 @@ public:
 	* @return a boolean indicating whether the operation is successful
 	*/
 	bool insertExpression(const int& index, const string& expression);
+
+	/**
+	* Inserts a variable name into PKB
+	*
+	* @param variable
+	*
+	* @return a boolean indicating whether the operation is successful
+	*/
+	bool insertVariable(const string& variable);
 
 	/**
 	* Retrieves indices of all statements of some type as string
@@ -176,7 +185,7 @@ private:
 	
 	unordered_map<string, EntityType> types; // map from index to type
 	
-	unordered_map<EntityType, set<string>, EnumClassHash> stmts; // map from type to indices
+	unordered_map<EntityType, set<string>, EnumClassHash> entities; // map from type to indices
 
 	unordered_map<string, set<string>> relations[6]; // relationship maps
 	
