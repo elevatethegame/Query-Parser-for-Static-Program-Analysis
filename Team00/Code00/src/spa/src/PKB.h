@@ -179,6 +179,8 @@ public:
 		const EntityType& type, shared_ptr<QueryInput> input, Expression expression);
 
 
+	unordered_map<string, set<string>> getFollows();
+
 private:
 	
 	const int number; // number of statement
