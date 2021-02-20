@@ -7,6 +7,7 @@ Select a pattern a(_, _)
 assign a;
 Select a pattern a(_, _"a"_)
 2, 3
+5000
 3 - comment
 assign a;
 Select a pattern a("d", _)

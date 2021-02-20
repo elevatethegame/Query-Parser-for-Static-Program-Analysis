@@ -20,7 +20,7 @@ Select a such that Modifies(a, _)
 5000
 5 - comment
 assign a;
-Select a such that Modfies(a, "b")
+Select a such that Modifies(a, "b")
 2
 5000
 6 - comment
@@ -57,3 +57,4 @@ Select a such that Modifies(a, v)
 variable v; assign a;
 Select v such that Modifies(a, v)
 a, b, c, d
+5000
