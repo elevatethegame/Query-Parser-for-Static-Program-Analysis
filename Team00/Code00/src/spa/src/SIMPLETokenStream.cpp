@@ -27,7 +27,7 @@ SIMPLETokenStream::SIMPLETokenStream(vector<string> lineVector) {
 
         string curToken = "";
         for (const auto& ch : line) {
-            if (ch == ' ') {
+            if (helper.isSeparator(ch)) {
                 /// push current token
                 insertToken(curToken, curRow, curCol - curToken.size());
                 curToken.clear();
