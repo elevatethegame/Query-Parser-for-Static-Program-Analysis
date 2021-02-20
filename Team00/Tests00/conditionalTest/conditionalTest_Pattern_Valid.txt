@@ -1,12 +1,13 @@
 1 - comment
 assign a;
 Select a pattern a(_, _)
-1, 2, 3, 4, 5, 6, 8, 9, 10
+1, 2, 3, 5, 6, 8, 9, 10
 5000
 2 - comment
 assign a;
 Select a pattern a(_, _"a"_)
 2, 3, 5, 6, 10
+5000
 3 - comment
 assign a;
 Select a pattern a("d", _)
