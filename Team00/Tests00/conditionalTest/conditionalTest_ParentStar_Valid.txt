@@ -32,6 +32,7 @@ Select s such that Parent*(s, 8)
 stmt s;
 Select s such that Parent*(7, s)
 8, 9
+5000
 9 - comment
 assign a;
 Select a such that Parent*(4, 5)
@@ -51,6 +52,7 @@ Select a such that Parent*(4, a)
 assign a;
 Select a such that Parent*(7, a)
 8, 9
+5000
 13 - comment
 while w;
 Select w such that Parent*(w, _)

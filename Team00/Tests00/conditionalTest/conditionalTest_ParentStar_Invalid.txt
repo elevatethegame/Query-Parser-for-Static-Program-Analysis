@@ -41,12 +41,12 @@ none
 9 - comment
 while w;
 Select w such that Parent*(w, 3)
-none 
+none
 5000
 10 - comment 
 while w;
 Select w such that Parent*(2, w)
-none 
+none
 5000
 11 - comment
 while w; stmt s;
@@ -106,11 +106,12 @@ none
 22 - comment
 variable v; stmt s;
 Select v such that Parent*(v, s)
-none 5000
+none
+5000
 23 - comment
 variable v; stmt s;
 Select s such that Parent*(s, v)
-none 
+none
 5000
 24 - comment
 constant c; 
@@ -130,17 +131,17 @@ none
 27 - comment
 constant c;
 Select c such that Parent*(4, c)
-none 
+none
 5000
 28 - comment
 constant c; 
 Select c such that Parent*(c, 3)
-none 
+none
 5000
 28 - comment
 constant c; stmt s;
 Select s such that Parent*(s, c)
-none 
+none
 5000
 29 - comment 
 constant c; stmt s;
@@ -150,7 +151,7 @@ none
 30 - comment
 constant c; stmt s;
 Select c such that Parent*(s, c)
-none 
+none
 5000
 31 - comment
 constant c; stmt s; 
