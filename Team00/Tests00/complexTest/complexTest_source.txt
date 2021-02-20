@@ -1,75 +1,75 @@
 procedure complexTest {
-	read a; // 1
-	read b; // 2
-	c = 1;	// 3
-	d = c + 1;	//4
-	e = c + d;	// 5
+	read a; 
+	read b; 
+	c = 1;	
+	d = c + 1;
+	e = c + d;	
 
-	while(a > 0) {	// 6			
-		a = a - 1; 	// 7		
-		b = a + c;	// 8		
-		if (b > c) then {	// 9  		
-			d = c;			// 10
+	while(a > 0) {	
+		a = a - 1; 		
+		b = a + c;			
+		if (b > c) then {		
+			d = c;			
 		} else {			
-			e = b;			// 11
+			e = b;		
 		}
 	}
 	
-	a = a - b * c;		// 12
+	a = a - b * c;		
 
-	while (((c > 0) && (d>0)) || (a < b) || e <= 20) {// 13 - bracket 29 - 57
-		a = c + d * b;		// 14
-		b = ((a + b) * ((c / d) - e));	// 15
-		if (b <= c) then {	// 16 - bracket 23 - 55
-			print b;		// 17
+	while (((c > 0) && (d>0)) || (a < b) || e <= 20) {
+		a = c + d * b;		
+		b = ((a + b) * ((c / d) - e));
+		if (b <= c) then {	
+			print b;		
 		} else { 
-			while (c >= b) { // 18 - bracket 26 - 53
-				b = b + 1;		// 19
-				while (d >= e) {	// 20 - bracket 28 - 30
-					d = d + e / c;	//21
+			while (c >= b) {
+				b = b + 1;		
+				while (d >= e) {	
+					d = d + e / c;
 				}
-				if ((a * b) < (c + d + e)) then {	//22 - bracket 31 - 51
-					a = a * b - c / e;	// 23
-					f = a / e - c;	// 24
+				if ((a * b) < (c + d + e)) then {	
+					a = a * b - c / e;	
+					f = a / e - c;	
 				} else { 
-					if (a < (c+d + e)) then {	// 25 - bracket 35 - 48
-						a = a / b - c / e * d;	//26
+					if (a < (c+d + e)) then {	
+						a = a / b - c / e * d;	
 					} else { 
-						f = f - a * d;	// 27
-						a = a + f;	// 28
-						if (f <= 100) then {	//29 - bracket 40 - 46
-							print f;	 //30
+						f = f - a * d;	
+						a = a + f;
+						if (f <= 100) then {	
+							print f;	
 						} else {	
-							while (f <= 100) {	// 31 - bracket 43 - 45
-								f = f * f - f;	//32
+							while (f <= 100) {	
+								f = f * f - f;
 							}
 						}
-						a = a * d;	// 33
+						a = a * d;	
 					}
-					z = x;	//34
-					x = x -1 * 10; // 35
+					z = x;
+					x = x -1 * 10;
 				}
-				a = p * p; // 36
+				a = p * p; 
 			}		
-			print a; // 37
+			print a; 
 		}
-		z = a * (y - x) + ((u - o) + q); // 38
+		z = a * (y - x) + ((u - o) + q); 
 	}
-	c = c / a + (b - d);	// 39
+	c = c / a + (b - d);	
 
-	if (e < 10 && a > e) then {	//40 - bracket 60 - 71
-		e = e + 1;				// 41
-		a = a - e;				// 42
+	if (e < 10 && a > e) then {
+		e = e + 1;			
+		a = a - e;				
 	} else {
-		e = e - 1;				// 43
-		c = c + e;				// 44
-		while (d <= 20 || d < (a + b)) {	// 45
-			d = d + a * (c - e);	// 46
+		e = e - 1;			
+		c = c + e;				
+		while (d <= 20 || d < (a + b)) {
+			d = d + a * (c - e);
 		}
 
-		d = d - 1;			//47
+		d = d - 1;		
 	}
 
-	print a;		//48
-	print b;		//49
+	print a;		
+	print b;		
 }
