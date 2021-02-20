@@ -1,15 +1,15 @@
 procedure conditionalTest {
-	a = 1;				// 1
-	b = a + 1; 			// 2
-	c = a + b;			// 3
-	while(a > 0) {		//4
-		a = a - 1; 		// 5
-		b = a + c;		// 6
+	a = 1;				
+	b = a + 1; 			
+	c = a + b;			
+	while(a > 0) {		
+		a = a - 1; 		
+		b = a + c;		
 	}
-	if (b > c) then {  	// 7
-		d = c;			// 8
+	if (b > c) then {  	
+		d = c;			
 	} else {			
-		e = b;			// 9
+		e = b;			
 	}
-	a = a - b * c;      //  10
+	a = a - b * c;      
 }

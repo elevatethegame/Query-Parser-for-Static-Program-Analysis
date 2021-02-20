@@ -1,135 +1,135 @@
 1 - comment
 stmt s;
-select s such that Uses(_, _)
+Select s such that Uses(_, _)
 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49
 5000
 2 - comment
 stmt s;
-select s such that Uses(s, _)
+Select s such that Uses(s, _)
 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49
 5000
 3 - comment
 stmt s;
-select s such that Uses(s, "a")
+Select s such that Uses(s, "a")
 6, 7, 8, 12, 13, 14, 15, 16, 18, 22, 23, 24, 25, 26, 27, 28, 33, 37, 38, 39, 40, 42, 45, 46, 48
 5000
 4 - comment
 stmt s; variable v;
-select s such that Uses(s, v)
+Select s such that Uses(s, v)
 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49
 5000
 5 - comment
 stmt s; variable v;
-select v such that Uses(s, v)
+Select v such that Uses(s, v)
 c, d, a, b, e, f, x, p, u, o, y, q
 5000
 6 - comment
 stmt s; constant c;
-select s such that Uses(s, c)
+Select s such that Uses(s, c)
 3, 4, 6, 7, 13, 16, 18, 19, 22, 25, 29, 31, 35, 40, 41, 43, 45, 47
 5000
 7 - comment
 stmt s; constant c;
-select c such that Uses(s, c)
+Select c such that Uses(s, c)
 1, 0, 20, 100, 10
 5000
 8 - comment
 assign a;
-select a such that Uses(_, _)
+Select a such that Uses(_, _)
 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 19, 21, 23, 24, 26, 27, 28, 32, 33, 34, 35, 36, 38, 39, 41, 42, 43, 44, 46, 47
 5000
 9 - comment
 assign a;
-select a such that Uses(a, _)
+Select a such that Uses(a, _)
 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 19, 21, 23, 24, 26, 27, 28, 32, 33, 34, 35, 36, 38, 39, 41, 42, 43, 44, 46, 47
 5000
 10 - comment
 assign a;
-select a such that Uses(a, "b")
+Select a such that Uses(a, "b")
 11, 12, 14, 15, 19, 23, 26, 39
 5000
 11 - comment
 assign a; variable v;
-select a such that Uses(a, v)
+Select a such that Uses(a, v)
 4, 5, 7, 8, 10, 11, 12, 14, 15, 19, 21, 23, 24, 26, 27, 28, 32, 33, 34, 35, 36, 38, 39, 41, 42, 43, 44, 46, 47
 5000
 12 - comment
 assign a; variable v;
-select v such that Uses(a, v)
+Select v such that Uses(a, v)
 c, d, a, b, e, f, x, p, y, u, o, q
 5000
 13 - comment
 assign a; constant c;
-select a such that Uses(a, c)
+Select a such that Uses(a, c)
 3, 4, 7, 19, 35, 41, 43, 47
 5000
 14 - comment
 assign a; constant c;
-select c such that Uses(a, c)
+Select c such that Uses(a, c)
 1, 10
 5000
 15 - comment
 while w; 
-select w such that Uses(_, _)
+Select w such that Uses(_, _)
 6, 13, 18, 20, 31, 45
 5000
 16 - comment
 while w;
-select w such that Uses(w, _)
+Select w such that Uses(w, _)
 6, 13, 18, 20, 31, 45
 5000
 17 - comment
 while w; variable v;
-select w such that Uses(w, v)
+Select w such that Uses(w, v)
 6, 13, 18, 20, 31, 45
 5000
 18 - comment
 while w; variable v;
-select v such that Uses(w, v)
+Select v such that Uses(w, v)
 a, b, c, d, e, f, x, y, o, u, q, p
 5000
 19 - comment
 while w; constant c;
-select w such that Uses(w, c)
+Select w such that Uses(w, c)
 6, 13, 18, 31, 45
 5000
 20 - comment
 while w; constant c;
-select c such that Uses(w, c)
+Select c such that Uses(w, c)
 0, 1, 10, 20, 100
 5000
 21 - comment
 if ifs;
-select ifs such that Uses(_, _)
+Select ifs such that Uses(_, _)
 9, 16, 22, 25, 29, 40
 5000
 22 - comment
 if ifs;
-select ifs such that Uses(ifs, _)
+Select ifs such that Uses(ifs, _)
 9, 16, 22, 25, 29, 40
 5000
 23 - comment
 if ifs; variable v;
-select ifs such that Uses(ifs, v)
+Select ifs such that Uses(ifs, v)
 9, 16, 22, 25, 29, 40
 5000
 24 - comment
 if ifs; variable v;
-select v such that Uses(ifs, v)
+Select v such that Uses(ifs, v)
 a, b, c, d, e, f, p, x
 5000
 25 - comment
 if ifs; constant c;
-select ifs such that Uses(ifs, c)
+Select ifs such that Uses(ifs, c)
 16, 22, 25, 29, 40
 5000
 27 - comment
 if ifs; constant c;
-select c such that Uses(ifs, c)
+Select c such that Uses(ifs, c)
 1, 10, 100
 5000
 28 - comment
 variable v;
-select v such that Uses(25, v)
+Select v such that Uses(25, v)
 a, b, c, d, e, f
 5000
