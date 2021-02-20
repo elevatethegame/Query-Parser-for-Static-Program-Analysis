@@ -356,7 +356,7 @@ void PKB::filterMapOfType(
 	unordered_map<string, set<string>>* res) {
 	if (t1 == EntityType::VAR || t1 == EntityType::CONST ||
 		t1 == EntityType::STMT || t1 == EntityType::PROC) {
-		filterSetOfType(t2, &((*res)[""]));
+		for (auto& x : *res) filterSetOfType(t2, &((*res)[x.first]));
 	} else if (t2 == EntityType::VAR || t2 == EntityType::CONST ||
 		t2 == EntityType::STMT || t2 == EntityType::PROC) {
 		unordered_map<string, set<string>> ans = *res;
