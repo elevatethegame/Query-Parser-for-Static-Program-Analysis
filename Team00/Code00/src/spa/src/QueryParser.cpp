@@ -250,7 +250,7 @@ bool QueryParser::Uses()
             { EntityType::ASSIGN, EntityType::STMT, EntityType::PRINT, EntityType::PROC, EntityType::IF, EntityType::WHILE })
             , false);
         expect(TokenTypes::Comma);
-        std::shared_ptr<QueryInput> rightQueryInput = entRef(std::set<EntityType>({ EntityType::VAR, EntityType::CONST }));
+        std::shared_ptr<QueryInput> rightQueryInput = entRef(std::set<EntityType>({ EntityType::VAR }));
         expect(TokenTypes::RightParen);
         suchThatRelationshipType = RelationshipType::USES;
         suchThatLeftQueryInput = leftQueryInput;
