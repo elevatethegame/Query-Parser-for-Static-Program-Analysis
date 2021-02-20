@@ -36,6 +36,7 @@ void TestWrapper::parse(std::string filename) {
 	// call your parser to do the parsing
 	
 	vector<string> codes;
+	
 	// Open the File
 	std::ifstream in(filename.c_str());
 	// Check if object is valid
@@ -53,17 +54,27 @@ void TestWrapper::parse(std::string filename) {
 	}
 	//Close The File
 	in.close();
-
+	
 	SIMPLETokenStream stream{ codes };
+	/*
+	SIMPLETokenStream stream2{ codes };
+	while (!stream2.isEmpty()) {
+		cout << stream2.getToken().toString() << "\n";
+	}
+	*/
 
 	DesignExtractor extractor;
 	Parser parser{ extractor };
 
 	auto error = parser.parseProcedure(stream);
-	
+	cerr << error.getErrorMessage() << "\n";
 	pkb = extractor.extractToPKB();
+	//shared_ptr<PKB> pkb = make_shared<PKB>(6);
+	//pkb->insertFollow(1, 2);
+	//cout << (pkb->getFollows()["1"] == set<string>{"2"}) <<"\n";
 
 	pkb->init();
+
 }
 
 // method to evaluating a query
@@ -74,12 +85,11 @@ void TestWrapper::evaluate(std::string input, std::list<std::string>& results) {
 	auto query = std::make_shared<Query>();
 	QueryParser queryParser = QueryParser{ input, query };
 	try {
-		
-		
 		queryParser.parse();
 	}
 	catch (std::exception err) {
 		cout << err.what() << "\n";
+		return;
 	}
 
 	
@@ -89,14 +99,7 @@ void TestWrapper::evaluate(std::string input, std::list<std::string>& results) {
 	//cout << query->getRelationshipClauses().size() << "\n";
 	QueryEvaluator queryEvaluator = QueryEvaluator(query, pkb);
 	//set<string> r = pkb->getEntities(EntityType::STMT);
-	shared_ptr<QueryInput> stmtnum1 =
-		dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(1));
-	shared_ptr<QueryInput> stmtnum2 =
-		dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>(2));
-	cout << "getBooleanResultOfRS: " << pkb->getBooleanResultOfRS(RelationshipType::FOLLOWS, stmtnum1, stmtnum2) << "\n";
-	shared_ptr<QueryInput> dec =
-		dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, "s"));
-	cout << "getResultsOfRS: " << pkb->getResultsOfRS(RelationshipType::FOLLOWS, dec, stmtnum2).size() << "\n";
+	
 	auto evaluatedResults = queryEvaluator.evaluate();
 	//cout << evaluatedResults->isNoResult() << "\n";
 	ResultsProjector::projectResults(evaluatedResults, query->getSelectClause(), pkb, results);
