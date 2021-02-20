@@ -31,12 +31,12 @@ Select s such that Follows(_, _)
 7 - comment
 assign a;
 Select a such that Follows(a, _)
-1, 2, 3, 4, 5, 7
+1, 2, 3, 5
 5000
 8 - comment 
 assign a;
 Select a such that Follows(_, a)
-2, 3, 4, 6, 7, 10
+2, 3, 6, 10
 5000
 9 - comment
 assign a;
@@ -51,12 +51,12 @@ Select a such that Follows(2, a)
 11 - comment
 stmt s; assign a;
 Select s such that Follows(s, a)
-1, 2, 3, 5, 7
+1, 2, 5, 7
 5000
 12 - comment
 stmt s; assign a;
 Select s such that Follows(a, s)
-2, 3, 4
+2, 3, 4, 6
 5000
 13 - comment
 stmt s; assign a;

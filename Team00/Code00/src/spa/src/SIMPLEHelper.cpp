@@ -120,5 +120,12 @@ string SIMPLEHelper::getTokenTypeName(TokenType type) {
     };
 }
 
+bool SIMPLEHelper::isSeparator(char ch) {
+    for(auto i : separators) {
+        if (i == ch) return true;
+    }
+    return false;
+}
+
 
 
