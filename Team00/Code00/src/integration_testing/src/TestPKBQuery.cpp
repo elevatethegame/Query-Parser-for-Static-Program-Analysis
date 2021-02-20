@@ -26,6 +26,8 @@ TEST_CASE("testSuchThatClauseSuccess") {
 	REQUIRE(pkb->insertParent(5, 7));
 	REQUIRE(pkb->insertFollow(6, 7));
 	REQUIRE(pkb->insertParent(4, 8));
+	REQUIRE(pkb->insertFollow(5, 8));
+	REQUIRE(pkb->insertFollow(4, 9));
 	REQUIRE(pkb->insertFollow(9, 10));
 	REQUIRE(pkb->insertDirectUses(3, set<string>{ "x" }));
 	REQUIRE(pkb->insertExpression(3, "x"));
@@ -400,6 +402,7 @@ TEST_CASE("testSuchThatAndPatternClausesSuccess") {
 	REQUIRE(pkb->insertExpression(10, "3"));
 	// 11 if (1 == 2) {12, 13}
 	REQUIRE(pkb->insertParent(2, 11));
+	REQUIRE(pkb->insertFollow(5, 11));
 	REQUIRE(pkb->setStatementType(11, EntityType::IF));
 	// 12 t = z + t + 3
 	REQUIRE(pkb->insertParent(11, 12));
@@ -416,6 +419,7 @@ TEST_CASE("testSuchThatAndPatternClausesSuccess") {
 	REQUIRE(pkb->insertDirectUses(13, set<string> { "y" }));
 	// 14 read t
 	REQUIRE(pkb->insertParent(2, 14));
+	REQUIRE(pkb->insertFollow(11, 14));
 	REQUIRE(pkb->setStatementType(14, EntityType::READ));
 	REQUIRE(pkb->insertDirectModifies(14, "t"));
 	// 15 y = a * a * a
@@ -426,6 +430,7 @@ TEST_CASE("testSuchThatAndPatternClausesSuccess") {
 	REQUIRE(pkb->insertDirectModifies(15, "y"));
 	REQUIRE(pkb->insertExpression(15, "a"));
 	// 16 print m
+	REQUIRE(pkb->insertFollow(2, 16));
 	REQUIRE(pkb->setStatementType(16, EntityType::PRINT));
 	REQUIRE(pkb->insertDirectUses(16, set<string>{ "m" }));
 
