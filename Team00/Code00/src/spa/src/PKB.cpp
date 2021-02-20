@@ -380,6 +380,3 @@ void PKB::filterMapOfType(
 
 }
 
-unordered_map<string, set<string>> PKB::getFollows() {
-	return this->relations[FOLLOWS];
-}
