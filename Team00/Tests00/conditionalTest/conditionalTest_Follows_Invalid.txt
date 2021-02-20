@@ -16,7 +16,7 @@ none
 4 - comment
 stmt s;
 Select s such that Follows(s, "s")
-none 
+none
 5000
 5 - comment
 variable v;
@@ -32,6 +32,7 @@ none
 variable v; stmt s;
 Select s such that Follows(v, s)
 none
+5000
 8 - comment
 variable v; stmt s;
 Select v such that Follows(s, v)

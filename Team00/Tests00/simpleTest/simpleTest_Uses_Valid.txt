@@ -31,7 +31,7 @@ a
 7 - comment
 variable v;
 Select v such that Uses(3, v)
-b, c
+a, b
 5000
 8 - comment
 variable v; stmt s;
@@ -44,37 +44,13 @@ Select s such that Uses(s, v)
 2, 3, 4
 5000
 10 - comment
-constant c;
-Select c such that Uses(2, c)
-1
-5000
-11 - comment
-constant c; stmt s;
-Select c such that Uses(s, c)
-1
-5000
-12 - comment
-constant c; stmt s;
-Select s such that Uses(s, c)
-1, 2
-5000
-13 - comment
 variable v; assign a;
 Select v such that Uses(a, v)
 a, b, c
 5000
-14 - comment
+11 - comment
 variable v; assign a;
 Select a such that Uses(a, v)
 2, 3, 4
 5000
-15 - comment
-constant c; assign a;
-Select c such that Uses(a, c)
-1
-5000
-16 - comment
-constant c; assign a;
-Select a such that Uses(a, c)
-1, 2
-5000
+ 	
