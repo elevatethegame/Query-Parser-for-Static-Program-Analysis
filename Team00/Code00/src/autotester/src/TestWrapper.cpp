@@ -68,16 +68,11 @@ void TestWrapper::parse(std::string filename) {
 	Parser parser{ extractor };
 
 	auto error = parser.parseProcedure(stream);
-<<<<<<< HEAD
-	
-	pkb = extractor.extractToPKB();
-=======
 	cerr << error.getErrorMessage() << "\n";
 	pkb = extractor.extractToPKB();
 	//shared_ptr<PKB> pkb = make_shared<PKB>(6);
 	//pkb->insertFollow(1, 2);
 	//cout << (pkb->getFollows()["1"] == set<string>{"2"}) <<"\n";
->>>>>>> d6ff4621a93e6bb99d9d580a92e28eb5e3b38031
 
 	pkb->init();
 
@@ -87,10 +82,7 @@ void TestWrapper::parse(std::string filename) {
 void TestWrapper::evaluate(std::string input, std::list<std::string>& results) {
 	// call your evaluator to evaluate the query here
 	  // ...code to evaluate query...
-<<<<<<< HEAD
-=======
-	//cout << "Test evaluate method\n";
->>>>>>> d6ff4621a93e6bb99d9d580a92e28eb5e3b38031
+	shared_ptr<PKB> pkb;
 	auto query = std::make_shared<Query>();
 	QueryParser queryParser = QueryParser{ input, query };
 	try {
@@ -104,13 +96,6 @@ void TestWrapper::evaluate(std::string input, std::list<std::string>& results) {
 	
 	// store the answers to the query in the results list (it is initially empty)
 	// each result must be a string.
-<<<<<<< HEAD
-	cout << query->getSelectClause()->getDeclaration()->getValue() << "\n";
-	cout << query->getRelationshipClauses().size() << "\n";
-=======
-	//cout << query->getSelectClause()->getDeclaration()->getValue() << "\n";
-	//cout << query->getRelationshipClauses().size() << "\n";
->>>>>>> d6ff4621a93e6bb99d9d580a92e28eb5e3b38031
 	QueryEvaluator queryEvaluator = QueryEvaluator(query, pkb);
 	//set<string> r = pkb->getEntities(EntityType::STMT);
 	
