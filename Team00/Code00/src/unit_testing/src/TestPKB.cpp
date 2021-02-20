@@ -46,12 +46,13 @@ TEST_CASE("PKB setAndGetTypes") {
 TEST_CASE("PKB parentAndFollow") {
 	
 	PKB pkb = PKB(10);
-
+	// 1 2 3 4 {5 {6}} 7 8 9
 	REQUIRE(pkb.insertFollow(1, 2));
 	REQUIRE(pkb.insertFollow(2, 3));
 	REQUIRE(pkb.insertFollow(3, 4));
 	REQUIRE(pkb.insertParent(4, 5));
 	REQUIRE(pkb.insertParent(5, 6));
+	REQUIRE(pkb.insertFollow(4, 7));
 	REQUIRE(pkb.insertFollow(7, 8));
 	REQUIRE(pkb.insertFollow(8, 9));
 
@@ -82,7 +83,7 @@ TEST_CASE("PKB parentAndFollow") {
 		shared_ptr<QueryInput>(new StmtNum(10))));
 	REQUIRE_FALSE(pkb.getBooleanResultOfRS(RelationshipType::FOLLOWS, 
 		shared_ptr<QueryInput>(new StmtNum(4)), 
-		shared_ptr<QueryInput>(new Any())));
+		shared_ptr<QueryInput>(new StmtNum(8))));
 	REQUIRE_FALSE(pkb.getBooleanResultOfRS(RelationshipType::FOLLOWS, 
 		shared_ptr<QueryInput>(new StmtNum(0)), 
 		shared_ptr<QueryInput>(new StmtNum(1))));
@@ -103,7 +104,7 @@ TEST_CASE("PKB parentAndFollow") {
 	set<string> resultFollow = pkb.getResultsOfRS(FOLLOWS,
 		shared_ptr<QueryInput>(new Any()), 
 		shared_ptr<QueryInput>(new Declaration(EntityType::STMT, "s")))[""];
-	string a[] = { "2", "3", "4", "8", "9" };
+	string a[] = { "2", "3", "4", "7", "8", "9" };
 	set<string> expectedFollow{ std::begin(a), std::end(a) };
 	REQUIRE(expectedFollow == resultFollow);
 	
@@ -127,6 +128,8 @@ TEST_CASE("PKB extarctStar 1") {
 	REQUIRE(pkb.insertParent(5, 7));
 	REQUIRE(pkb.insertFollow(6, 7));
 	REQUIRE(pkb.insertParent(4, 8));
+	REQUIRE(pkb.insertFollow(5, 8));
+	REQUIRE(pkb.insertFollow(4, 9));
 	REQUIRE(pkb.insertFollow(9, 10));
 
 	pkb.init();
@@ -194,11 +197,14 @@ TEST_CASE("PKB extarctStar 2") {
 	REQUIRE(pkb.insertParent(8, 10));
 	REQUIRE(pkb.insertFollow(9, 10));
 	REQUIRE(pkb.insertParent(2, 11));
+	REQUIRE(pkb.insertFollow(5, 11));
 	REQUIRE(pkb.insertParent(11, 12));
 	REQUIRE(pkb.insertParent(12, 13));
 	REQUIRE(pkb.insertParent(2, 14));
+	REQUIRE(pkb.insertFollow(11, 14));
 	REQUIRE(pkb.insertParent(2, 15));
 	REQUIRE(pkb.insertFollow(14, 15));
+	REQUIRE(pkb.insertFollow(2, 16));
 
 	REQUIRE(pkb.insertDirectUses(2, set<string>{ "x" }));
 	REQUIRE(pkb.insertDirectUses(3, set<string>{ "x", "y" }));
@@ -421,6 +427,7 @@ TEST_CASE("PKB iter1SimTest") {
 	REQUIRE(pkb.insertExpression(10, "3"));
 	// 11 if (1 == 2) {12, 13}
 	REQUIRE(pkb.insertParent(2, 11));
+	REQUIRE(pkb.insertFollow(5, 11));
 	REQUIRE(pkb.setStatementType(11, EntityType::IF));
 	// 12 t = z + t + 3
 	REQUIRE(pkb.insertParent(11, 12));
@@ -437,6 +444,7 @@ TEST_CASE("PKB iter1SimTest") {
 	REQUIRE(pkb.insertDirectUses(13, set<string> { "y" }));
 	// 14 read t
 	REQUIRE(pkb.insertParent(2, 14));
+	REQUIRE(pkb.insertFollow(11, 14));
 	REQUIRE(pkb.setStatementType(14, EntityType::READ));
 	REQUIRE(pkb.insertDirectModifies(14, "t"));
 	// 15 y = a * a * a
@@ -447,6 +455,7 @@ TEST_CASE("PKB iter1SimTest") {
 	REQUIRE(pkb.insertDirectModifies(15, "y"));
 	REQUIRE(pkb.insertExpression(15, "a"));
 	// 16 print m
+	REQUIRE(pkb.insertFollow(2, 16));
 	REQUIRE(pkb.setStatementType(16, EntityType::PRINT));
 	REQUIRE(pkb.insertDirectUses(16, set<string>{ "m" }));
 
