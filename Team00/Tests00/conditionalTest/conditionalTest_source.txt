@@ -6,7 +6,7 @@ procedure conditionalTest {
 		a = a - 1; 		
 		b = a + c;		
 	}
-	if (b > c) then {  	
+	if (b > c) then  	
 		d = c;			
 	} else {			
 		e = b;			

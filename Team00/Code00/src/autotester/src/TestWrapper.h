@@ -25,7 +25,6 @@ class TestWrapper : public AbstractWrapper {
   // method for evaluating a query
   virtual void evaluate(std::string query, std::list<std::string>& results);
 
-  shared_ptr<PKB> pkb;
 };
 
 #endif

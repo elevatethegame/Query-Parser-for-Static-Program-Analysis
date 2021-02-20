@@ -266,25 +266,21 @@ unordered_map<string, set<string>> PKB::getResultsOfPattern(const EntityType& ty
 
 
 void PKB::extractFollowStar() {
-	int p = RelationshipType::PARENT;
+	int f = RelationshipType::FOLLOWS;
 	int fs = RelationshipType::FOLLOWS_T;
-	for (int i = 1; i < this->number; i++) {
-		for (int j = i + 1; j <= this->number; j++) {
-			string former = to_string(i);
-			string latter = to_string(j);
-			bool e1 = relationByKeys[p].find(former) == relationByKeys[p].end();
-			bool e2 = relationByKeys[p].find(latter) == relationByKeys[p].end();
-			if (e1 != e2) {
-				continue;
-			} else if ((e1 && e2) || // no parent or same parent
-				relationsBy[p][former] == relationsBy[p][latter]) { 
-				relations[fs][former].insert(latter);
-				relationsBy[fs][latter].insert(former);
-				relationKeys[fs].insert(former);
-				relationByKeys[fs].insert(latter);
-			}
+	for (string former : this->relationKeys[f]) {
+		set<string> res = this->relations[f][former];
+		if (res.empty()) continue;
+		this->relationKeys[fs].insert(former);
+		while (!res.empty()) { // follow*(s, _)
+			string latter = *(res.begin());
+			this->relations[fs][former].insert(latter);
+			this->relationsBy[fs][latter].insert(former);
+			this->relationByKeys[fs].insert(latter);
+			res = this->relations[f][latter];
 		}
 	}
+
 }
 
 void PKB::extractParentStar() {
@@ -356,7 +352,7 @@ void PKB::filterMapOfType(
 	unordered_map<string, set<string>>* res) {
 	if (t1 == EntityType::VAR || t1 == EntityType::CONST ||
 		t1 == EntityType::STMT || t1 == EntityType::PROC) {
-		filterSetOfType(t2, &((*res)[""]));
+		for (auto& x : *res) filterSetOfType(t2, &((*res)[x.first]));
 	} else if (t2 == EntityType::VAR || t2 == EntityType::CONST ||
 		t2 == EntityType::STMT || t2 == EntityType::PROC) {
 		unordered_map<string, set<string>> ans = *res;
@@ -380,6 +376,3 @@ void PKB::filterMapOfType(
 
 }
 
-unordered_map<string, set<string>> PKB::getFollows() {
-	return this->relations[FOLLOWS];
-}

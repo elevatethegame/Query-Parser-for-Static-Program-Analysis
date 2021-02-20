@@ -31,7 +31,7 @@ none
 7 - comment
 stmt s; constant c;
 Select c such that Uses(c, s)
-none 
+none
 5000
 8 - comment
 assign a;
@@ -126,7 +126,7 @@ none
 26 - comment
 if ifs; variable v;
 Select ifs such that Uses(v, ifs)
-none 
+none
 5000
 27 - comment
 if  ifs; constant c;
@@ -156,5 +156,30 @@ none
 32 - comment
 constant c;
 Select c such that Uses(_, c)
+none
+5000
+33 - comment
+constant c;
+Select c such that Uses(2, c)
+none
+5000
+34 - comment
+constant c; stmt s;
+Select c such that Uses(s, c)
+none
+5000
+35 - comment
+constant c; stmt s;
+Select s such that Uses(s, c)
+none
+5000
+36 - comment
+constant c; assign a;
+Select c such that Uses(a, c)
+none
+5000
+37 - comment
+constant c; assign a;
+Select a such that Uses(a, c)
 none
 5000
