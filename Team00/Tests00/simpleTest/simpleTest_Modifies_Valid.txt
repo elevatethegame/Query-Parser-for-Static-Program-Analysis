@@ -1,59 +1,59 @@
 1 - comment
 stmt s;
-select s such that Modifies(s, _)
+Select s such that Modifies(s, _)
 1, 2, 3, 4
 5000
 2 - comment
 stmt s;
-select s such that Modifies(s, "a")
+Select s such that Modifies(s, "a")
 1
 5000
 3 - comment
 stmt s; 
-select s such that Modifies(s, "d")
+Select s such that Modifies(s, "d")
 4 
 5000
 4 - comment
 assign a;
-select a such that Modifies(a, _)
+Select a such that Modifies(a, _)
 1, 2, 3, 4
 5000
 5 - comment
 assign a;
-select a such that Modfies(a, "b")
+Select a such that Modfies(a, "b")
 2
 5000
 6 - comment
 assign a;
-select a such that Modifies(a, "c")
+Select a such that Modifies(a, "c")
 3
 5000
 7 - comment
 variable v;
-select v such that Modifies(4, v)
+Select v such that Modifies(4, v)
 d
 5000
 8 - comment
 variable v;
-select v such that Modifies(2, v)
+Select v such that Modifies(2, v)
 b
 5000
 9 - comment
 variable v; stmt s;
-select s such that Modifies(s, v)
+Select s such that Modifies(s, v)
 1, 2, 3, 4
 5000
 10 - comment
 variable  v; stmt s;
-select v such that Modifies(s, v)
+Select v such that Modifies(s, v)
 a, b, c, d
 5000
 11 - comment
 variable v; assign a;
-select a such that Modifies(a, v)
+Select a such that Modifies(a, v)
 1, 2, 3, 4
 5000
 12 - comment
 variable v; assign a;
-select v such that Modifies(a, v)
+Select v such that Modifies(a, v)
 a, b, c, d
