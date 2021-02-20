@@ -4,12 +4,14 @@
 #include <string>
 #include <iostream>
 #include <list>
+#include "PKB.h"
 
 // include your other headers here
 #include "AbstractWrapper.h"
 
 class TestWrapper : public AbstractWrapper {
  public:
+     shared_ptr<PKB> pkb;
 
   // default constructor
   TestWrapper();

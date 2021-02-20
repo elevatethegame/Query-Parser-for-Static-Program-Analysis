@@ -27,6 +27,7 @@ volatile bool AbstractWrapper::GlobalStop = false;
 TestWrapper::TestWrapper() { 
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
+
 }
 
 // method for parsing the SIMPLE source
@@ -64,7 +65,7 @@ void TestWrapper::parse(std::string filename) {
 
 	auto error = parser.parseProcedure(stream);
 	
-	shared_ptr<PKB> pkb = extractor.extractToPKB();
+	pkb = extractor.extractToPKB();
 
 	pkb->init();
 }
@@ -73,12 +74,13 @@ void TestWrapper::parse(std::string filename) {
 void TestWrapper::evaluate(std::string input, std::list<std::string>& results) {
 	// call your evaluator to evaluate the query here
 	  // ...code to evaluate query...
-	shared_ptr<PKB> pkb;
 	auto query = std::make_shared<Query>();
 	QueryParser queryParser = QueryParser{ input, query };
 	queryParser.parse();
 	// store the answers to the query in the results list (it is initially empty)
 	// each result must be a string.
+	cout << query->getSelectClause()->getDeclaration()->getValue() << "\n";
+	cout << query->getRelationshipClauses().size() << "\n";
 	QueryEvaluator queryEvaluator = QueryEvaluator(query, pkb);
 	auto evaluatedResults = queryEvaluator.evaluate();
 	ResultsProjector::projectResults(evaluatedResults, query->getSelectClause(), pkb, results);
