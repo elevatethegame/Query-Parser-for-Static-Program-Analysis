@@ -34,6 +34,7 @@ private:
     const vector<string> termSymbols = {"*", "/", "%"};
     const vector<string> braces = {"{", "}", "(", ")"};
     const vector<string> semicolon = {";"};
+    const vector<char> separators = {' ', '\t', '\v'};
 
     const vector<string> keywords = {
         "procedure",
@@ -65,6 +66,7 @@ public:
     bool isInteger(string token);
     bool isName(string token);
     bool isKeyword(string token);
+    bool isSeparator(char ch);
 
     string getTokenTypeName(TokenType type);
 };
