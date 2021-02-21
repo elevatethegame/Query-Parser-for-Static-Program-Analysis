@@ -131,7 +131,7 @@ bool QueryParser::patternClause()
         }
         auto synonym = std::make_shared<Declaration>(synonyms[synToken->getValue()], synToken->getValue());
         expect(TokenTypes::LeftParen);
-        std::shared_ptr<QueryInput> queryInput = entRef(std::set<EntityType>({ EntityType::VAR, EntityType::CONST }));
+        std::shared_ptr<QueryInput> queryInput = entRef(std::set<EntityType>({ EntityType::VAR }));
         expect(TokenTypes::Comma);
         std::shared_ptr<Expression> expression = expressionSpec();
         expect(TokenTypes::RightParen);
@@ -267,7 +267,7 @@ bool QueryParser::Parent()
         if (accept(TokenTypes::Asterisk)) {
             expect(TokenTypes::LeftParen);
             std::shared_ptr<QueryInput> leftQueryInput = stmtRef(std::set<EntityType>(
-                { EntityType::WHILE, EntityType::IF }) , true);
+                { EntityType::STMT, EntityType::WHILE, EntityType::IF }) , true);
             expect(TokenTypes::Comma);
             std::shared_ptr<QueryInput> rightQueryInput = stmtRef(std::set<EntityType>(
                 { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
@@ -296,7 +296,7 @@ bool QueryParser::Parent()
         else {
             expect(TokenTypes::LeftParen);
             std::shared_ptr<QueryInput> leftQueryInput = stmtRef(std::set<EntityType>(
-                { EntityType::WHILE, EntityType::IF }) , true);
+                { EntityType::STMT, EntityType::WHILE, EntityType::IF }) , true);
             expect(TokenTypes::Comma);
             std::shared_ptr<QueryInput> rightQueryInput = stmtRef(std::set<EntityType>(
                 { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
