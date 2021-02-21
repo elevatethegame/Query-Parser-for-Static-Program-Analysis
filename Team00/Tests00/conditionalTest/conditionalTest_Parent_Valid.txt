@@ -64,12 +64,12 @@ Select ifs such that Parent(ifs, _)
 7 
 5000
 15 - comment
-while w; stmt s
+while w; stmt s;
 Select w such that Parent(w, s)
 4
 5000
 16 - comment
-if ifs; stmt s
+if ifs; stmt s;
 Select ifs such that Parent(ifs, s)
 7 
 5000

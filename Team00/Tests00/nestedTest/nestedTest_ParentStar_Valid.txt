@@ -22,6 +22,7 @@ Select s such that Parent*(4, s)
 stmt s;
 Select s such that Parent*(7, s)
 8, 9
+5000
 6 - comment
 stmt s;
 Select s such that Parent*(11, s)
@@ -86,6 +87,7 @@ Select ifs such that Parent*(s, ifs)
 stmt s; if ifs;
 Select ifs such that Parent*(ifs, s)
 7, 11
+5000
 19 - comment
 assign a;
 Select a such that Parent*(4, 5)
@@ -105,18 +107,19 @@ Select a such that Parent*(4, a)
 assign a;
 Select a such that Parent*(7, a)
 8, 9
+5000
 23 - comment
 assign a;
 Select a such that Parent*(11, a)
 12, 13, 14, 15, 17, 18
-500
+5000
 24 - comment
 assign a; while w;
 Select a such that Parent*(w, a)
 5, 6, 8, 9, 17
 5000
 25 - comment
-assign a;; while w;
+assign a; while w;
 Select w such that Parent*(w, a)
 4, 16
 5000
@@ -129,6 +132,7 @@ Select a such that Parent*(ifs, a)
 assign a; if ifs;
 Select ifs such that Parent*(ifs, a)
 7, 11
+5000
 28 - comment
 while w;
 Select w such that Parent*(w, _)
