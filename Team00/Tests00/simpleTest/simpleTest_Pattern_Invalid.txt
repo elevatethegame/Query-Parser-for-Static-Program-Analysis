@@ -36,7 +36,7 @@ none
 8 - comment
 assign a; variable v;
 Select a pattern a(v, v)
-none 
+none
 5000
 9 - comment
 assign a;

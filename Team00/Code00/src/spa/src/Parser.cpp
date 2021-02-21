@@ -215,7 +215,7 @@ ParseError Parser::parsePrintStatement(SIMPLETokenStream &stream, int parentStat
 		return error;
 	}
 
-	this->addVariable(variable.getValue());	
+	this->addUses(thisStatementIndex, variable.getValue());
 	return ParseError();
 }
 

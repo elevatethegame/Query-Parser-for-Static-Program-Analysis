@@ -91,11 +91,12 @@ none
 19 - comment
 variable v; stmt s;
 Select v such that Parent(v, s)
-none 5000
+none
+5000
 20 - comment
 variable v; stmt s;
 Select s such that Parent(s, v)
-none 
+none
 5000
 21 - comment
 constant c; 
@@ -115,17 +116,17 @@ none
 24 - comment
 constant c;
 Select c such that Parent(4, c)
-none 
+none
 5000
 25 - comment
 constant c; 
 Select c such that Parent(c, 3)
-none 
+none
 5000
 26 - comment
 constant c; stmt s;
 Select s such that Parent(s, c)
-none 
+none
 5000
 27 - comment 
 constant c; stmt s;
@@ -135,7 +136,7 @@ none
 28 - comment
 constant c; stmt s;
 Select c such that Parent(s, c)
-none 
+none
 5000
 29 - comment
 constant c; stmt s; 
@@ -150,7 +151,7 @@ none
 31 - comment
 variable v; assign a;
 Select a such that Parent(v, a)
-none 
+none
 5000
 32 - comment
 variable v; assign a;

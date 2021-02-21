@@ -6,7 +6,7 @@ Select a pattern a(_, _)
 2 - comment
 assign a;
 Select a pattern a(_, _"d"_)
-5, 15, 21, 26, 27, 33, 39, 46, 47
+5, 14, 15, 21, 26, 27, 33, 39, 46, 47
 5000
 3 - comment
 assign a;
@@ -26,5 +26,5 @@ Select a pattern a(v, _)
 6 - comment
 assign a; variable v;
 Select a pattern a(v, _"d"_)
-5, 15, 21, 26, 27, 33, 39, 46, 47
+5, 14, 15, 21, 26, 27, 33, 39, 46, 47
 5000

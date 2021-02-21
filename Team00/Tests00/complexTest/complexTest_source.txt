@@ -17,7 +17,7 @@ procedure complexTest {
 	
 	a = a - b * c;		
 
-	while (((c > 0) && (d>0)) || (a < b) || e <= 20) {
+	while ((((c > 0) && (d>0)) || (a < b)) || (e <= 20)) {
 		a = c + d * b;		
 		b = ((a + b) * ((c / d) - e));
 		if (b <= c) then {	
@@ -32,7 +32,7 @@ procedure complexTest {
 					a = a * b - c / e;	
 					f = a / e - c;	
 				} else { 
-					if (a < (c+d + e)) then {	
+					if ((a) < (c+d + e)) then {	
 						a = a / b - c / e * d;	
 					} else { 
 						f = f - a * d;	
@@ -57,13 +57,13 @@ procedure complexTest {
 	}
 	c = c / a + (b - d);	
 
-	if (e < 10 && a > e) then {
+	if ((e < 10) && (a > e)) then {
 		e = e + 1;			
 		a = a - e;				
 	} else {
 		e = e - 1;			
 		c = c + e;				
-		while (d <= 20 || d < (a + b)) {
+		while ((d <= 20) || (d < (a + b))) {
 			d = d + a * (c - e);
 		}
 
