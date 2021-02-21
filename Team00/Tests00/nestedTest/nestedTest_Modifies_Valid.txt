@@ -44,8 +44,8 @@ Select w such that Modifies(w, _)
 4, 16
 5000
 10 - comment
-while w;
-Select w such that Modifies(a, "a")
+while w; assign a;
+Select w such that Modifies(w, "a")
 4
 5000
 11 - comment

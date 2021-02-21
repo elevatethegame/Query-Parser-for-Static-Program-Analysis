@@ -25,6 +25,6 @@ Select a pattern a(v, _)
 5000
 6 - comment
 assign a; variable v;
-Select a pattern(v, _"c"_)
+Select a pattern a(v, _"c"_)
 6, 8, 10, 15, 17, 19
 5000
