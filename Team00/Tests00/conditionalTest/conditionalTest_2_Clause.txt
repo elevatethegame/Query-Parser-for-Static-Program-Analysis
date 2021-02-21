@@ -10,12 +10,12 @@ Select s such that Follows(_, s) pattern a(_, _)
 5000
 3 - comment
 stmt s; assign a;
-Select s such that Follows(s, _) patttern a(_, _"a"_)
+Select s such that Follows(s, _) pattern a(_, _"a"_)
 1, 2, 3, 4, 5, 7
 5000
 4 - comment
 stmt s; assign a;
-Select s such that Follows(s, _) patttern a("b", _)
+Select s such that Follows(s, _) pattern a("b", _)
 1, 2, 3, 4, 5, 7
 5000
 5 - comment
@@ -40,12 +40,12 @@ Select a1 such that Follows(_, a1) pattern a(_, _)
 5000
 9 - comment
 assign a1; assign a;
-Select a1 such that Follows(a1, _) patttern a(_, _"a"_)
+Select a1 such that Follows(a1, _) pattern a(_, _"a"_)
 1, 2, 3, 5
 5000
 10 - comment
 assign a1; assign a;
-Select a1 such that Follows(a1, _) patttern a("b", _)
+Select a1 such that Follows(a1, _) pattern a("b", _)
 1, 2, 3, 5
 5000
 11 - comment
@@ -70,12 +70,12 @@ Select a such that Follows(_, a) pattern a(_, _)
 5000
 15 - comment
 assign a;
-Select a such that Follows(a, _) patttern a(_, _"a"_)
+Select a such that Follows(a, _) pattern a(_, _"a"_)
 2, 3, 5
 5000
 16 - comment
 assign a;
-Select a such that Follows(a, _) patttern a("b", _)
+Select a such that Follows(a, _) pattern a("b", _)
 2
 5000
 17 - comment
@@ -100,12 +100,12 @@ Select s such that Follows*(_, s) pattern a(_, _)
 5000
 21 - comment
 stmt s; assign a;
-Select s such that Follows*(s, _) patttern a(_, _"a"_)
+Select s such that Follows*(s, _) pattern a(_, _"a"_)
 1, 2, 3, 4, 5, 7
 5000
 22 - comment
 stmt s; assign a;
-Select s such that Follows*(s, _) patttern a("b", _)
+Select s such that Follows*(s, _) pattern a("b", _)
 1, 2, 3, 4, 5, 7
 5000
 23 - comment
@@ -130,12 +130,12 @@ Select a1 such that Follows*(_, a1) pattern a(_, _)
 5000
 27 - comment
 assign a1; assign a;
-Select a1 such that Follows*(a1, _) patttern a(_, _"a"_)
+Select a1 such that Follows*(a1, _) pattern a(_, _"a"_)
 1, 2, 3, 5
 5000
 28 - comment
 assign a1; assign a;
-Select a1 such that Follows*(a1, _) patttern a("b", _)
+Select a1 such that Follows*(a1, _) pattern a("b", _)
 1, 2, 3, 5
 5000
 29 - comment
@@ -160,12 +160,12 @@ Select a such that Follows*(_, a) pattern a(_, _)
 5000
 33 - comment
 assign a;
-Select a such that Follows*(a, _) patttern a(_, _"a"_)
+Select a such that Follows*(a, _) pattern a(_, _"a"_)
 2, 3, 5
 5000
 34 - comment
 assign a;
-Select a such that Follows*(a, _) patttern a("b", _)
+Select a such that Follows*(a, _) pattern a("b", _)
 2
 5000
 35 - comment
@@ -276,7 +276,7 @@ a, c
 56 - comment
 stmt s; assign a;
 Select s such that Modifies(s, "d") pattern a(_, _"c"_)
-8
+7, 8
 5000
 57 - comment
 stmt s; assign a;
@@ -311,7 +311,7 @@ a, b, d, c, e
 63 - comment
 variable v; assign a1; assign a;
 Select v such that Modifies(a1, v) pattern a("a", _)
-a
+a, b, d, c, e
 5000
 64 - comment
 variable v; assign a;

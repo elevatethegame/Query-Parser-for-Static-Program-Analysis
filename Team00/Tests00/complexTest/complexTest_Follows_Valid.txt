@@ -11,7 +11,7 @@ Select s such that Follows(s, _)
 3 - comment
 stmt s;
 Select s such that Follows(_, s)
-2, 3, 4, 5, 6, 8, 9, 12, 13, 15, 16, 20, 22, 24, 28, 29, 33, 34, 35, 36, 37, 38, 39, 40, 42, 44, 45, 47, 49
+2, 3, 4, 5, 6, 8, 9, 12, 13, 15, 16, 20, 22, 24, 28, 29, 33, 34, 35, 36, 37, 38, 39, 40, 42, 44, 45, 47, 48, 49
 5000
 4 - comment
 stmt s;
@@ -131,7 +131,7 @@ Select ifs such that Follows(_, ifs)
 27 - comment
 if ifs; stmt s;
 Select s such that Follows(s, ifs)
-8, 15, 21, 28, 39
+8, 15, 20, 28, 39
 5000
 28 - comment
 if ifs; stmt s;
@@ -145,7 +145,7 @@ Select s such that Follows(ifs, s)
 5000
 30 - comment
 if ifs; stmt s;
-Select ifs such thtat Follows(ifs, s)
+Select ifs such that Follows(ifs, s)
 16, 22, 25, 29, 40
 5000
 31 - comment
@@ -164,7 +164,7 @@ Select a such that Follows(ifs, a)
 33, 34, 36, 38
 5000
 34 - comment
-if ifs; assign a;;
+if ifs; assign a;
 Select ifs such that Follows(ifs, a)
 16, 22, 25, 29
 5000

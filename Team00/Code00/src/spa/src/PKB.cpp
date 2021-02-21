@@ -96,7 +96,7 @@ bool PKB::insertFollow(const int& former, const int& latter) {
 
 
 bool PKB::insertDirectUses(const int& index, const set<string>& variables) {
-	if (index <= 0 || index > this->number) {
+	if (index <= 0 || index > this->number || variables.empty()) {
 		return false;
 	} else {
 		int t = RelationshipType::USES;
