@@ -19,137 +19,82 @@ Select v such that Uses(s, v)
 a, b, c, d, e
 5000
 5 - comment
-stmt s; constant c;
-Select s such that Uses(s, c)
-1, 2, 4, 5, 11, 12, 14, 16, 18
-5000
-6 - comment
-stmt s; constant c;
-Select c such that Uses(s, c)
-0, 1, 10, 20
-5000
-7 - comment
 assign a;
 Select a such that Uses(a, _)
 1, 2, 3, 5, 6, 8, 9, 10, 12, 13, 14, 15, 17, 18, 19
 5000
-8 - comment
+6 - comment
 assign a;
 Select a such that Uses(a, "a")
 2, 3, 5, 6, 10, 13, 17, 19
 5000
-9 - comment
+7 - comment
 assign a; variable v;
 Select a such that Uses(a, v)
 2, 3, 5, 6, 8, 9, 10, 12, 13, 14, 15, 17, 18, 19
 5000
-10 - comment
+8 - comment
 assign a; variable v;
 Select v such that Uses(a, v)
 a, b, c, d, e
 5000
-11 - comment
-assign a; constant c;
-Select a such that Uses(a, c)
-1, 2, 5, 12, 14, 18
-5000
-12 - comment
-assign a; constant c;
-Select a such that Uses(a, c)
-1
-5000
-13 - comment
+9 - comment
 while w;
 Select w such that Uses(w, _)
 4, 16
 5000
-14 - comment
+10 - comment
 while w;
 Select w such that Uses(w, "a")
 4, 16
 5000
-15 - comment
+11 - comment
 while w; variable v;
 Select w such that Uses(w, v)
 4, 16
 5000
-16 - comment
+12 - comment
 while w; variable v;
 Select v such that Uses(w, v)
 a, b, c, d, e
 5000
-17 - comment
-while w; constant c;
-Select w such that Uses(w, c)
-4, 16
-5000
-18 - comment
-while w; constant c;
-Select c such that Uses(w, c)
-0, 1, 20
-5000
-19 - comment
+13 - comment
 if ifs;
 Select ifs such that Uses(ifs, _)
 7, 11
 5000
-20 - comment
+14 - comment
 if ifs;
 Select ifs such that Uses(ifs, "a")
 11
 5000
-21 - comment
+15 - comment
 if ifs; variable v;
 Select ifs such that Uses(ifs, v)
 7, 11
 5000
-22 - comment
+16 - comment
 if ifs; variable v;
 Select v such that Uses(ifs, v)
 a, b, c, d, e
 5000
-23 - comment
-if ifs; constant c;
-Select ifs such that Uses(ifs, c)
-11
-5000
-24 - comment
-if ifs; constant c;
-Select c such that Uses(ifs, c)
-1, 10, 20
-5000
-25 - comment
+17 - comment
 variable v;
 Select v such that Uses(4, v)
 a, b, c
 5000
-26 - comment
+18 - comment
 variable v;
 Select v such that Uses(7, v)
 b, c
 5000
-27 - comment
+19 - comment
 variable v;
 Select v such that Uses(11, v)
 a, b, c, d, e
 5000
-28 - comment
+20 - comment
 variable v;
 Select v such that Uses(16, v)
 a, b, c, d, e
-5000
-29 - comment
-constant c;
-Select c such that Uses(4, c)
-0, 1
-5000
-30 - comment
-constant c;
-Select c such that Uses(11, c)
-1, 10, 20
-5000
-31 - comment
-constant c;
-Select c such that Uses(16, c)
-20
 5000

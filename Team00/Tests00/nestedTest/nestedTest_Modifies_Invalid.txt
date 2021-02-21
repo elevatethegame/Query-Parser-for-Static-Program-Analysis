@@ -31,7 +31,7 @@ none
 7 - comment
 stmt s; constant c;
 Select c such that Modifies(c, s)
-none 
+none
 5000
 8 - comment
 assign a;
@@ -126,7 +126,7 @@ none
 26 - comment
 if ifs; variable v;
 Select ifs such that Modifies(v, ifs)
-none 
+none
 5000
 27 - comment
 if  ifs; constant c;
@@ -186,7 +186,7 @@ none
 38 - comment
 constant c; while w;
 Select c such that Modifies(w, c)
-none 
+none
 5000
 39 - comment
 constant c; if ifs;
