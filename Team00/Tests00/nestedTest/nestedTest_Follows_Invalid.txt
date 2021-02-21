@@ -16,7 +16,7 @@ none
 4 - comment
 stmt s;
 Select s such that Follows(s, "s")
-none 
+none
 5000
 5 - comment
 variable v;
@@ -32,6 +32,7 @@ none
 variable v; stmt s;
 Select s such that Follows(v, s)
 none
+5000
 8 - comment
 variable v; stmt s;
 Select v such that Follows(s, v)
@@ -39,7 +40,7 @@ none
 5000
 9  - comment
 variable v; stmt s;
-Select s cuh that Folows(v, s)
+Select s such that Folows(v, s)
 none
 5000
 10 - comment
@@ -60,10 +61,12 @@ none
 13 - comment
 constant c; stmt s;
 Select c such that Follows(s, c)
+none
 5000
 14 - comment
 constant c; stmt s;
 Select c such that Follows(c, s)
+none
 5000
 15 - comment
 while w;
@@ -93,7 +96,7 @@ none
 20 - comment
 assign a; variable v;
 Select v such that Follows(v, a)
-none 
+none
 5000
 21 - comment
 assign a; constant  c;
@@ -133,7 +136,7 @@ none
 28 - comment
 while w; variable v;
 Select v such that Follows(v, w)
-none 
+none
 5000
 29 - comment
 while w; constant  c;
@@ -173,7 +176,7 @@ none
 36 - comment
 if ifs; variable v;
 Select v such that Follows(v, ifs)
-none 
+none
 5000
 37 - comment
 if ifs; constant  c;

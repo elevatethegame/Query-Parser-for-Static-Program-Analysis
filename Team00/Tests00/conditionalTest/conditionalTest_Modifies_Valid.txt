@@ -20,8 +20,8 @@ Select a such that Modifies(a, _)
 5000
 5 - comment
 assign a;
-Select a such that Modfies(a, "b")
-2, 4, 6
+Select a such that Modifies(a, "b")
+2, 6
 5000
 6 - comment
 assign a;
