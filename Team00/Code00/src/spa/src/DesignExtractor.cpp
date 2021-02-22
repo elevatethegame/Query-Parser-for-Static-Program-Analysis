@@ -20,6 +20,7 @@ DesignExtractor::DesignExtractor() {
 	uses.emplace_back(0);
 	modifies.emplace_back(0);
 	expressions.push_back({});
+	constants.resize(0);
 }
 
 void DesignExtractor::increaseNumberOfStatement(EntityType type) {
@@ -75,6 +76,12 @@ shared_ptr<PKB> DesignExtractor::extractToPKB() {
 		}
 	}
 
+	for (auto c: constants) {
+		result->insertConst(c);
+	}
+
+	result->insertProcedure(this->procName);
+
 	return result;
 }
 
@@ -84,5 +91,13 @@ vector<string> DesignExtractor::getUses(int index) const {
 
 vector<string> DesignExtractor::getModifies(int index) const {
 	return modifies[index];
+}
+
+void DesignExtractor::insertConstant(string c) {
+	constants.insert(c);
+}
+
+void setProcName(string name) {
+	this->procName = name;
 }
 
