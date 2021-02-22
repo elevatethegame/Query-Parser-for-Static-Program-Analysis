@@ -140,12 +140,18 @@ bool PKB::insertVariable(const string& variable) {
 	return true;
 }
 
+bool PKB::insertConst(const string& number) {
+	this->entities[EntityType::CONST].insert(number);
+	return true;
+}
+
+bool PKB::insertProcedure(const string& proc) {
+	this->entities[EntityType::PROC].insert(proc);
+	return true;
+}
+
 set<string> PKB::getEntities(const EntityType& type) {
-	if (type == EntityType::CONST) {
-		return set<string>();
-	} else {
-		return this->entities[type];
-	}
+	return this->entities[type];
 }
 
 bool PKB::getBooleanResultOfRS(const RelationshipType& type, 

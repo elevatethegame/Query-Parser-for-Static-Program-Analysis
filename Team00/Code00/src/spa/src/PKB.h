@@ -128,6 +128,10 @@ public:
 	*/
 	bool insertVariable(const string& variable);
 
+	bool insertConst(const string& number);
+
+	bool insertProcedure(const string& proc);
+
 	/**
 	* Retrieves indices of all statements of some type as string
 	* 
