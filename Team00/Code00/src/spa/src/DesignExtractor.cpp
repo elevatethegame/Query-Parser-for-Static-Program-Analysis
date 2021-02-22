@@ -20,7 +20,6 @@ DesignExtractor::DesignExtractor() {
 	uses.emplace_back(0);
 	modifies.emplace_back(0);
 	expressions.push_back({});
-	constants.resize(0);
 }
 
 void DesignExtractor::increaseNumberOfStatement(EntityType type) {
@@ -97,7 +96,7 @@ void DesignExtractor::insertConstant(string c) {
 	constants.insert(c);
 }
 
-void setProcName(string name) {
+void DesignExtractor::setProcName(string name) {
 	this->procName = name;
 }
 
