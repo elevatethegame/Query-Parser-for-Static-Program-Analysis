@@ -16,12 +16,15 @@ TEST_CASE("PKB setAndGetTypes") {
 	REQUIRE_FALSE(pkb.setStatementType(3, EntityType::CONST));
 	REQUIRE_FALSE(pkb.setStatementType(4, EntityType::STMT));
 	
+	REQUIRE(pkb.insertProcedure("main"));
 	REQUIRE(pkb.setStatementType(5, EntityType::WHILE));
 	REQUIRE(pkb.setStatementType(6, EntityType::IF));
 	REQUIRE(pkb.setStatementType(7, EntityType::ASSIGN));
 	REQUIRE(pkb.setStatementType(8, EntityType::CALL));
 	REQUIRE(pkb.setStatementType(9, EntityType::READ));
 	REQUIRE(pkb.setStatementType(10, EntityType::READ));
+	REQUIRE(pkb.insertConst("-100"));
+	REQUIRE(pkb.insertConst("3"));
 
 	REQUIRE_FALSE(pkb.setStatementType(5, EntityType::PRINT));
 	REQUIRE_FALSE(pkb.setStatementType(11, EntityType::CALL));
@@ -36,10 +39,15 @@ TEST_CASE("PKB setAndGetTypes") {
 	set<string> whileResult;
 	whileResult.insert("5");
 	REQUIRE(pkb.getEntities(EntityType::WHILE) == whileResult);
-	
-	REQUIRE(pkb.getEntities(EntityType::PROC).empty());
+	set<string> procResult;
+	procResult.insert("main");
+	REQUIRE(pkb.getEntities(EntityType::PROC) == procResult);
+	set<string> constResult;
+	constResult.insert("-100");
+	constResult.insert("3");
+	REQUIRE(pkb.getEntities(EntityType::CONST) == constResult);
+
 	REQUIRE(pkb.getEntities(EntityType::VAR).empty());
-	REQUIRE(pkb.getEntities(EntityType::CONST).empty());
 	REQUIRE(pkb.getEntities(EntityType::STMT).size() == 10);
 }
 
