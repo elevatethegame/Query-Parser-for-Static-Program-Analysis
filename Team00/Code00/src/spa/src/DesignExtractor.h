@@ -25,6 +25,10 @@ public:
 
 	void insertExpression(int id, const Expression& expression);
 
+	void insertConstant(string c);
+
+	void setProcName(string name);
+
 	shared_ptr<PKB> extractToPKB();
 
 	vector<string> getUses(int index) const;
@@ -38,4 +42,6 @@ private:
 	vector<vector<string>> uses;
 	vector<vector<string>> modifies;
 	vector<vector<Expression>> expressions;
+	vector<string> constants;
+	string procName;
 };
