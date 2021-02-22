@@ -17,13 +17,13 @@ public:
 	static shared_ptr<ResultsTable> getCartesianProduct(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
 		shared_ptr<ResultsTable> currentResults);
 
-	static shared_ptr<ResultsTable> ResultUtil::getNaturalJoin(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	static shared_ptr<ResultsTable> getNaturalJoin(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
 		shared_ptr<ResultsTable> currentResults, set<string> commonSynonyms);
 
 private:
-	static shared_ptr<ResultsTable> ResultUtil::getNaturalJoinTwoSynonymsCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	static shared_ptr<ResultsTable> getNaturalJoinTwoSynonymsCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
 		shared_ptr<ResultsTable> currentResults);
 
-	static shared_ptr<ResultsTable> ResultUtil::getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	static shared_ptr<ResultsTable> getNaturalJoinOneSynonymCommon(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
 		bool isLeftSynonymCommon, shared_ptr<ResultsTable> currentResults);
 };

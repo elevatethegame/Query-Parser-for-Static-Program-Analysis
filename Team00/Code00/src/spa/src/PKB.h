@@ -210,9 +210,9 @@ private:
 
 	void extractModifies();
 
-	void PKB::filterSetOfType(const EntityType& type, set<string> *res);
+	void filterSetOfType(const EntityType& type, set<string> *res);
 
-	void PKB::filterMapOfType(
+	void filterMapOfType(
 		const EntityType& t1, const EntityType& t2, 
 		unordered_map<string, set<string>>* res);
 };

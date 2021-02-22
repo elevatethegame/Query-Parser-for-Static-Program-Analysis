@@ -167,7 +167,7 @@ ParseError Parser::parseProcedure(SIMPLETokenStream& stream) {
 	error = error.combineWith(consumeTerminal("{", stream));
 	error = error.combineWith(parseStatementList(stream));
 	error = error.combineWith(consumeTerminal("}", stream));
-	this->extractor.setProcName(procedureName.getValue());
+	this->designExtractor.setProcName(procedureName.getValue());
 	return error;
 }
 
@@ -347,7 +347,7 @@ ParseError Parser::parseFactor(SIMPLETokenStream &stream, Expression& result, in
 	if (nextToken.getTokenType() == TokenType::integer) {
 		result = Expression(nextToken.getValue());
 		this->addExpression(userStatement, result);
-		this->extractor.insertConstant(nextToken.getValue());
+		this->designExtractor.insertConstant(nextToken.getValue());
 		return ParseError();
 	}
 
@@ -447,7 +447,7 @@ ParseError Parser::evaluateConditionOrExpression(int level, SIMPLETokenStream &s
 					this->addUses(userStatement, nextToken.getValue());
 				}
 				if (nextToken.getTokenType() == TokenType::integer) {
-					this->extractor.insertConstant(nextToken.getValue());
+					this->designExtractor.insertConstant(nextToken.getValue());
 				}
 				currentResult = EXPRESSION;
 			}

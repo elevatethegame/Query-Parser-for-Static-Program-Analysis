@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <set>
 
 using namespace std;
 
@@ -42,6 +43,6 @@ private:
 	vector<vector<string>> uses;
 	vector<vector<string>> modifies;
 	vector<vector<Expression>> expressions;
-	vector<string> constants;
+	set<string> constants;
 	string procName;
 };
