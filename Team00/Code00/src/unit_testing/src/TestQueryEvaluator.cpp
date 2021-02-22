@@ -108,7 +108,7 @@ TEST_CASE("Evaluating query with only one relationship clause") {
 		shared_ptr<QueryInput> wildcard = dynamic_pointer_cast<QueryInput>(make_shared<Any>("_"));
 		query->addRelationshipClause(RelationshipType::FOLLOWS, stmt, wildcard);
 
-		unordered_map<string, set<string>> pkbRsResult = {};
+		unordered_map<string, set<string>> pkbRsResult = { {"", {} } };
 		pkb->setGetResultsOfRSReturnValue(pkbRsResult);
 		unordered_map<string, int> expectedMap = {};
 		vector<vector<string>> expectedTable = {};
@@ -214,7 +214,7 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 		shared_ptr<Expression> expression = make_shared<Expression>("_");
 		query->addPatternClause(assign, wildcard, expression);
 
-		unordered_map<string, set<string>> pkbRsResult = {};
+		unordered_map<string, set<string>> pkbRsResult = { {"", {} } };
 		pkb->setGetResultsOfPatternReturnValue(pkbRsResult);
 		unordered_map<string, int> expectedMap = {};
 		vector<vector<string>> expectedTable = {};
