@@ -37,6 +37,14 @@ void Parser::addVariable(string variableName) {
 	}
 }
 
+void Parser::startAProcedure(string procName) {
+	rangeProcedure[procName].first = this->expectNextStatementIndex();
+}
+
+void Parser::endAProcedure(string procName) {
+	rangeProcedure[procName].second = this->numberOfStatements;
+}
+
 int Parser::startNewStatement(int parentStatement, EntityType type) {
 	int newIndex = ++numberOfStatements;
 	this->designExtractor.increaseNumberOfStatement(type);
@@ -60,6 +68,10 @@ void Parser::addFollowRelationship(int before, int after) {
 
 void Parser::addExpression(int statementId, Expression expression){
 	this->designExtractor.insertExpression(statementId, expression);
+}
+
+void Parser::addCallingRelationship(string caller, string callee) {
+	this->callingRelationships[caller].emplace_back(callee);
 }
 
 ParseResult combineResult(ParseResult first, ParseResult second, SIMPLEToken operand) {
@@ -160,13 +172,25 @@ ParseError consumeTerminal(const string& value, SIMPLETokenStream &stream) {
 	}
 }
 
+ParseError Parser::parseProgram(SIMPLETokenStream &stream) {
+	while (!stream.isEmpty()) {
+		auto error = parseProcedure(stream);
+		if (error.hasError()) {
+			return error;
+		}
+	}
+	return ParseError();
+}
+
 ParseError Parser::parseProcedure(SIMPLETokenStream& stream) {
 	SIMPLEToken procedureName; 
 	auto error = consumeTerminal("procedure", stream);
 	error = error.combineWith(consumeToken(TokenType::name, stream, procedureName));
+	this->startAProcedure(procedureName.getValue());
 	error = error.combineWith(consumeTerminal("{", stream));
 	error = error.combineWith(parseStatementList(stream));
 	error = error.combineWith(consumeTerminal("}", stream));
+	this->endAProcedure(procedureName.getValue());
 	this->designExtractor.setProcName(procedureName.getValue());
 	return error;
 }
@@ -187,6 +211,17 @@ ParseError Parser::parseAssignmentStatement(SIMPLETokenStream& stream, int paren
 
 	this->addModifies(thisStatementIndex, leftHandSide.getValue());
 	return ParseError();
+}
+
+ParseError Parser::parseCallStatement(SIMPLETokenStream &stream, int parentStatementIndex) {
+	int thisStatementIndex = this->startNewStatement(parentStatementIndex, EntityType::CALL);
+
+	SIMPLEToken calleeName;
+	auto error = consumeTerminal("call", stream);
+	error = error.combineWith(consumeToken(TokenType::name, stream, calleeName));
+	error = error.combineWith(consumeTerminal(";", stream));
+
+	return error;
 }
 
 ParseError Parser::parseReadStatement(SIMPLETokenStream &stream, int parentStatementIndex = -1) {
@@ -337,7 +372,6 @@ ParseError Parser::parseFactor(SIMPLETokenStream &stream, Expression& result, in
 	SIMPLEToken nextToken = stream.getToken();
 
 	if (nextToken.getTokenType() == TokenType::name) {
-		//cerr << " adding uses " << userStatement << " " << nextToken.getValue() << endl;
 		this->addUses(userStatement, nextToken.getValue());
 		result = Expression(nextToken.getValue());
 		this->addExpression(userStatement, result);

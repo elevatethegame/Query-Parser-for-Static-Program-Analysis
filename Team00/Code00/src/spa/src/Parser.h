@@ -40,6 +40,7 @@ public:
     
     ParseError parseReadStatement(SIMPLETokenStream &stream, int parentStatementIndex);
 
+    ParseError parseProgram(SIMPLETokenStream &stream);
 private:
     //Design
     DesignExtractor& designExtractor;
@@ -52,7 +53,22 @@ private:
 
     //set of all literals
     set<string> literals;
+    
+    ///range of procedures
+    map<string, pair<int, int> > rangeProcedure;
 
+    ///all calling relationships.
+    map<string, vector<string> > callingRelationships;
+
+    void addCallingRelationship(string caller, string callee);
+
+    //set the first statement index of the procName
+    void startAProcedure(string procName);
+
+    //set the last statement index of the procName
+    void endAProcedure(string procName);
+
+    ///add one literals
     void addLiterals(string literals);
 
     //add a new variable to the table
@@ -91,6 +107,8 @@ private:
     ParseError parseRelationExpression(SIMPLETokenStream &stream, int userStatement);
 
     ParseError parsePrintStatement(SIMPLETokenStream &stream, int parentStatementIndex);
+
+    ParseError parseCallStatement(SIMPLETokenStream &stream, int parentStatementIndex);
 
     ParseError parseFactor(SIMPLETokenStream &stream, Expression& result, int userStatement);
 
