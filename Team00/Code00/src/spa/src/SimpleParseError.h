@@ -8,6 +8,9 @@ public:
     /* Constructs parse error with an error*/
     ParseError(SIMPLEToken token, string errorMessage);
 
+    /* Constructs parse error without a token -- semantic error*/
+    ParseError(string errorMessage);
+
     /* Constructs an empty error*/
     ParseError();
 

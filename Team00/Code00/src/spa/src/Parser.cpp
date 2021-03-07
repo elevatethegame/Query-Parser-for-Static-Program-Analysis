@@ -12,6 +12,7 @@ using namespace std;
 #include "TNode.h"
 #include "SimpleParseError.h"
 #include "SIMPLEToken.h"
+#include "ParserHelper.h"
 
 Parser::Parser(DesignExtractor &extractor) : designExtractor(extractor) {
 	this->numberOfStatements = 0;
@@ -178,6 +179,9 @@ ParseError Parser::parseProgram(SIMPLETokenStream &stream) {
 		if (error.hasError()) {
 			return error;
 		}
+	}
+	if (checkCyclicCalls(this->callingRelationships)) {
+		return ParseError("There is a cyclic call");
 	}
 	return ParseError();
 }
