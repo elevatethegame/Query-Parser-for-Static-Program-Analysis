@@ -13,6 +13,11 @@ ParseError::ParseError(
         hasErrorValue = true;
 }
 
+ParseError::ParseError(string errorMessage) {
+    this->errorMessage = errorMessage;
+    hasErrorValue = true;
+}
+
 ParseError::ParseError() {
     hasErrorValue = false;
 }
