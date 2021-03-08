@@ -11,6 +11,8 @@ enum class TokenTypes
     Uses,
     Parent,
     Follows,
+    Calls,
+    Next,
     Select,
     Such,
     That,

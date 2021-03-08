@@ -177,6 +177,12 @@ void QueryParser::relRef()
     else if (Parent()) {
 
     }
+    else if (Calls()) {
+
+    }
+    else if (Next()) {
+
+    }
     else {
         throw std::invalid_argument("Unexpected token encountered when parsing relRef: " + currToken->toString());
     }
@@ -298,66 +304,41 @@ bool QueryParser::Uses()
 bool QueryParser::Parent()
 {
     if (accept(TokenTypes::Parent)) {
-        if (accept(TokenTypes::Asterisk)) {
-            expect(TokenTypes::LeftParen);
-            std::shared_ptr<QueryInput> leftQueryInput = expect(
-                stmtRef(std::set<EntityType>({ EntityType::STMT, EntityType::WHILE, EntityType::IF }) , true)
-                    , true);
-            expect(TokenTypes::Comma);
-            std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
-                { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ }), true)
-                    , true);
-            expect(TokenTypes::RightParen);
-            // Semantic checks for Parent
-            // Cannot have same synonym on both sides
-            if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION
-                && rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
-                if (leftQueryInput->getValue() == rightQueryInput->getValue())
-                    throw std::runtime_error("Same synonym detected on both sides");
-            }
-            // Cannot have a statement after being a parent of a statement before
-            if (leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM &&
-                rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM) {
-                if (leftQueryInput->getValue() >= rightQueryInput->getValue()) {
-                    std::string errorMsg = "Statement " + leftQueryInput->getValue() + " cannot be parent of " + rightQueryInput->getValue();
-                    throw std::runtime_error(errorMsg.c_str());
-                }
-            }
-            suchThatRelationshipType = RelationshipType::PARENT_T;
-            suchThatLeftQueryInput = leftQueryInput;
-            suchThatRightQueryInput = rightQueryInput;
-            query->addRelationshipClause(RelationshipType::PARENT_T, leftQueryInput, rightQueryInput);
-        }
-        else {
-            expect(TokenTypes::LeftParen);
-            std::shared_ptr<QueryInput> leftQueryInput = expect(
-                stmtRef(std::set<EntityType>({ EntityType::STMT, EntityType::WHILE, EntityType::IF }), true)
+        RelationshipType relType;
+
+        if (accept(TokenTypes::Asterisk))
+            relType = RelationshipType::PARENT_T;
+        else
+            relType = RelationshipType::PARENT;
+
+        expect(TokenTypes::LeftParen);
+        std::shared_ptr<QueryInput> leftQueryInput = expect(
+            stmtRef(std::set<EntityType>({ EntityType::STMT, EntityType::WHILE, EntityType::IF }) , true)
                 , true);
-            expect(TokenTypes::Comma);
-            std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
-                { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ }), true)
+        expect(TokenTypes::Comma);
+        std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
+            { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ }), true)
                 , true);
-            expect(TokenTypes::RightParen);
-            // Semantic checks for Parent
-            // Cannot have same synonym on both sides
-            if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION
-                && rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
-                if (leftQueryInput->getValue() == rightQueryInput->getValue())
-                    throw std::runtime_error("Same synonym detected on both sides");
-            }
-            // Cannot have a statement after being a parent of a statement before
-            if (leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM &&
-                rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM) {
-                if (leftQueryInput->getValue() >= rightQueryInput->getValue()) {
-                    std::string errorMsg = "Statement " + leftQueryInput->getValue() + " cannot be parent of " + rightQueryInput->getValue();
-                    throw std::runtime_error(errorMsg.c_str());
-                }
-            }
-            suchThatRelationshipType = RelationshipType::PARENT;
-            suchThatLeftQueryInput = leftQueryInput;
-            suchThatRightQueryInput = rightQueryInput;
-            query->addRelationshipClause(RelationshipType::PARENT, leftQueryInput, rightQueryInput);
+        expect(TokenTypes::RightParen);
+        // Semantic checks for Parent
+        // Cannot have same synonym on both sides
+        if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION
+            && rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
+            if (leftQueryInput->getValue() == rightQueryInput->getValue())
+                throw std::runtime_error("Same synonym detected on both sides");
         }
+        // Cannot have a statement after being a parent of a statement before
+        if (leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM &&
+            rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM) {
+            if (leftQueryInput->getValue() >= rightQueryInput->getValue()) {
+                std::string errorMsg = "Statement " + leftQueryInput->getValue() + " cannot be parent of " + rightQueryInput->getValue();
+                throw std::runtime_error(errorMsg.c_str());
+            }
+        }
+        suchThatRelationshipType = relType;
+        suchThatLeftQueryInput = leftQueryInput;
+        suchThatRightQueryInput = rightQueryInput;
+        query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
     return false;
@@ -366,70 +347,112 @@ bool QueryParser::Parent()
 bool QueryParser::Follows()
 {
     if (accept(TokenTypes::Follows)) {
-        if (accept(TokenTypes::Asterisk)) {
-            expect(TokenTypes::LeftParen);
-            std::shared_ptr<QueryInput> leftQueryInput = expect(stmtRef(std::set<EntityType>(
-                { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
-                , true)
-                    , true);
-            expect(TokenTypes::Comma);
-            std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
-                { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
-                , true)
-                    , true);
-            expect(TokenTypes::RightParen);
-            // Semantic checks for Follows
-            // Cannot have same synonym on both sides
-            if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION
-                && rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
-                if (leftQueryInput->getValue() == rightQueryInput->getValue())
-                    throw std::runtime_error("Same synonym detected on both sides");
-            }
-            // Cannot have a statement coming after following one that comes before
-            if (leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM &&
-                rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM) {
-                if (leftQueryInput->getValue() >= rightQueryInput->getValue()) {
-                    std::string errorMsg = "Statement " + leftQueryInput->getValue() + " cannot follow " + rightQueryInput->getValue();
-                    throw std::runtime_error(errorMsg.c_str());
-                }
-            }
-            suchThatRelationshipType = RelationshipType::FOLLOWS_T;
-            suchThatLeftQueryInput = leftQueryInput;
-            suchThatRightQueryInput = rightQueryInput;
-            query->addRelationshipClause(RelationshipType::FOLLOWS_T, leftQueryInput, rightQueryInput);
+        RelationshipType relType;
+
+        if (accept(TokenTypes::Asterisk))
+            relType = RelationshipType::FOLLOWS_T;
+        else
+            relType = RelationshipType::FOLLOWS;
+
+        expect(TokenTypes::LeftParen);
+        std::shared_ptr<QueryInput> leftQueryInput = expect(stmtRef(std::set<EntityType>(
+            { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
+            , true)
+                , true);
+        expect(TokenTypes::Comma);
+        std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
+            { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
+            , true)
+                , true);
+        expect(TokenTypes::RightParen);
+        // Semantic checks for Follows*
+        // Cannot have same synonym on both sides
+        if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION
+            && rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
+            if (leftQueryInput->getValue() == rightQueryInput->getValue())
+                throw std::runtime_error("Same synonym detected on both sides");
         }
-        else {
-            expect(TokenTypes::LeftParen);
-            std::shared_ptr<QueryInput> leftQueryInput = expect(stmtRef(std::set<EntityType>(
-                { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
-                , true)
-                    , true);
-            expect(TokenTypes::Comma);
-            std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
-                { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
-                , true)
-                    , true);
-            expect(TokenTypes::RightParen);
-            // Semantic checks for Follows*
-            // Cannot have same synonym on both sides
-            if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION
-                && rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
-                if (leftQueryInput->getValue() == rightQueryInput->getValue())
-                    throw std::runtime_error("Same synonym detected on both sides");
+        // Cannot have a statement coming after following one that comes before
+        if (leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM &&
+            rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM) {
+            if (leftQueryInput->getValue() >= rightQueryInput->getValue()) {
+                std::string errorMsg = "Statement " + leftQueryInput->getValue() + " cannot follow " + rightQueryInput->getValue();
+                throw std::runtime_error(errorMsg.c_str());
             }
-            // Cannot have a statement coming after following one that comes before
-            if (leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM &&
-                rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM) {
-                if (leftQueryInput->getValue() >= rightQueryInput->getValue()) {
-                    std::string errorMsg = "Statement " + leftQueryInput->getValue() + " cannot follow " + rightQueryInput->getValue();
-                    throw std::runtime_error(errorMsg.c_str());
-                }
-            }
-            suchThatRelationshipType = RelationshipType::FOLLOWS;
-            suchThatLeftQueryInput = leftQueryInput;
-            suchThatRightQueryInput = rightQueryInput;
-            query->addRelationshipClause(RelationshipType::FOLLOWS, leftQueryInput, rightQueryInput);
         }
+        suchThatRelationshipType = relType;
+        suchThatLeftQueryInput = leftQueryInput;
+        suchThatRightQueryInput = rightQueryInput;
+        query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
+        return true;
+    }
+    return false;
+}
+
+bool QueryParser::Calls()
+{
+    if (accept(TokenTypes::Calls)) {
+        RelationshipType relType;
+
+        if (accept(TokenTypes::Asterisk))
+            relType = RelationshipType::CALLS_T;
+        else
+            relType = RelationshipType::CALLS;
+
+        expect(TokenTypes::LeftParen);
+        std::shared_ptr<QueryInput> leftQueryInput = expect(entRef(std::set<EntityType>(
+            { EntityType::PROC })
+            , true)
+            , false);
+        expect(TokenTypes::Comma);
+        std::shared_ptr<QueryInput> rightQueryInput = expect(entRef(std::set<EntityType>(
+            { EntityType::PROC })
+            , true)
+            , false);
+        expect(TokenTypes::RightParen);
+        // Semantic checks for Calls
+        // Cannot have same synonym on both sides
+        if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION
+            && rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
+            if (leftQueryInput->getValue() == rightQueryInput->getValue())
+                throw std::runtime_error("Same synonym detected on both sides");
+        }
+
+        suchThatRelationshipType = relType;
+        suchThatLeftQueryInput = leftQueryInput;
+        suchThatRightQueryInput = rightQueryInput;
+        query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
+        return true;
+    }
+    return false;
+}
+
+bool QueryParser::Next()
+{
+    if (accept(TokenTypes::Next)) {
+        RelationshipType relType;
+
+        if (accept(TokenTypes::Asterisk))
+            relType = RelationshipType::NEXT_T;
+        else
+            relType = RelationshipType::NEXT;
+
+        expect(TokenTypes::LeftParen);
+        std::shared_ptr<QueryInput> leftQueryInput = expect(entRef(std::set<EntityType>(
+            { EntityType::PROGLINE })
+            , true)
+            , false);
+        expect(TokenTypes::Comma);
+        std::shared_ptr<QueryInput> rightQueryInput = expect(entRef(std::set<EntityType>(
+            { EntityType::PROGLINE })
+            , true)
+            , false);
+        expect(TokenTypes::RightParen);
+
+        suchThatRelationshipType = relType;
+        suchThatLeftQueryInput = leftQueryInput;
+        suchThatRightQueryInput = rightQueryInput;
+        query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
     return false;
