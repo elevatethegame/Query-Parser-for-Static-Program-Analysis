@@ -39,13 +39,14 @@ private:
     bool canTreatAsIdent(TokenTypes type);
     std::unique_ptr<Token> accept(TokenTypes type);
     std::unique_ptr<Token> expect(TokenTypes type);
+    std::shared_ptr<QueryInput> expect(std::shared_ptr<QueryInput> queryInput, bool isStmtRef);
     void selectClause();
     bool declaration();
     bool suchThatClause();
     bool patternClause();
     void relRef();
     std::shared_ptr<QueryInput> stmtRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
-    std::shared_ptr<QueryInput> entRef(std::set<EntityType> allowedDesignEntities);
+    std::shared_ptr<QueryInput> entRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
     bool Modifies();
     bool Uses();
     bool Parent();
