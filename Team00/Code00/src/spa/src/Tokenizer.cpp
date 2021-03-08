@@ -49,6 +49,12 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     else if (identifier == "Follows") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Follows, identifier });
     }
+    else if (identifier == "Calls") {
+        token = std::unique_ptr<Token>(new Token{ TokenTypes::Calls, identifier });
+    }
+    else if (identifier == "Next") {
+        token = std::unique_ptr<Token>(new Token{ TokenTypes::Next, identifier });
+    }
     else if (std::find(std::begin(designEntities), std::end(designEntities), identifier) != std::end(designEntities)) {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::DesignEntity, identifier });
     }

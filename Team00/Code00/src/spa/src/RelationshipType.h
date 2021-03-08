@@ -7,6 +7,10 @@ enum RelationshipType {
 	PARENT_T = 3,
 	USES = 4,
 	MODIFIES = 5,
-	NONE = 6
+	CALLS = 6,
+	CALLS_T = 7,
+	NEXT = 8,
+	NEXT_T = 9,
+	NONE = 99
 };
 

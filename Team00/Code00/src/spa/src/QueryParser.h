@@ -51,6 +51,8 @@ private:
     bool Uses();
     bool Parent();
     bool Follows();
+    bool Calls();
+    bool Next();
     std::shared_ptr<Expression> expressionSpec();
     std::unique_ptr<Token> subExpression();
     std::unique_ptr<Token> factor();
