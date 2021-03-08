@@ -165,7 +165,10 @@ public:
 	* or a map of (input1_value, set<input2_value>) if there are two,
 	* or an empty map if neither of the inputs is a Declaration
 	*/
-	unordered_map<string, set<string>> getResultsOfRS(const RelationshipType& type, 
+	unordered_map<string, set<string>> getMapResultsOfRS(const RelationshipType& type, 
+		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
+
+	set<string> getSetResultsOfRS(const RelationshipType& type,
 		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
 	/**
@@ -179,8 +182,17 @@ public:
 	* or a map with a dummy key and a set of indices if input is Any or Ident, or empty
 	* 
 	*/
-	unordered_map<string, set<string>> getResultsOfPattern(
-		const EntityType& type, shared_ptr<QueryInput> input, Expression expression);
+	unordered_map<string, set<string>> getMapResultsOfAssignPattern(
+		shared_ptr<QueryInput> input, Expression expression);
+
+	set<string> getSetResultsOfAssignPattern(
+		shared_ptr<QueryInput> input, Expression expression);
+
+	unordered_map<string, set<string>> getMapResultsOfContainerPattern(
+		const EntityType& type, shared_ptr<QueryInput> input);
+
+	set<string> getSetResultsOfContainerPattern(
+		const EntityType& type, shared_ptr<QueryInput> input);
 
 
 

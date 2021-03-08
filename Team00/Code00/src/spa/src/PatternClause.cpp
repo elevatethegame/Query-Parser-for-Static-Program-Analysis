@@ -6,6 +6,11 @@ PatternClause::PatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInp
 	this->aExpression = expression;
 }
 
+PatternClause::PatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput) {
+	this->aSynonym = synonym;
+	this->aQueryInput = queryInput;
+}
+
 shared_ptr<QueryInput> PatternClause::getSynonym() {
 	return this->aSynonym;
 }
