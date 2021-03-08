@@ -19,7 +19,8 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
 {
     std::string identifier = std::string(1, inputStream.next());
     identifier += readWhile(std::isalnum);
-    std::string designEntities[] = { "stmt", "read", "print", "while", "if", "assign", "variable", "constant", "procedure" };
+    std::string designEntities[] = { "stmt", "read", "print", "while", "if", "assign", 
+            "variable", "constant", "procedure", "prog_line", "call" };
     std::unique_ptr<Token> token;
     if (identifier == "Select") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Select, identifier });
@@ -33,6 +34,9 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     else if (identifier == "pattern") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Pattern, identifier });
     }
+    else if (identifier == "and") {
+        token = std::unique_ptr<Token>(new Token{ TokenTypes::And, identifier });
+    }
     else if (identifier == "Modifies") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Modifies, identifier });
     }
@@ -44,6 +48,12 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     }
     else if (identifier == "Follows") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Follows, identifier });
+    }
+    else if (identifier == "Calls") {
+        token = std::unique_ptr<Token>(new Token{ TokenTypes::Calls, identifier });
+    }
+    else if (identifier == "Next") {
+        token = std::unique_ptr<Token>(new Token{ TokenTypes::Next, identifier });
     }
     else if (std::find(std::begin(designEntities), std::end(designEntities), identifier) != std::end(designEntities)) {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::DesignEntity, identifier });

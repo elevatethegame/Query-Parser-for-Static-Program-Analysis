@@ -1,12 +1,8 @@
 #pragma once
-#ifndef QUERYINPUTTYPE_H
-#define QUERYINPUTTYPE_H
 
 enum class QueryInputType {
-	Declaration,
-	StmtNum,
-	Ident,
-	Any
+	DECLARATION,
+	STMT_NUM,
+	IDENT,
+	ANY
 };
-
-#endif

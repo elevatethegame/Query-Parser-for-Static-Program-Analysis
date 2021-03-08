@@ -1,6 +1,13 @@
 #include "StmtNum.h"
 
-StmtNum::StmtNum(QueryInputType queryInputType, std::string value) {
-    m_queryInputType = queryInputType;
-    m_value = value;
+using namespace std;
+
+StmtNum::StmtNum(int value) {
+	this->aQueryInputType = QueryInputType::STMT_NUM;
+	this->aValue = to_string(value);
+}
+
+StmtNum::StmtNum(string value) {
+	this->aQueryInputType = QueryInputType::STMT_NUM;
+	this->aValue = value;
 }

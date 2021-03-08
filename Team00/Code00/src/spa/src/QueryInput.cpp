@@ -1,9 +1,13 @@
 #include "QueryInput.h"
 
-QueryInputType QueryInput::getType() {
-	return m_queryInputType;
+using namespace std;
+
+QueryInputType QueryInput::getQueryInputType() {
+	return this->aQueryInputType;
 }
 
-std::string QueryInput::getValue() {
-	return m_value;
+string QueryInput::getValue() {
+	return this->aValue;
 }
+
+QueryInput::~QueryInput() {}

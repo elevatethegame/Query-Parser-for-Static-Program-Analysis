@@ -1,6 +1,14 @@
 #include "Any.h"
 
-Any::Any(QueryInputType queryInputType, std::string value) {
-    m_queryInputType = queryInputType;
-    m_value = value;
+using namespace std;
+
+
+Any::Any() {
+	this->aValue = "_";
+	this->aQueryInputType = QueryInputType::ANY;
+}
+
+Any::Any(string value) {
+	this->aValue = value;
+	this->aQueryInputType = QueryInputType::ANY;
 }

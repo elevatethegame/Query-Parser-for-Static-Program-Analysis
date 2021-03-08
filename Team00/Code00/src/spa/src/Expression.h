@@ -1,17 +1,16 @@
 #pragma once
-#ifndef EXPRESSION_H
-#define EXPRESSION_H
-
 #include <string>
+
+using namespace std;
 
 class Expression {
 private:
-	std::string m_value;
+	string aValue;
 
 public:
-	Expression(std::string value);
-	std::string getValue();
-};
+	Expression combineExpression(string operand, const Expression& other);
 
-#endif
+	Expression(string value);
+	string getValue() const;
+};
 

@@ -1,19 +1,5 @@
 #pragma once
-#ifndef ENTITYTYPE_H
-#define ENTITYTYPE_H
 
 enum class EntityType {
-	While,
-	If,
-	Assign,
-	Stmt,
-	Variable,
-	Constant,
-	Procedure,
-	Read,
-	Print,
-	Call,
-	Null
+	WHILE, IF, ASSIGN, STMT, VAR, CONST, PROC, READ, PRINT, CALL, PROGLINE, NONETYPE
 };
-
-#endif

@@ -1,6 +1,8 @@
 #include "Ident.h"
 
-Ident::Ident(QueryInputType queryInputType, std::string value) {
-    m_queryInputType = queryInputType;
-    m_value = value;
+using namespace std;
+
+Ident::Ident(string value) {
+	this->aQueryInputType = QueryInputType::IDENT;
+	this->aValue = value;
 }

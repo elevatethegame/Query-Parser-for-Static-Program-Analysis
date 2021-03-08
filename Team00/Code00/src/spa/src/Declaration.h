@@ -1,18 +1,12 @@
 #pragma once
-#ifndef DECLARATION_H
-#define DECLARATION_H
-
 #include "QueryInput.h"
 #include "EntityType.h"
-#include <string>
 
-class Declaration : public QueryInput {
+class Declaration: public QueryInput {
 private:
-	EntityType m_entityType;
+	EntityType aEntityType;
 
 public:
-	Declaration(QueryInputType queryInputType, std::string value, EntityType entityType);
+	Declaration(EntityType entityType, string value);
 	EntityType getEntityType();
 };
-
-#endif

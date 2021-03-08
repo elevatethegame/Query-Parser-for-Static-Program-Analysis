@@ -1,13 +1,10 @@
 #pragma once
-#ifndef STMTNUM_H
-#define STMTNUM_H
-
-#include "QueryInput.h"
 #include <string>
+#include "QueryInput.h"
+using namespace std;
 
-class StmtNum : public QueryInput {
-public:
-	StmtNum(QueryInputType queryInputType, std::string value);
+class StmtNum: public QueryInput{
+public: 
+	StmtNum(int value);
+	StmtNum(string value);
 };
-
-#endif

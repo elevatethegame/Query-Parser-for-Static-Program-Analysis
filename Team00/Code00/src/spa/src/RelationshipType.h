@@ -1,15 +1,16 @@
 #pragma once
-#ifndef RELATIONSHIPTYPE_H
-#define RELATIONSHIPTYPE_H
 
-enum class RelationshipType {
-    Follows,
-    FollowsT,
-    Parent,
-    ParentT,
-    Uses,
-    Modifies,
-    Null
+enum RelationshipType {
+	FOLLOWS = 0,
+	FOLLOWS_T = 1,
+	PARENT = 2,
+	PARENT_T = 3,
+	USES = 4,
+	MODIFIES = 5,
+	CALLS = 6,
+	CALLS_T = 7,
+	NEXT = 8,
+	NEXT_T = 9,
+	NONE = 99
 };
 
-#endif

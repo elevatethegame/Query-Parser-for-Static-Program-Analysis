@@ -1,9 +1,16 @@
 #include "Expression.h"
+#include <iostream>
 
-Expression::Expression(std::string value) : m_value(value) {
+using namespace std;
 
+Expression::Expression(string value) : aValue(value) {}
+
+//currently just return string addition
+Expression Expression::combineExpression(string operand, const Expression& other) {
+    //cout << "combining " <<  "(" + this->getValue() + operand + other.getValue() + ")" << endl;
+	return Expression( "(" + this->getValue() + operand + other.getValue() + ")" );
 }
 
-std::string Expression::getValue() {
-    return m_value;
+string Expression::getValue() const {
+	return this->aValue;
 }

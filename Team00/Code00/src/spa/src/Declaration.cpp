@@ -1,11 +1,13 @@
 #include "Declaration.h"
 
-Declaration::Declaration(QueryInputType queryInputType, std::string value, EntityType entityType) {
-    m_queryInputType = queryInputType;
-    m_value = value;
-    m_entityType = entityType;
+using namespace std;
+
+Declaration::Declaration(EntityType entityType, string value) {
+	this->aEntityType = entityType;
+	this->aValue = value;
+	this->aQueryInputType = QueryInputType::DECLARATION;
 }
 
 EntityType Declaration::getEntityType() {
-    return m_entityType;
+	return this->aEntityType;
 }

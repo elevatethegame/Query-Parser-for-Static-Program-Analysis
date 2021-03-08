@@ -1,13 +1,10 @@
 #pragma once
-#ifndef IDENT_H
-#define IDENT_H
-
-#include "QueryInput.h"
 #include <string>
+#include "QueryInput.h"
+
+using namespace std;
 
 class Ident : public QueryInput {
 public:
-	Ident(QueryInputType queryInputType, std::string value);
+	Ident(string value);
 };
-
-#endif

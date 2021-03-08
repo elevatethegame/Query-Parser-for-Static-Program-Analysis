@@ -1,13 +1,11 @@
 #pragma once
-#ifndef ANY_H
-#define ANY_H
-
-#include "QueryInput.h"
 #include <string>
+#include "QueryInput.h"
 
-class Any : public QueryInput {
+using namespace std;
+
+class Any: public QueryInput {
 public:
-	Any(QueryInputType queryInputType, std::string value);
+	Any();
+	Any(string value);
 };
-
-#endif

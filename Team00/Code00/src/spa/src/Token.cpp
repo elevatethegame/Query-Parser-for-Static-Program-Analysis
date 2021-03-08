@@ -66,34 +66,34 @@ std::string Token::EntityTypeToString(EntityType type)
 {
     switch (type)
     {
-    case EntityType::Assign:
+    case EntityType::ASSIGN:
         return "Entity Type of Assign";
         break;
-    case EntityType::Call:
+    case EntityType::CALL:
         return "Entity Type of Call";
         break;
-    case EntityType::Constant:
+    case EntityType::CONST:
         return "Entity Type of Constant";
         break;
-    case EntityType::If:
+    case EntityType::IF:
         return "Entity Type of If";
         break;
-    case EntityType::Print:
+    case EntityType::PRINT:
         return "Entity Type of Print";
         break;
-    case EntityType::Procedure:
+    case EntityType::PROC:
         return "Entity Type of Procedure";
         break;
-    case EntityType::Read:
+    case EntityType::READ:
         return "Entity Type of Read";
         break;
-    case EntityType::Stmt:
+    case EntityType::STMT:
         return "Entity Type of Stmt";
         break;
-    case EntityType::Variable:
+    case EntityType::VAR:
         return "Entity Type of Variable";
         break;
-    case EntityType::While:
+    case EntityType::WHILE:
         return "Entity Type of While";
         break;
     default:  // case EntityType::Null
@@ -180,9 +180,9 @@ std::string Token::toString()
 }
 
 EntityType Token::getEntityType() {
-    if (type != TokenTypes::DesignEntity) return EntityType::Null;
-    std::unordered_map<std::string, EntityType> stringToCase = { {"stmt", EntityType::Stmt}, {"read", EntityType::Read},
-        {"print", EntityType::Print}, {"while", EntityType::While}, {"if", EntityType::If}, {"assign", EntityType::Assign},
-        {"variable", EntityType::Variable}, {"constant", EntityType::Constant}, {"procedure", EntityType::Procedure} };
+    if (type != TokenTypes::DesignEntity) return EntityType::NONETYPE;
+    std::unordered_map<std::string, EntityType> stringToCase = { {"stmt", EntityType::STMT}, {"read", EntityType::READ},
+        {"print", EntityType::PRINT}, {"while", EntityType::WHILE}, {"if", EntityType::IF}, {"assign", EntityType::ASSIGN},
+        {"variable", EntityType::VAR}, {"constant", EntityType::CONST}, {"procedure", EntityType::PROC} };
     return stringToCase[value];
 }
