@@ -176,7 +176,7 @@ bool PKB::getBooleanResultOfRS(const RelationshipType& type,
 	}
 }
 
-unordered_map<string, set<string>> PKB::getResultsOfRS(const RelationshipType& type,
+unordered_map<string, set<string>> PKB::getMapResultsOfRS(const RelationshipType& type,
 	shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
 	QueryInputType t1 = input1->getQueryInputType();
 	QueryInputType t2 = input2->getQueryInputType();
@@ -232,42 +232,34 @@ unordered_map<string, set<string>> PKB::getResultsOfRS(const RelationshipType& t
 	}
 }
 
-unordered_map<string, set<string>> PKB::getResultsOfPattern(const EntityType& type, 
+set<string> PKB::getSetResultsOfRS(const RelationshipType& type,
+	shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
+	set<string> res;
+	return res;
+}
+
+unordered_map<string, set<string>> PKB::getMapResultsOfAssignPattern(
 	shared_ptr<QueryInput> input, Expression expression) {
-	string exp = expression.getValue();
-	set<string> res = this->expressions[exp];
-	unordered_map<string, set<string>> ans;
-	if (type != EntityType::ASSIGN && type != EntityType::STMT) {
-		return ans;
-	} else if (exp == "_") {
-		res = this->getEntities(EntityType::ASSIGN);
-	}
-	switch (input->getQueryInputType()) {
-	case QueryInputType::ANY: { // eg. pattern a(_, _"x"_)
-		ans[""] = res;
-		// filterSetOfType(type, &(ans[""]));
-		break;
-	}
-	case QueryInputType::DECLARATION: { // eg. pattern a(v, _"x"_)
-		for (string s : res) {
-			// if (this->types[s] == type) {
-			ans[s] = this->relations[MODIFIES][s];
-			// }
-		}
-		break;
-	}
-	case QueryInputType::IDENT: { // eg. pattern a("x", _"x"_)
-		for (string s : res) {
-			if (input->getValue() == *(relations[MODIFIES][s].begin())) {
-				ans[""].insert(s);
-			}
-		}
-		// filterSetOfType(type, &(ans[""]));
-		break;
-	}
-	default: { } // STMT_NUM
-	}
-	return ans;
+	unordered_map<string, set<string>> res;
+	return res;
+}
+
+set<string> PKB::getSetResultsOfAssignPattern(
+	shared_ptr<QueryInput> input, Expression expression) {
+	set<string> res;
+	return res;
+}
+
+unordered_map<string, set<string>> PKB::getMapResultsOfContainerPattern(
+	const EntityType& type, shared_ptr<QueryInput> input) {
+	unordered_map<string, set<string>> res;
+	return res;
+}
+
+set<string> PKB::getSetResultsOfContainerPattern(
+	const EntityType& type, shared_ptr<QueryInput> input) {
+	set<string> res;
+	return res;
 }
 
 

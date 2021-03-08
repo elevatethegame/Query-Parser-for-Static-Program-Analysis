@@ -12,6 +12,7 @@ private:
 
 public:
 	PatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression);
+	PatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput);
 	shared_ptr<QueryInput> getSynonym();
 	shared_ptr<QueryInput> getQueryInput();
 	shared_ptr<Expression> getExpression();
