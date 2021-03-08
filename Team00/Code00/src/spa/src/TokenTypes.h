@@ -15,6 +15,7 @@ enum class TokenTypes
     Such,
     That,
     Pattern,
+    And,
     Semicolon,
     Underscore,
     LeftParen,

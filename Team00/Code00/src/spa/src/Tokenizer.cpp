@@ -34,6 +34,9 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     else if (identifier == "pattern") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Pattern, identifier });
     }
+    else if (identifier == "and") {
+        token = std::unique_ptr<Token>(new Token{ TokenTypes::And, identifier });
+    }
     else if (identifier == "Modifies") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Modifies, identifier });
     }
