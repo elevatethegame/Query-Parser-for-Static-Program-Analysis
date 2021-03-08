@@ -19,7 +19,8 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
 {
     std::string identifier = std::string(1, inputStream.next());
     identifier += readWhile(std::isalnum);
-    std::string designEntities[] = { "stmt", "read", "print", "while", "if", "assign", "variable", "constant", "procedure" };
+    std::string designEntities[] = { "stmt", "read", "print", "while", "if", "assign", 
+            "variable", "constant", "procedure", "prog_line", "call" };
     std::unique_ptr<Token> token;
     if (identifier == "Select") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Select, identifier });
