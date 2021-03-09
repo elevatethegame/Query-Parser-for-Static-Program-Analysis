@@ -176,7 +176,7 @@ bool PKB::getBooleanResultOfRS(const RelationshipType& type,
 	}
 }
 
-unordered_map<string, set<string>> PKB::getMapResultsOfRS(const RelationshipType& type,
+unordered_map<string, set<string>> PKB::getResultsOfRS(const RelationshipType& type,
 	shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
 	QueryInputType t1 = input1->getQueryInputType();
 	QueryInputType t2 = input2->getQueryInputType();
@@ -184,14 +184,16 @@ unordered_map<string, set<string>> PKB::getMapResultsOfRS(const RelationshipType
 	if (t1 != QueryInputType::DECLARATION &&
 		t2 != QueryInputType::DECLARATION) { // eg. uses(1, 2)
 		return ans;
-	} else if (t1 == QueryInputType::DECLARATION &&
+	}
+	else if (t1 == QueryInputType::DECLARATION &&
 		t2 == QueryInputType::DECLARATION) { // eg. follows*(s1, s2)
 		ans = this->relations[type];
 		shared_ptr<Declaration> d1 = dynamic_pointer_cast<Declaration>(input1);
 		shared_ptr<Declaration> d2 = dynamic_pointer_cast<Declaration>(input2);
 		filterMapOfType(d1->getEntityType(), d2->getEntityType(), &ans);
 		return ans;
-	} else if (t1 == QueryInputType::DECLARATION) {
+	}
+	else if (t1 == QueryInputType::DECLARATION) {
 		switch (t2) {
 		case QueryInputType::STMT_NUM: { // eg. parent*(s, 3)
 			ans[""] = this->relationsBy[type][input2->getValue()];
@@ -209,7 +211,8 @@ unordered_map<string, set<string>> PKB::getMapResultsOfRS(const RelationshipType
 		shared_ptr<Declaration> d = dynamic_pointer_cast<Declaration>(input1);
 		filterSetOfType(d->getEntityType(), &(ans[""]));
 		return ans;
-	} else if (t2 == QueryInputType::DECLARATION) {
+	}
+	else if (t2 == QueryInputType::DECLARATION) {
 		switch (t1) {
 		case QueryInputType::STMT_NUM: { // eg. parent*(3, s)
 			ans[""] = this->relations[type][input1->getValue()];
@@ -227,9 +230,56 @@ unordered_map<string, set<string>> PKB::getMapResultsOfRS(const RelationshipType
 		shared_ptr<Declaration> d = dynamic_pointer_cast<Declaration>(input2);
 		filterSetOfType(d->getEntityType(), &(ans[""]));
 		return ans;
-	} else { // otherwise
+	}
+	else { // otherwise
 		return ans;
 	}
+}
+
+unordered_map<string, set<string>> PKB::getResultsOfPattern(const EntityType& type,
+	shared_ptr<QueryInput> input, Expression expression) {
+	string exp = expression.getValue();
+	set<string> res = this->expressions[exp];
+	unordered_map<string, set<string>> ans;
+	if (type != EntityType::ASSIGN && type != EntityType::STMT) {
+		return ans;
+	}
+	else if (exp == "_") {
+		res = this->getEntities(EntityType::ASSIGN);
+	}
+	switch (input->getQueryInputType()) {
+	case QueryInputType::ANY: { // eg. pattern a(_, _"x"_)
+		ans[""] = res;
+		// filterSetOfType(type, &(ans[""]));
+		break;
+	}
+	case QueryInputType::DECLARATION: { // eg. pattern a(v, _"x"_)
+		for (string s : res) {
+			// if (this->types[s] == type) {
+			ans[s] = this->relations[MODIFIES][s];
+			// }
+		}
+		break;
+	}
+	case QueryInputType::IDENT: { // eg. pattern a("x", _"x"_)
+		for (string s : res) {
+			if (input->getValue() == *(relations[MODIFIES][s].begin())) {
+				ans[""].insert(s);
+			}
+		}
+		// filterSetOfType(type, &(ans[""]));
+		break;
+	}
+	default: { } // STMT_NUM
+	}
+	return ans;
+}
+
+
+unordered_map<string, set<string>> PKB::getMapResultsOfRS(const RelationshipType& type,
+	shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
+	unordered_map<string, set<string>> res;
+	return res;
 }
 
 set<string> PKB::getSetResultsOfRS(const RelationshipType& type,

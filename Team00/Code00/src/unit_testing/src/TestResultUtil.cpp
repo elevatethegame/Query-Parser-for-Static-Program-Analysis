@@ -85,14 +85,14 @@ TEST_CASE("Getting cartesian product from two results") {
 	string varSynonym = "v";
 	string whileSynonym = "w";
 
-	SECTION("Getting cartesian product from PKB Result with 2 synonym values") {
+	SECTION("Getting cartesian product from PKB Map Result with 2 synonym values") {
 		unordered_map<string, set<string>> pkbResult = { {"1", {"2", "3"}}, {"4", {"5"}} };
 		vector<vector<string>> table = { {"a", "c"}, {"b", "d"} };
 		unordered_map<string, int> indexMap = { {varSynonym, 0}, {whileSynonym, 1} };
 		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getCartesianProduct(pkbResult, { stmtSynonym, assignSynonym }, resultsTable);
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getCartesianProductFromMap(pkbResult, { stmtSynonym, assignSynonym }, resultsTable);
 		
 		
 		vector<vector<string>> cartProdTable = cartProdResult->getTableValues();
@@ -107,14 +107,14 @@ TEST_CASE("Getting cartesian product from two results") {
 		TestResultsTableUtil::checkMap(cartProdIndexMap, expectedMap);
 	}
 
-	SECTION("Getting cartesian product from PKB results with one synonym values") {
-		unordered_map<string, set<string>> pkbResult = { { "dummy", {"1", "2", "3", "4"} } };
+	SECTION("Getting cartesian product from PKB Set results with one synonym values") {
+		set<string> pkbResult = { "1", "2", "3", "4" };
 		vector<vector<string>> table = { {"a", "c"}, {"b", "d"} };
 		unordered_map<string, int> indexMap = { {varSynonym, 0}, {whileSynonym, 1} };
 		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getCartesianProduct(pkbResult, { stmtSynonym }, resultsTable);
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getCartesianProductFromSet(pkbResult, stmtSynonym, resultsTable);
 
 
 		vector<vector<string>> cartProdTable = cartProdResult->getTableValues();
@@ -137,14 +137,14 @@ TEST_CASE("Getting natural join from two results") {
 	string whileSynonym = "w";
 	string readSynonym = "r";
 
-	SECTION("Getting natural join from PKB result with 1 synonym") {
-		unordered_map<string, set<string>> pkbResult = { { "dummy", {"1", "2", "3", "4"} } };
+	SECTION("Getting natural join from PKB Set result with 1 synonym") {
+		set<string> pkbResult = { "1", "2", "3", "4" };
 		vector<vector<string>> table = { {"a", "2", "c"}, {"b", "10", "d"}, {"e", "2", "f"}, {"b", "4", "d"} };
 		unordered_map<string, int> indexMap = { {varSynonym, 0}, {stmtSynonym, 1}, {whileSynonym, 2} };
 		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym }, resultsTable, { stmtSynonym });
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoinFromSet(pkbResult, stmtSynonym, resultsTable, { stmtSynonym });
 
 
 		vector<vector<string>> cartProdTable = cartProdResult->getTableValues();
@@ -157,7 +157,7 @@ TEST_CASE("Getting natural join from two results") {
 		TestResultsTableUtil::checkMap(cartProdIndexMap, expectedMap);
 	}
 
-	SECTION("Getting natural join from PKB result with 2 common synonyms") {
+	SECTION("Getting natural join from PKB Map result with 2 common synonyms") {
 		unordered_map<string, set<string>> pkbResult = { {"1", {"2", "3", "12", "10"}}, {"4", {"5", "2", "23", "12"}} };
 		vector<vector<string>> table = { {"a", "1", "c", "10"}, {"b", "10", "d", "2"}, {"e", "4", "f", "2"}, {"b", "4", "d", "12"},
 			{"b", "10", "a", "222"}, {"ee", "1", "ff", "2"} };
@@ -165,7 +165,7 @@ TEST_CASE("Getting natural join from two results") {
 		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym, assignSynonym }, resultsTable,
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoinFromMap(pkbResult, { stmtSynonym, assignSynonym }, resultsTable,
 			{ stmtSynonym, assignSynonym });
 
 
@@ -180,7 +180,7 @@ TEST_CASE("Getting natural join from two results") {
 		TestResultsTableUtil::checkMap(cartProdIndexMap, expectedMap);
 	}
 
-	SECTION("Getting natural join from PKB result with common left synonym and uncommon right synonym") {
+	SECTION("Getting natural join from PKB Map result with common left synonym and uncommon right synonym") {
 		unordered_map<string, set<string>> pkbResult = { {"1", {"2", "10"}}, {"4", {"5", "2", "23"}}, {"10", {"5", "2", "23"}} };
 		vector<vector<string>> table = { {"a", "1", "c", "10"}, {"b", "10", "d", "2"}, {"e", "14", "f", "2"}, {"b", "41", "d", "12"},
 			{"b", "10", "a", "222"}, {"ee", "1", "ff", "2"} };
@@ -188,7 +188,7 @@ TEST_CASE("Getting natural join from two results") {
 		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym, readSynonym }, resultsTable,
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoinFromMap(pkbResult, { stmtSynonym, readSynonym }, resultsTable,
 			{ stmtSynonym });
 
 
@@ -206,7 +206,7 @@ TEST_CASE("Getting natural join from two results") {
 		TestResultsTableUtil::checkMap(cartProdIndexMap, expectedMap);
 	}
 	
-	SECTION("Getting natural join from PKB result with uncommon left synonym and common right synonym") {
+	SECTION("Getting natural join from PKB Map result with uncommon left synonym and common right synonym") {
 		unordered_map<string, set<string>> pkbResult = { {"1", {"2", "10"}}, {"4", {"5", "21", "23"}}, {"10", {"15", "222", "2"}} };
 		vector<vector<string>> table = { {"a", "1", "c", "10"}, {"b", "10", "d", "2"}, {"e", "14", "f", "2"}, {"b", "41", "d", "5"},
 			{"b", "10", "a", "222"}, {"ee", "1", "ff", "2"} };
@@ -214,7 +214,7 @@ TEST_CASE("Getting natural join from two results") {
 		shared_ptr<ResultsTable> resultsTable = make_shared<ResultsTable>();
 		resultsTable->setTable(indexMap, table);
 
-		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoin(pkbResult, { stmtSynonym, readSynonym }, resultsTable,
+		shared_ptr<ResultsTable> cartProdResult = ResultUtil::getNaturalJoinFromMap(pkbResult, { stmtSynonym, readSynonym }, resultsTable,
 			{ readSynonym });
 
 

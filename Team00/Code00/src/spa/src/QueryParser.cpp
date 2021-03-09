@@ -138,7 +138,7 @@ bool QueryParser::patternClause()
         patternDeclaration = synonym;
         patternQueryInput = queryInput;
         patternExpression = expression;
-        query->addPatternClause(synonym, queryInput, expression);
+        query->addAssignPatternClause(synonym, queryInput, expression);
         return true;
     }
     return false;
