@@ -97,6 +97,9 @@ int DesignExtractor::buildCFGBlock(int stmt) {
 
 		insertNext(stmt, blockSt);
 		insertRevFlow(blockSt, stmt);
+
+		insertNext(blockEnd, stmt);
+
 		if (nextStmt != -1) {
 			insertNext(stmt, nextStmt);
 			insertRevFlow(nextStmt, stmt);
