@@ -37,7 +37,7 @@ TEST_CASE("Adding Pattern clause pointer to vector") {
 
 	SECTION("Adding to empty vector") {
 		REQUIRE(query.getPatternClauses().size() == 0);
-		query.addPatternClause(leftQueryInput, rightQueryInput, expression);
+		query.addAssignPatternClause(leftQueryInput, rightQueryInput, expression);
 		REQUIRE(query.getPatternClauses().size() == 1);
 	}
 
@@ -45,9 +45,9 @@ TEST_CASE("Adding Pattern clause pointer to vector") {
 		shared_ptr<QueryInput> leftQueryInput2 = make_shared<QueryInput>();
 		shared_ptr<QueryInput> rightQueryInput2 = make_shared<QueryInput>();
 		shared_ptr<Expression> expression2 = make_shared<Expression>("_");
-		query.addPatternClause(leftQueryInput, rightQueryInput, expression);
+		query.addAssignPatternClause(leftQueryInput, rightQueryInput, expression);
 		REQUIRE(query.getPatternClauses().size() == 1);
-		query.addPatternClause(leftQueryInput2, rightQueryInput2, expression2);
+		query.addAssignPatternClause(leftQueryInput2, rightQueryInput2, expression2);
 		REQUIRE(query.getPatternClauses().size() == 2);
 	}
 }

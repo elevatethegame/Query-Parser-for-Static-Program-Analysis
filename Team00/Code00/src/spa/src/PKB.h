@@ -154,34 +154,12 @@ public:
 	bool getBooleanResultOfRS(const RelationshipType& type, 
 		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
-	/**
-	* Retrieves results of a given relationship query
-	*
-	* @param type
-	* @param input1 the first input of relationship
-	* @param input2 the second input of relationship
-	*
-	* @return set of results with a dummy key if there is exactly one Declaration,
-	* or a map of (input1_value, set<input2_value>) if there are two,
-	* or an empty map if neither of the inputs is a Declaration
-	*/
 	unordered_map<string, set<string>> getMapResultsOfRS(const RelationshipType& type, 
 		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
 	set<string> getSetResultsOfRS(const RelationshipType& type,
 		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
-	/**
-	* Retrieves results of a pattern query
-	*
-	* @param type the type of statements being queried
-	* @param input the LHS of a pattern clause
-	* @param expression the RHS of a pattern clause
-	*
-	* @return a map of results (stmt_index, set<input_value>) if input is a Declaration, 
-	* or a map with a dummy key and a set of indices if input is Any or Ident, or empty
-	* 
-	*/
 	unordered_map<string, set<string>> getMapResultsOfAssignPattern(
 		shared_ptr<QueryInput> input, Expression expression);
 
@@ -194,7 +172,33 @@ public:
 	set<string> getSetResultsOfContainerPattern(
 		const EntityType& type, shared_ptr<QueryInput> input);
 
+	/**
+	* Retrieves results of a given relationship query
+	*
+	* @param type
+	* @param input1 the first input of relationship
+	* @param input2 the second input of relationship
+	*
+	* @return set of results with a dummy key if there is exactly one Declaration,
+	* or a map of (input1_value, set<input2_value>) if there are two,
+	* or an empty map if neither of the inputs is a Declaration
+	*/
+	unordered_map<string, set<string>> getResultsOfRS(const RelationshipType& type,
+		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
+	/**
+	* Retrieves results of a pattern query
+	*
+	* @param type the type of statements being queried
+	* @param input the LHS of a pattern clause
+	* @param expression the RHS of a pattern clause
+	*
+	* @return a map of results (stmt_index, set<input_value>) if input is a Declaration,
+	* or a map with a dummy key and a set of indices if input is Any or Ident, or empty
+	*
+	*/
+	unordered_map<string, set<string>> getResultsOfPattern(
+		const EntityType& type, shared_ptr<QueryInput> input, Expression expression);
 
 private:
 	

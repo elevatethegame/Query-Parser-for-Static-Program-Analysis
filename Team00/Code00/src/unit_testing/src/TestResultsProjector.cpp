@@ -12,7 +12,7 @@ TEST_CASE("Projecting list of final results from query evaluator") {
 	shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
 	shared_ptr<Declaration> declaration = make_shared<Declaration>(EntityType::ASSIGN, assignSynonym);
 	shared_ptr<SelectClause> selectClause = make_shared<SelectClause>(declaration);
-	pkb->setGetEntitiesReturnValue({ "1", "2", "3", "4" });
+	pkb->addSetResult({ "1", "2", "3", "4" });
 	
 	SECTION("Select synonym in PKB results, all clauses fulfilled") {
 		unordered_map<string, int> indexMap = { {stmtSynonym, 0}, {assignSynonym, 1} };
