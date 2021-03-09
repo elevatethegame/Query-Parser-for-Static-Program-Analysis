@@ -183,6 +183,7 @@ ParseError Parser::parseProgram(SIMPLETokenStream &stream) {
 	if (checkCyclicCalls(this->callingRelationships)) {
 		return ParseError("There is a cyclic call");
 	}
+	this->designExtractor.setCalls(callingRelationships);
 	return ParseError();
 }
 

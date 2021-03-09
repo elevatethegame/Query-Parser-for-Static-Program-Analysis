@@ -92,11 +92,38 @@ vector<string> DesignExtractor::getModifies(int index) const {
 	return modifies[index];
 }
 
+void DesignExtractor::setCalls(map<string, vector<string>> &edges) {
+	calls = edges;
+}
+
 void DesignExtractor::insertConstant(string c) {
 	constants.insert(c);
 }
 
 void DesignExtractor::setProcName(string name) {
 	this->procName = name;
+}
+
+template<typename T>
+unordered_map<T, vector<T> > extractStars(unordered_map<T, vector<T> >& edges) {
+	unordered_map<T, vector<T> > results;
+	unordered_map<T, bool> was;
+
+	function<void(T)> dfs = [&](T u) {
+		vector<T> &answer = results[u];
+		for (auto& other: edges[u]) {
+			if (!was[other]) {
+				dfs(other);
+			}
+			for (auto& v: result[other]) {
+				answer.push_back(v);
+			}
+			answer.push_back(other);
+		}
+		sort(anser.begin(), answer.end());
+		answer.resize(unique(answer.begin(), answer.end()) - answer.begin());
+	}
+
+	return results;
 }
 
