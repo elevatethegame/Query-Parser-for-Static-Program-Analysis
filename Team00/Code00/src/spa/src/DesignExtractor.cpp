@@ -19,6 +19,8 @@ DesignExtractor::DesignExtractor() {
 	types.emplace_back(EntityType::NONETYPE);
 	uses.emplace_back(0);
 	modifies.emplace_back(0);
+	nexts.emplace_back(0);
+	revFlows.emplace_back(0);
 	expressions.push_back({});
 }
 
@@ -29,6 +31,8 @@ void DesignExtractor::increaseNumberOfStatement(EntityType type) {
 	types.emplace_back(type);
 	uses.emplace_back(0);
 	modifies.emplace_back(0);
+	nexts.emplace_back(0);
+	revFlows.emplace_back(0);
 	expressions.push_back({});
 }
 
@@ -50,6 +54,75 @@ void DesignExtractor::insertUses(int index, const string& value) {
 
 void DesignExtractor::insertModifies(int index, const string& value) {
 	this->modifies[index].emplace_back(value);
+}
+
+void DesignExtractor::insertNext(int id1, int id2) {
+	nexts[id1].emplace_back(id2);
+}
+
+void DesignExtractor::insertRevFlow(int id1, int id2) {
+	revFlows[id1].emplace_back(id2);
+}
+
+int DesignExtractor::buildCFGBlock(int stmt) {
+	auto stmtType = types[stmt];
+
+	assert(follows[stmt].size() <= 1);
+	int nextStmt = follows[stmt].empty() ? -1 : follows[stmt][0];
+
+	if (stmtType == EntityType::IF) { /// if statement, jump in one scope
+		int firstBlockIfSt = stmt + 1; /// alway the next statement is in first if block
+		int firstBlockIfEnd = buildCFGBlock(firstBlockIfSt);
+		
+		/// the next statement after last statement of 1st if block is begin of 2nd if block
+		int sndBlockIfSt = firstBlockIfEnd + 1; 
+		int sndBlockIfEnd = buildCFGBlock(sndBlockIfSt);
+
+		insertNext(stmt, firstBlockIfSt);
+		insertNext(stmt, sndBlockIfSt);
+		insertRevFlow(firstBlockIfSt, stmt);
+		insertRevFlow(sndBlockIfSt, stmt);
+		if (nextStmt != -1) {
+			insertNext(firstBlockIfEnd, nextStmt);
+			insertNext(sndBlockIfEnd, nextStmt);
+			insertRevFlow(nextStmt, firstBlockIfEnd);
+			insertRevFlow(nextStmt, sndBlockIfEnd);
+		}
+	} 
+	else if (stmtType == EntityType::WHILE) {
+		/// while statement, jump in 1 scope 
+
+		int blockSt = stmt + 1; /// alway the next statement is in first if block
+		int blockEnd = buildCFGBlock(blockSt);
+
+		insertNext(stmt, blockSt);
+		insertRevFlow(blockSt, stmt);
+		if (nextStmt != -1) {
+			insertNext(stmt, nextStmt);
+			insertRevFlow(nextStmt, stmt);
+		}
+	}
+	else {
+		if (nextStmt != -1) {
+			insertNext(stmt, nextStmt);
+			insertRevFlow(nextStmt, stmt);
+		}
+	}
+
+	/// if this statement does not have a follow statement, then it should be the last statement in this scope.
+	if (nextStmt == -1) {
+		return smt;
+	}
+	else {
+		return buildCFGBlock(nextStmt);
+	}
+}
+
+void DesignExtractor::buildCFG() {
+	int currentStmt = 1;
+	while (currentStmt <= numberOfStatement) {
+		currentStmt = buildCFGBlock(currentStmt) + 1;
+	}
 }
 
 shared_ptr<PKB> DesignExtractor::extractToPKB() {
@@ -99,4 +172,6 @@ void DesignExtractor::insertConstant(string c) {
 void DesignExtractor::setProcName(string name) {
 	this->procName = name;
 }
+
+
 
