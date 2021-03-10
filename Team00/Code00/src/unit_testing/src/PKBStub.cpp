@@ -1,5 +1,4 @@
 #include "PKBStub.h"
-
 void PKBStub::resetCounts() {
 	this->setResultsCount = 0;
 	this->mapResultsCount = 0;
@@ -11,21 +10,23 @@ PKBStub::PKBStub() {
 }
 
 set<string> PKBStub::getEntities(const EntityType& type) {
+	if (this->setResults.size() <= this->setResultsCount) {
+		return {};
+	}
 	return this->setResults.at(this->setResultsCount++);
 }
 
 unordered_map<string, set<string>> PKBStub::getMapResultsOfRS(
 	const RelationshipType& type, shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
-	if (this->mapResults.size() == 0) {
+	if (this->mapResults.size() <= this->mapResultsCount) {
 		return {};
 	}
-
 	return this->mapResults.at(this->mapResultsCount++);
 }
 
 set<string> PKBStub::getSetResultsOfRS(
 	const RelationshipType& type, shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
-	if (this->setResults.size() == 0) {
+	if (this->setResults.size() <= this->setResultsCount) {
 		return {};
 	}
 	return this->setResults.at(this->setResultsCount++);
@@ -33,7 +34,7 @@ set<string> PKBStub::getSetResultsOfRS(
 
 unordered_map<string, set<string>> PKBStub::getMapResultsOfAssignPattern(
 	shared_ptr<QueryInput> input, Expression expression) {
-	if (this->mapResults.size() == 0) {
+	if (this->mapResults.size() <= this->mapResultsCount) {
 		return {};
 	}
 	return this->mapResults.at(this->mapResultsCount++);
@@ -41,7 +42,7 @@ unordered_map<string, set<string>> PKBStub::getMapResultsOfAssignPattern(
 
 set<string> PKBStub::getSetResultsOfAssignPattern(
 	shared_ptr<QueryInput> input, Expression expression) {
-	if (this->setResults.size() == 0) {
+	if (this->setResults.size() <= this->setResultsCount) {
 		return {};
 	}
 	return this->setResults.at(this->setResultsCount++);
@@ -49,7 +50,7 @@ set<string> PKBStub::getSetResultsOfAssignPattern(
 
 unordered_map<string, set<string>> PKBStub::getMapResultsOfContainerPattern(
 	const EntityType& type, shared_ptr<QueryInput> input) {
-	if (this->mapResults.size() == 0) {
+	if (this->mapResults.size() <= this->mapResultsCount) {
 		return {};
 	}
 	return this->mapResults.at(this->mapResultsCount++);
@@ -57,7 +58,7 @@ unordered_map<string, set<string>> PKBStub::getMapResultsOfContainerPattern(
 
 set<string> PKBStub::getSetResultsOfContainerPattern(
 	const EntityType& type, shared_ptr<QueryInput> input) {
-	if (this->setResults.size() == 0) {
+	if (this->setResults.size() <= this->setResultsCount) {
 		return {};
 	}
 	return this->setResults.at(this->setResultsCount++);
@@ -65,7 +66,7 @@ set<string> PKBStub::getSetResultsOfContainerPattern(
 
 bool PKBStub::getBooleanResultOfRS(const RelationshipType& type,
 	shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
-	if (this->boolReturnValues.size() == 0) {
+	if (this->boolReturnValues.size() <= this->boolCount) {
 		return {};
 	}
 	return this->boolReturnValues.at(this->boolCount++);
