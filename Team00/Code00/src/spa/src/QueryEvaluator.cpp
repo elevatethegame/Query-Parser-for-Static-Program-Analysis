@@ -36,12 +36,13 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluateRelationshipClauses(vector<shar
 		shared_ptr<RelationshipClause> relationshipClause = *iterator;
 		shared_ptr<QueryInput> leftQueryInput = relationshipClause->getLeftInput();
 		shared_ptr<QueryInput> rightQueryInput = relationshipClause->getRightInput();
+		RelationshipType relationshipType = relationshipClause->getRelationshipType();
 
 		// None of query inputs are declarations
-		if (leftQueryInput->getQueryInputType() != QueryInputType::DECLARATION &&
-			rightQueryInput->getQueryInputType() != QueryInputType::DECLARATION) {
-			bool hasResults = aPKB->getBooleanResultOfRS(relationshipClause->getRelationshipType(),
-				leftQueryInput, rightQueryInput);
+		if ((leftQueryInput->getQueryInputType() != QueryInputType::DECLARATION &&
+			rightQueryInput->getQueryInputType() != QueryInputType::DECLARATION) || 
+			relationshipType == RelationshipType::NEXT || relationshipType == RelationshipType::NEXT_T) {
+			bool hasResults = aPKB->getBooleanResultOfRS(relationshipType, leftQueryInput, rightQueryInput);
 			if (!hasResults) {
 				// clause returns no results, no need to further evaluate
 				currentResults->setIsNoResult();
@@ -56,8 +57,7 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluateRelationshipClauses(vector<shar
 		if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION &&
 			rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
 
-			unordered_map<string, set<string>> PKBResults = aPKB->getMapResultsOfRS(relationshipClause->getRelationshipType(),
-				leftQueryInput, rightQueryInput);
+			unordered_map<string, set<string>> PKBResults = aPKB->getMapResultsOfRS(relationshipType, leftQueryInput, rightQueryInput);
 
 			if (PKBResults.size() == 0) {
 				currentResults->setIsNoResult();
