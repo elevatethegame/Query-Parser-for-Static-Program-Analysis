@@ -58,4 +58,8 @@ private:
 	/// Return last statement of each block 
 	int buildCFGBlock(int stmt);
 	void buildCFG();
+
+
+	// Build Indirect relationships
+	void buildIndirectRelationships();
 };
