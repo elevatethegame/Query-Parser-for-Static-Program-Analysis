@@ -251,4 +251,15 @@ unordered_map<K, vector<V> > extractOwnerships(
 	return answer;
 }
 
+template<typename T, typename K>
+unordered_map<T, vector<K> > convertToMapForm(const vector<vector<K>>& vectorForm, int low, int high) {
+	unordered_map<T, vector<K> > answer;
+
+	for (int i = low; i <= high; i++) {
+		answer[i] = vectorForm[i];
+	}
+
+	return answer;
+}
+
 
