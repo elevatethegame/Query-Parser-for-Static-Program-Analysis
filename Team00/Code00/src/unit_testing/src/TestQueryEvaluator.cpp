@@ -170,9 +170,11 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 	shared_ptr<Declaration> declaration = make_shared<Declaration>(EntityType::ASSIGN, "a");
 	query->setSelectClause(declaration);
 	shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
+	shared_ptr<QueryInput> synWhile = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+	shared_ptr<QueryInput> synIf = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
 
 	//Select a pattern a(v, _x_)
-	SECTION("Pattern clause has synonym input, evaluates to non empty results") {
+	SECTION("Assign pattern clause has synonym input, evaluates to non empty results") {
 		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
 		shared_ptr<Expression> expression = make_shared<Expression>("x");
 		query->addAssignPatternClause(assign, var, expression);
@@ -193,7 +195,7 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 	}
 	
 	//Select a pattern a(_, _)
-	SECTION("Pattren clause has non synonym input, evaluates to non empty results") {
+	SECTION("Assign pattern clause has non synonym input, evaluates to non empty results") {
 		shared_ptr<QueryInput> wildcard = dynamic_pointer_cast<QueryInput>(make_shared<Any>("_"));
 		shared_ptr<Expression> expression = make_shared<Expression>("_");
 		query->addAssignPatternClause(assign, wildcard, expression);
@@ -214,7 +216,7 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 	}
 	
 	//Select a pattern a(v, _x_)
-	SECTION("Pattern clause has synonym input, evaluates to empty results") {
+	SECTION("Assign pattern clause has synonym input, evaluates to empty results") {
 		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
 		shared_ptr<Expression> expression = make_shared<Expression>("x");
 		query->addAssignPatternClause(assign, var, expression);
@@ -235,7 +237,7 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 	}
 
 	//Select a pattern a(_, _)
-	SECTION("Pattren clause has non synonym input, evaluates to empty results") {
+	SECTION("Assign pattern clause has non synonym input, evaluates to empty results") {
 		shared_ptr<QueryInput> wildcard = dynamic_pointer_cast<QueryInput>(make_shared<Any>("_"));
 		shared_ptr<Expression> expression = make_shared<Expression>("_");
 		query->addAssignPatternClause(assign, wildcard, expression);
@@ -254,9 +256,169 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 		TestResultsTableUtil::checkMap(actualMap, expectedMap);
 		TestResultsTableUtil::checkTable(actualTable, expectedTable);
 	}
+	
+	//Select w pattern w(v, _)
+	SECTION("While pattern clause has synonym input, evaluates to non empty results") {
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addContainerPatternClause(synWhile, var);
+
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+		unordered_map<string, set<string>> pkbRsResult = { { "1", {"12", "13", "14"} }, { "2", {"22", "23", "24"} } };
+		pkb->addMapResult(pkbRsResult);
+		unordered_map<string, int> expectedMap = { {whileSynonym, 0}, {varSynonym, 1} };
+		vector<vector<string>> expectedTable = { {"1", "12"}, {"1", "13"}, {"1", "14"}, {"2", "22"}, {"2", "23"}, {"2", "24"} };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select w pattern w(_, _)
+	SECTION("While pattern clause has non synonym input, evaluates to non empty results") {
+		shared_ptr<QueryInput> wildcard = dynamic_pointer_cast<QueryInput>(make_shared<Any>("_"));
+		query->addContainerPatternClause(synWhile, wildcard);
+
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+		set<string> pkbRsResult = { "11", "12", "13", "14", "22", "23", "24" };
+		pkb->addSetResult(pkbRsResult);
+		unordered_map<string, int> expectedMap = { {whileSynonym, 0} };
+		vector<vector<string>> expectedTable = { {"11"}, {"12"}, {"13"}, {"14"}, {"22"}, {"23"}, {"24"} };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select w pattern w(v, _)
+	SECTION("While pattern clause has synonym input, evaluates to empty results") {
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addContainerPatternClause(synWhile, var);
+
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+		unordered_map<string, set<string>> pkbRsResult = {};
+		pkb->addMapResult(pkbRsResult);
+		unordered_map<string, int> expectedMap = {};
+		vector<vector<string>> expectedTable = {};
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select w pattern w(_, _)
+	SECTION("While pattern clause has non synonym input, evaluates to empty results") {
+		shared_ptr<QueryInput> wildcard = dynamic_pointer_cast<QueryInput>(make_shared<Any>("_"));
+		query->addContainerPatternClause(synWhile, wildcard);
+
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+		set<string> pkbRsResult = {};
+		pkb->addSetResult(pkbRsResult);
+		unordered_map<string, int> expectedMap = {};
+		vector<vector<string>> expectedTable = {};
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select ifs pattern ifs(v, _, _)
+	SECTION("If pattern clause has synonym input, evaluates to non empty results") {
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addContainerPatternClause(synIf, var);
+
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+		unordered_map<string, set<string>> pkbRsResult = { { "1", {"12", "13", "14"} }, { "2", {"22", "23", "24"} } };
+		pkb->addMapResult(pkbRsResult);
+		unordered_map<string, int> expectedMap = { {ifSynonym, 0}, {varSynonym, 1} };
+		vector<vector<string>> expectedTable = { {"1", "12"}, {"1", "13"}, {"1", "14"}, {"2", "22"}, {"2", "23"}, {"2", "24"} };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select ifs pattern ifs(_, _)
+	SECTION("If pattern clause has non synonym input, evaluates to non empty results") {
+		shared_ptr<QueryInput> wildcard = dynamic_pointer_cast<QueryInput>(make_shared<Any>("_"));
+		query->addContainerPatternClause(synIf, wildcard);
+
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+		set<string> pkbRsResult = { "11", "12", "13", "14", "22", "23", "24" };
+		pkb->addSetResult(pkbRsResult);
+		unordered_map<string, int> expectedMap = { {ifSynonym, 0} };
+		vector<vector<string>> expectedTable = { {"11"}, {"12"}, {"13"}, {"14"}, {"22"}, {"23"}, {"24"} };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select ifs pattern ifs(v, _)
+	SECTION("If pattern clause has synonym input, evaluates to empty results") {
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addContainerPatternClause(synIf, var);
+
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+		unordered_map<string, set<string>> pkbRsResult = {};
+		pkb->addMapResult(pkbRsResult);
+		unordered_map<string, int> expectedMap = {};
+		vector<vector<string>> expectedTable = {};
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select ifs pattern ifs(_, _)
+	SECTION("If pattern clause has non synonym input, evaluates to empty results") {
+		shared_ptr<QueryInput> wildcard = dynamic_pointer_cast<QueryInput>(make_shared<Any>("_"));
+		query->addContainerPatternClause(synIf, wildcard);
+
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+		set<string> pkbRsResult = {};
+		pkb->addSetResult(pkbRsResult);
+		unordered_map<string, int> expectedMap = {};
+		vector<vector<string>> expectedTable = {};
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
 }
 
-TEST_CASE("Evaluating query with both relationship and pattern clause") {
+TEST_CASE("Evaluating query with both such that and pattern clause") {
 	string stmtSynonym = "s";
 	string assignSynonym = "a";
 	string varSynonym = "v";
@@ -269,7 +431,7 @@ TEST_CASE("Evaluating query with both relationship and pattern clause") {
 	shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 
 	//Select a such that Modifies(a, v) pattern a(v, _x_)
-	SECTION("Clauses have 2 common synonyms, all evaluates to non empty results") {
+	SECTION("such that and assign pattern clauses have 2 common synonyms, all evaluates to non empty results") {
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
 
 		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
@@ -298,7 +460,7 @@ TEST_CASE("Evaluating query with both relationship and pattern clause") {
 	}
 
 	//Select a such that Uses(s, v) pattern a(v, _)
-	SECTION("Clauses have 1 common synonym, all evaluates to non empty results") {
+	SECTION("such that and assign pattern clauses have 1 common synonym, all evaluates to non empty results") {
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
 
 		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
@@ -327,7 +489,7 @@ TEST_CASE("Evaluating query with both relationship and pattern clause") {
 	}
 
 	//Select a such that Parent*(s, w) pattern a(v, _)
-	SECTION("Clauses have no common synonym, all evaluates to non empty results") {
+	SECTION("such that and assign pattern clauses have no common synonym, all evaluates to non empty results") {
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
 
 		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
@@ -365,7 +527,7 @@ TEST_CASE("Evaluating query with both relationship and pattern clause") {
 	}
 
 	//Select a such that Modifies(a, v) pattern a(v, _)
-	SECTION("Clauses have 2 common synonyms, rs clause evaluates to empty results") {
+	SECTION("such that and assign pattern clauses have 2 common synonyms, rs clause evaluates to empty results") {
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
 
 		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
@@ -394,7 +556,7 @@ TEST_CASE("Evaluating query with both relationship and pattern clause") {
 	}
 
 	//Select a such that Modifies(a, v) pattern a(v, _)
-	SECTION("Clauses have 2 common synonyms, pattern clause evaluates to empty results") {
+	SECTION("such that and assign pattern clauses have 2 common synonyms, pattern clause evaluates to empty results") {
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
 
 		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
@@ -407,6 +569,439 @@ TEST_CASE("Evaluating query with both relationship and pattern clause") {
 		shared_ptr<QueryInput> assign2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		shared_ptr<Expression> expr = make_shared<Expression>("_");
 		query->addAssignPatternClause(assign2, var2, expr);
+		unordered_map<string, set<string>> patternClauseResult = {};
+		pkb->addMapResult(patternClauseResult);
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+	}
+
+	//Select a such that Uses(s, v) pattern a(v, _)
+	SECTION("such that and assign pattern clauses have 1 common synonym, rs clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::USES, stmt, var);
+		unordered_map<string, set<string>> rsClauseResult = {};
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
+		query->addAssignPatternClause(assign, var2, expr);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = {};
+		vector<vector<string>> expectedTable = {};
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select a such that Uses(s, v) pattern a(v, _)
+	SECTION("such that and assign pattern clauses have 1 common synonym, pattern clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::USES, stmt, var);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"x", "u"} }, { "3", {"count","p"} }, { "5", {"x"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
+		query->addAssignPatternClause(assign, var2, expr);
+		unordered_map<string, set<string>> patternClauseResult = {};
+		pkb->addMapResult(patternClauseResult);
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+	}
+	
+	//Select w such that Modifies(w, v) pattern w(v, _)
+	SECTION("such that and while pattern clauses have 2 common synonyms, all evaluates to non empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> synWhile = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::MODIFIES, synWhile, var);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"x", "u"} }, { "3", {"count","p"} }, { "5", {"x"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synWhile2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		query->addContainerPatternClause(synWhile2, var2);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = { { whileSynonym, 0 }, { varSynonym, 1 } };
+		vector<vector<string>> expectedTable = { { "1", "u" }, { "3", "count" } };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+	
+	//Select w such that Uses(s, v) pattern w(v, _)
+	SECTION("such that and while pattern clauses have 1 common synonym, all evaluates to non empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::USES, stmt, var);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"x", "u"} }, { "3", {"count","p"} }, { "5", {"x"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synWhile = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		query->addContainerPatternClause(synWhile, var2);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = { { stmtSynonym, 0 }, { varSynonym, 1 }, {whileSynonym, 2} };
+		vector<vector<string>> expectedTable = { { "1", "u", "1" }, { "3", "count", "3" }, {"1", "x", "51"}, { "5", "x", "51" } };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select w such that Parent*(ifs, s) pattern w(v, _)
+	SECTION("such that and while pattern clauses have no common synonym, all evaluates to non empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> synIf = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		query->addRelationshipClause(RelationshipType::PARENT_T, synIf, stmt);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"12", "13"} }, { "24", {"25","26"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synWhile = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		query->addContainerPatternClause(synWhile, var);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count", "p"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = { { ifSynonym, 0 }, { stmtSynonym, 1 }, {whileSynonym, 2},
+			{varSynonym, 3} };
+		vector<vector<string>> expectedTable = {
+			{ "1", "12", "1", "u" }, { "1", "13", "1", "u" },
+			{ "24", "25", "1", "u" }, { "24", "26", "1", "u" },
+			{ "1", "12", "1", "x1" }, { "1", "13", "1", "x1" },
+			{ "24", "25", "1", "x1" }, { "24", "26", "1", "x1" },
+			{ "1", "12", "3", "count" }, { "1", "13", "3", "count" },
+			{ "24", "25", "3", "count" }, { "24", "26", "3", "count" },
+			{ "1", "12", "3", "p" }, { "1", "13", "3", "p" },
+			{ "24", "25", "3", "p" }, { "24", "26", "3", "p" } };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select w such that Modifies(w, v) pattern w(v, _)
+	SECTION("such that and while pattern clauses have 2 common synonyms, rs clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synWhile = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		query->addRelationshipClause(RelationshipType::MODIFIES, synWhile, var);
+		unordered_map<string, set<string>> rsClauseResult = {};
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synWhile2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		query->addContainerPatternClause(synWhile2, var2);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = {};
+		vector<vector<string>> expectedTable = {};
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select w such that Modifies(w, v) pattern w(v, _)
+	SECTION("such that and while pattern clauses have 2 common synonyms, pattern clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synWhile = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		query->addRelationshipClause(RelationshipType::MODIFIES, synWhile, var);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"x", "u"} }, { "3", {"count","p"} }, { "5", {"x"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synWhile2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		query->addContainerPatternClause(synWhile2, var2);
+		unordered_map<string, set<string>> patternClauseResult = {};
+		pkb->addMapResult(patternClauseResult);
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+	}
+
+	//Select w such that Uses(s, v) pattern w(v, _)
+	SECTION("such that and while pattern clauses have 1 common synonym, rs clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::USES, stmt, var);
+		unordered_map<string, set<string>> rsClauseResult = {};
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synWhile = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		query->addContainerPatternClause(synWhile, var2);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = {};
+		vector<vector<string>> expectedTable = {};
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select w such that Uses(s, v) pattern w(v, _)
+	SECTION("such that and while pattern clauses have 1 common synonym, pattern clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::USES, stmt, var);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"x", "u"} }, { "3", {"count","p"} }, { "5", {"x"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synWhile = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		query->addContainerPatternClause(synWhile, var2);
+		unordered_map<string, set<string>> patternClauseResult = {};
+		pkb->addMapResult(patternClauseResult);
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+	}
+	
+	//Select ifs such that Modifies(ifs, v) pattern ifs(v, _, _)
+	SECTION("such that and if pattern clauses have 2 common synonyms, all evaluates to non empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> synIf = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::MODIFIES, synIf, var);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"x", "u"} }, { "3", {"count","p"} }, { "5", {"x"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synIf2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		query->addContainerPatternClause(synIf2, var2);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = { { ifSynonym, 0 }, { varSynonym, 1 } };
+		vector<vector<string>> expectedTable = { { "1", "u" }, { "3", "count" } };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select ifs such that Uses(s, v) pattern ifs(v, _)
+	SECTION("such that and if pattern clauses have 1 common synonym, all evaluates to non empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::USES, stmt, var);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"x", "u"} }, { "3", {"count","p"} }, { "5", {"x"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synIf = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		query->addContainerPatternClause(synIf, var2);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = { { stmtSynonym, 0 }, { varSynonym, 1 }, {ifSynonym, 2} };
+		vector<vector<string>> expectedTable = { { "1", "u", "1" }, { "3", "count", "3" }, {"1", "x", "51"}, { "5", "x", "51" } };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select ifs such that Parent*(w, s) pattern ifs(v, _)
+	SECTION("such that and if pattern clauses have no common synonym, all evaluates to non empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> synWhile = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::WHILE, whileSynonym));
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		query->addRelationshipClause(RelationshipType::PARENT_T, synWhile, stmt);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"12", "13"} }, { "24", {"25","26"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synIf = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		query->addContainerPatternClause(synIf, var);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count", "p"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = { { whileSynonym, 0 }, { stmtSynonym, 1 }, {ifSynonym, 2},
+			{varSynonym, 3} };
+		vector<vector<string>> expectedTable = {
+			{ "1", "12", "1", "u" }, { "1", "13", "1", "u" },
+			{ "24", "25", "1", "u" }, { "24", "26", "1", "u" },
+			{ "1", "12", "1", "x1" }, { "1", "13", "1", "x1" },
+			{ "24", "25", "1", "x1" }, { "24", "26", "1", "x1" },
+			{ "1", "12", "3", "count" }, { "1", "13", "3", "count" },
+			{ "24", "25", "3", "count" }, { "24", "26", "3", "count" },
+			{ "1", "12", "3", "p" }, { "1", "13", "3", "p" },
+			{ "24", "25", "3", "p" }, { "24", "26", "3", "p" } };
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(!resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select ifs such that Modifies(ifs, v) pattern ifs(v, _)
+	SECTION("such that and if pattern clauses have 2 common synonyms, rs clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synIf = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		query->addRelationshipClause(RelationshipType::MODIFIES, synIf, var);
+		unordered_map<string, set<string>> rsClauseResult = {};
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synIf2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		query->addContainerPatternClause(synIf2, var2);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = {};
+		vector<vector<string>> expectedTable = {};
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select ifs such that Modifies(ifs, v) pattern ifs(v, _)
+	SECTION("such that and if pattern clauses have 2 common synonyms, pattern clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synIf = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		query->addRelationshipClause(RelationshipType::MODIFIES, synIf, var);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"x", "u"} }, { "3", {"count","p"} }, { "5", {"x"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synIf2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		query->addContainerPatternClause(synIf2, var2);
+		unordered_map<string, set<string>> patternClauseResult = {};
+		pkb->addMapResult(patternClauseResult);
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+	}
+
+	//Select ifs such that Uses(s, v) pattern ifs(v, _)
+	SECTION("such that and if pattern clauses have 1 common synonym, rs clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::USES, stmt, var);
+		unordered_map<string, set<string>> rsClauseResult = {};
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synIf = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		query->addContainerPatternClause(synIf, var2);
+		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
+		pkb->addMapResult(patternClauseResult);
+
+		unordered_map<string, int> expectedMap = {};
+		vector<vector<string>> expectedTable = {};
+
+		QueryEvaluator qe = QueryEvaluator(query, pkb);
+		shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+		REQUIRE(resultsTable->isNoResult());
+		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
+		vector<vector<string>> actualTable = resultsTable->getTableValues();
+		TestResultsTableUtil::checkMap(actualMap, expectedMap);
+		TestResultsTableUtil::checkTable(actualTable, expectedTable);
+	}
+
+	//Select ifs such that Uses(s, v) pattern ifs(v, _)
+	SECTION("such that and if pattern clauses have 1 common synonym, pattern clause evaluates to empty results") {
+		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
+
+		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
+		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		query->addRelationshipClause(RelationshipType::USES, stmt, var);
+		unordered_map<string, set<string>> rsClauseResult = { { "1", {"x", "u"} }, { "3", {"count","p"} }, { "5", {"x"} } };
+		pkb->addMapResult(rsClauseResult);
+
+		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
+		shared_ptr<QueryInput> synIf = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::IF, ifSynonym));
+		query->addContainerPatternClause(synIf, var2);
 		unordered_map<string, set<string>> patternClauseResult = {};
 		pkb->addMapResult(patternClauseResult);
 
