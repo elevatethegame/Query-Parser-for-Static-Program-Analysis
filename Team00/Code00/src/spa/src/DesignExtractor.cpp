@@ -12,6 +12,7 @@ using namespace std;
 #include "PKB.h"
 #include "DesignExtractor.h"
 #include "EntityType.h"
+#include "DesignExtractorHelper.h"
 #include <set>
 
 
@@ -171,7 +172,7 @@ vector<string> DesignExtractor::getModifies(int index) const {
 	return modifies[index];
 }
 
-void DesignExtractor::setCalls(map<string, vector<string>> &edges) {
+void DesignExtractor::setCalls(unordered_map<string, vector<string>> &edges) {
 	calls = edges;
 }
 
@@ -185,7 +186,7 @@ void DesignExtractor::setProcName(string name) {
 
 
 void DesignExtractor::buildIndirectRelationships() {
-	
+	Indirect<string> callStar = extractStars<string>(calls);
 }
 
 

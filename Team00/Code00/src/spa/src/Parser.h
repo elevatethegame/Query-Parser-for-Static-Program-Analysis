@@ -58,7 +58,7 @@ private:
     map<string, pair<int, int> > rangeProcedure;
 
     ///all calling relationships.
-    map<string, vector<string> > callingRelationships;
+    unordered_map<string, vector<string> > callingRelationships;
 
     void addCallingRelationship(string caller, string callee);
 

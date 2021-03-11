@@ -30,7 +30,7 @@ Indirect<T> extractStars(const Direct<T>& edges) {
 
 	function<void(T)> dfs = [&](T u) {
 		vector<T> &answer = results[u];
-		for (auto& other: edges[u]) {
+		for (auto& other: edges.at(u)) {
 			if (!was[other]) {
 				was[other] = true;
 				dfs(other);

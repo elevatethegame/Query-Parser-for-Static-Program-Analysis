@@ -1,12 +1,13 @@
 #ifndef __PARSERHELPER__H__
 #define __PARSERHELPER__H__
 #include <vector>
+#include <unordered_map>
 #include <map>
 #include <queue>
 
 using namespace std;
 
-bool checkCyclicCalls(map<string, vector<string> >& edges) {
+bool checkCyclicCalls(unordered_map<string, vector<string> >& edges) {
     map<string, int> degree;
 
     for (auto& x: edges) {

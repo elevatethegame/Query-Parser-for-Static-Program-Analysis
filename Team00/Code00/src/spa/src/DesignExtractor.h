@@ -9,6 +9,7 @@ using namespace std;
 
 #include "PKB.h"
 #include "EntityType.h"
+#include "DesignExtractorHelper.h"
 
 class DesignExtractor {
 public:
@@ -26,7 +27,7 @@ public:
 
 	void insertExpression(int id, const Expression& expression);
 
-	void setCalls(map<string, vector<string> >& edges);
+	void setCalls(Direct<string>& edges);
 
 	void insertConstant(string c);
 
@@ -47,7 +48,7 @@ private:
 	vector<EntityType> types;
 	vector<vector<string>> uses;
 	vector<vector<string>> modifies;
-	map<string, vector<string>> calls;
+	unordered_map<string, vector<string>> calls;
 	vector<vector<Expression>> expressions;
 	set<string> constants;
 	string procName;
