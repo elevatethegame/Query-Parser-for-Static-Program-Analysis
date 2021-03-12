@@ -48,6 +48,9 @@ private:
     //number of statement to be incremented
     int numberOfStatements;
 
+    //current procName
+    string currentProcName;
+
     //set of all variables
     set<string> variables;
 
@@ -60,7 +63,9 @@ private:
     ///all calling relationships.
     unordered_map<string, vector<string> > callingRelationships;
 
-    void addCallingRelationship(string caller, string callee);
+    void addStatementCall(int statementId, string callee);
+
+    void addCallingRelationship(int, string callee);
 
     //set the first statement index of the procName
     void startAProcedure(string procName);
