@@ -26,70 +26,62 @@ unordered_set<T> extractVertices(const Indirect<T>& edges) {
 template<typename T>
 Indirect<T> extractStars(const Direct<T>& edges) {
     Indirect<T> results;
-	unordered_map<T, bool> was;
+    unordered_map<T, bool> was;
+    unordered_set<T> collecting;
+    unordered_set<T> allVertices = extractVertices(edges);
+    
 
-	function<void(T)> dfs = [&](T u) {
-		vector<T> &answer = results[u];
-		for (auto& other: edges.at(u)) {
-			if (!was[other]) {
-				was[other] = true;
-				dfs(other);
-			}
-			for (auto& v: results[other]) {
-				answer.push_back(v);
-			}
-			answer.push_back(other);
-		}
-		sort(answer.begin(), answer.end());
-		answer.resize(unique(answer.begin(), answer.end()) - answer.begin());
-	};
+    function<void(T, T)> dfs = [&](T u, T origin) {
+        results[origin].push_back(u);
+        for (auto &nxt: edges.at(u)) {
+            collecting.insert(nxt);
+            if (!was[nxt]) {
+                was[nxt] = true;
+                dfs(nxt, origin);
+            }
+        }
+    };
 
-	unordered_set<T> allVertices;
-	for (auto& x: edges) {
-		allVertices.insert(x.first);
-	}
+    for (auto u: allVertices) {
+        was.clear();
+        collecting.clear();
+        dfs(u, u);
+        for (auto& v: collecting) {
+            results[u].push_back(v);
+        }
+    }
 
-	for (auto& u: allVertices) if (!was[u]) {
-		was[u] = true;
-		dfs(u);
-	}
-
-	return results;
+    return results;
 }
+
 
 template<typename K, typename V>
 Ownership<K, V> extractOwnerships(
 	const Indirect<K> & indirectRelationships,
 	const Ownership<K, V> & directOwnerships) {
-		
-	unordered_map<K, vector<V> > answer;
-	unordered_set<K> allVertices;
-	for (auto &x: indirectRelationships) {
-		allVertices.insert(x.first);
-	}
-	unordered_map<K, bool> was;
-	function<void(K)> dfs = [&](const K& u){
-		vector<V> &currentAnswer = answer[u];
 
-		for (auto &other: directOwnerships[u]) {
-			if (!was[other]) {
-				was[other] = true;
-				dfs(other);
-			}
-			copy(answer[other].begin(), answer[other].end(), std::back_inserter(currentAnswer));
-		}
+    Ownership<K, V> results;
+    unordered_set<K> allVertices = extractVertices(indirectRelationships);
+    
+    for (auto& u: allVertices) {
+        unordered_set<V> collecting;
+        for (auto& v: indirectRelationships.at(u)) {
+            for (auto& w: directOwnerships.at(v)) {
+                collecting.insert(w);
+            }
+        }
+        copy(collecting.begin(), collecting.end(), std::back_inserter(results.at(u)));
+    }
 
-		sort(currentAnswer.begin(), currentAnswer.end());
-		currentAnswer.resize(unique(currentAnswer.begin(), currentAnswer.end()) - currentAnswer.begin());
-	};
-
-	for (auto& u: allVertices) if (!was[u]) {
-		was[u] = true;
-		dfs(u);
-	}
-
-	return answer;
+    return results;
 }
+
+
+template<typename A, typename B, typename C>
+Ownership<A, C> convolute(const Ownership<A, B> &f, const Ownership<B, C> &g) {
+
+}
+
 
 template<typename T, typename K>
 unordered_map<T, vector<K> > convertToMapForm(const vector<vector<K>>& vectorForm, int low, int high) {
