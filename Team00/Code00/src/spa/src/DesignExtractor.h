@@ -52,7 +52,7 @@ private:
 	vector<vector<string>> modifies;
 	unordered_map<string, vector<string>> calls;
 	Ownership<string, int> procedures;
-	vector<vector<Expression>> expressions;
+	vector<vector<Expression> > expressions;
 	set<string> constants;
 	string procName;
 
@@ -62,7 +62,6 @@ private:
 	/// Return last statement of each block 
 	int buildCFGBlock(int stmt);
 	void buildCFG();
-
 
 	// Build Indirect relationships
 	void buildIndirectRelationships();

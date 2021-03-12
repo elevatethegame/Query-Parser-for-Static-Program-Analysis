@@ -191,7 +191,6 @@ void DesignExtractor::setProcedure(string name, int low, int high) {
 	iota(procedures[name].begin(), procedures[name].end(), low);
 }
 
-
 void DesignExtractor::buildIndirectRelationships() {
 	Indirect<string> callStar = extractStars<string>(calls);
 	Indirect<int> parentStar = extractStars<int>(convertToMapForm<int, int>(parents, 1, numberOfStatement));
