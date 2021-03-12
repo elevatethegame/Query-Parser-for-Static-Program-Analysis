@@ -62,6 +62,10 @@ void DesignExtractor::insertModifies(int index, const string& value) {
 	this->modifies[index].emplace_back(value);
 }
 
+void DesignExtractor::insertStatementCall(int index, const string& procName) {
+	this->statementCalls[index].emplace_back(procName);
+}
+
 void DesignExtractor::insertNext(int id1, int id2) {
 	nexts[id1].emplace_back(id2);
 }
@@ -211,7 +215,18 @@ void DesignExtractor::buildIndirectRelationships() {
 		convolute<string, string, string>(callStar, directProcedureModifies)
 	);
 
+	directUses = combine<int, string>(
+		directUses,
+		convolute<int, string, string>(statementCalls, indirectProcedureUses)
+	);
+
+	directModifies = combine<int, string>(
+		directModifies,
+		convolute<int, string, string>(statementCalls, indirectProcedureModifies)
+	);
+
 	Ownership<int, string> indirectUses = extractOwnerships<int, string>(parentStar, directUses);
+
 	Ownership<int, string> indirectModifies = extractOwnerships<int, string>(parentStar, directModifies);
 }
 
