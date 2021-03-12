@@ -5,6 +5,8 @@
 #include <map>
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
+#include <numeric>
 
 using namespace std;
 
@@ -184,9 +186,20 @@ void DesignExtractor::setProcName(string name) {
 	this->procName = name;
 }
 
+void DesignExtractor::setProcedure(string name, int low, int high) {
+	procedures[name].resize(high - low + 1);
+	iota(procedures[name].begin(), procedures[name].end(), low);
+}
+
 
 void DesignExtractor::buildIndirectRelationships() {
 	Indirect<string> callStar = extractStars<string>(calls);
+	Indirect<int> parentStar = extractStars<int>(convertToMapForm<int, int>(parents, 1, numberOfStatement));
+	Indirect<int> followStar = extractStars<int>(convertToMapForm<int, int>(follows, 1, numberOfStatement));
+	Indirect<int> nextStar = extractStars<int>(convertToMapForm<int, int>(nexts, 1, numberOfStatement));
+	// Ownership<string, string> directProcedureUses = ;
+
+	///need indirect uses from statement to statement 
 }
 
 

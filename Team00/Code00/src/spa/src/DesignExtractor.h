@@ -31,6 +31,8 @@ public:
 
 	void insertConstant(string c);
 
+	void setProcedure(string name, int low, int high);
+
 	void setProcName(string name);
 
 	shared_ptr<PKB> extractToPKB();
@@ -49,6 +51,7 @@ private:
 	vector<vector<string>> uses;
 	vector<vector<string>> modifies;
 	unordered_map<string, vector<string>> calls;
+	unordered_map<string, vector<int>> procedures;
 	vector<vector<Expression>> expressions;
 	set<string> constants;
 	string procName;
