@@ -97,7 +97,7 @@ Ownership<A, B> combine(const Ownership<A, B>& f, const Ownership<A, B> &g) {
     unordered_set<A> allVertices = mergeSet<A>(extractVertices(f), extractVertices(g));
 
     for (auto& u: allVertices) {
-        unordered_set<A> collecting;
+        unordered_set<B> collecting;
         if (f.find(u) != f.end()) {
             for (auto&x : f.at(u)) {
                 collecting.insert(x);

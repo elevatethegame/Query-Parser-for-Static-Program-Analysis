@@ -27,6 +27,8 @@ public:
 
 	void insertExpression(int id, const Expression& expression);
 
+	void insertStatementCall(int id, const string &procName);
+
 	void setCalls(Direct<string>& edges);
 
 	void insertConstant(string c);
@@ -52,6 +54,7 @@ private:
 	vector<vector<string>> modifies;
 	unordered_map<string, vector<string>> calls;
 	Ownership<string, int> procedures;
+	Ownership<int, string> statementCalls;
 	vector<vector<Expression> > expressions;
 	set<string> constants;
 	string procName;
