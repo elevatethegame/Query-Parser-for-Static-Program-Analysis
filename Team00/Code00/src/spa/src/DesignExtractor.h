@@ -51,7 +51,7 @@ private:
 	vector<vector<string>> uses;
 	vector<vector<string>> modifies;
 	unordered_map<string, vector<string>> calls;
-	unordered_map<string, vector<int>> procedures;
+	Ownership<string, int> procedures;
 	vector<vector<Expression>> expressions;
 	set<string> constants;
 	string procName;

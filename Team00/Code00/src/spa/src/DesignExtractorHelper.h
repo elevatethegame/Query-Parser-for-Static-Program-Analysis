@@ -22,6 +22,13 @@ unordered_set<T> extractVertices(const Indirect<T>& edges) {
     return answer;
 }
 
+template<typename K, typename V>
+unordered_set<K> extractVertices(const Ownership<K, V> edges) {
+    unordered_set<K> answer;
+    for (auto& x: edges) answer.insert(x.first);
+    return answer; 
+}
+
 
 template<typename T>
 Indirect<T> extractStars(const Direct<T>& edges) {
@@ -118,7 +125,7 @@ Ownership<A, C> convolute(const Ownership<A, B> &f, const Ownership<B, C> &g) {
         unordered_set<C> collecting;
         for (auto& v: f.at(u)) {
             if (g.find(v) != g.end()) {
-                for (auto& w: g(v)) {
+                for (auto& w: g.at(v)) {
                     collecting.insert(w);
                 }
             }

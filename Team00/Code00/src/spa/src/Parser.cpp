@@ -40,6 +40,7 @@ void Parser::addVariable(string variableName) {
 
 void Parser::startAProcedure(string procName) {
 	rangeProcedure[procName].first = this->expectNextStatementIndex();
+	currentProcName = procName;
 }
 
 void Parser::endAProcedure(string procName) {
@@ -71,8 +72,8 @@ void Parser::addExpression(int statementId, Expression expression){
 	this->designExtractor.insertExpression(statementId, expression);
 }
 
-void Parser::addCallingRelationship(string caller, string callee) {
-	this->callingRelationships[caller].emplace_back(callee);
+void Parser::addCallingRelationship(int statementId, string callee) {
+	this->callingRelationships[currentProcName].emplace_back(callee);
 }
 
 ParseResult combineResult(ParseResult first, ParseResult second, SIMPLEToken operand) {
@@ -225,6 +226,8 @@ ParseError Parser::parseCallStatement(SIMPLETokenStream &stream, int parentState
 	auto error = consumeTerminal("call", stream);
 	error = error.combineWith(consumeToken(TokenType::name, stream, calleeName));
 	error = error.combineWith(consumeTerminal(";", stream));
+
+	addCallingRelationship(thisStatementIndex, calleeName.getValue());
 
 	return error;
 }
