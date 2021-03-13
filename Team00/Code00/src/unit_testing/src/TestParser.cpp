@@ -118,3 +118,65 @@ TEST_CASE("Source code parsing more difficult ... ") {
     REQUIRE(equals(extractor.getModifies(2), {"a"}));
 }
 
+
+TEST_CASE("Negative cyclic calls") {
+    vector<string> codes = {
+        "procedure Tuan {",
+        "call Chau;",
+        "}",
+        "procedure Chau {",
+        "call Tuan;",
+        "}"
+    };
+
+    SIMPLETokenStream stream{codes};
+    SIMPLETokenStream secondStream{stream};
+
+    DesignExtractor extractor;
+    Parser parser{extractor};
+    
+    auto error = parser.parseProgram(stream);
+    REQUIRE(error.hasError());
+}
+
+TEST_CASE("Two procedures with same name") {
+    vector<string> codes = {
+        "procedure Tuan {",
+        "a = b;",
+        "}",
+        "procedure Tuan {",
+        "c = d;",
+        "}"
+    };
+
+    SIMPLETokenStream stream{codes};
+    SIMPLETokenStream secondStream{stream};
+
+    DesignExtractor extractor;
+    Parser parser{extractor};
+    
+    auto error = parser.parseProgram(stream);
+    REQUIRE(error.hasError());
+}
+
+TEST_CASE("Calling non existing procedure") {
+    vector<string> codes = {
+        "procedure Tuan {",
+        "call Chau;",
+        "}",
+        "procedure Chau {",
+        "c = d;",
+        "}"
+    };
+
+    SIMPLETokenStream stream{codes};
+    SIMPLETokenStream secondStream{stream};
+
+    DesignExtractor extractor;
+    Parser parser{extractor};
+    
+    auto error = parser.parseProgram(stream);
+    REQUIRE(error.hasError());
+    cerr << error.getErrorMessage() << endl;
+}
+

@@ -56,6 +56,9 @@ private:
 
     //set of all literals
     set<string> literals;
+
+    //set of all procedures
+    set<string> procedures;
     
     ///range of procedures
     map<string, pair<int, int> > rangeProcedure;
