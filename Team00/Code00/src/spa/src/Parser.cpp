@@ -41,6 +41,7 @@ void Parser::addVariable(string variableName) {
 void Parser::startAProcedure(string procName) {
 	rangeProcedure[procName].first = this->expectNextStatementIndex();
 	currentProcName = procName;
+	procedures.insert(procName);
 }
 
 void Parser::endAProcedure(string procName) {
@@ -181,9 +182,13 @@ ParseError Parser::parseProgram(SIMPLETokenStream &stream) {
 			return error;
 		}
 	}
+	if (checkCallOfNonProcedure(this->callingRelationships, this->procedures)) {
+		return ParseError("There is a call of non-existance procedure");
+	}
 	if (checkCyclicCalls(this->callingRelationships)) {
 		return ParseError("There is a cyclic call");
 	}
+
 	this->designExtractor.setCalls(callingRelationships);
 	return ParseError();
 }
@@ -192,6 +197,12 @@ ParseError Parser::parseProcedure(SIMPLETokenStream& stream) {
 	SIMPLEToken procedureName; 
 	auto error = consumeTerminal("procedure", stream);
 	error = error.combineWith(consumeToken(TokenType::name, stream, procedureName));
+	
+	///check duplication of procedure names
+	if (procedures.find(procedureName.getValue()) != procedures.end())  {
+		return ParseError("Two procedures have the same name");
+	}
+
 	this->startAProcedure(procedureName.getValue());
 	error = error.combineWith(consumeTerminal("{", stream));
 	error = error.combineWith(parseStatementList(stream));
@@ -356,6 +367,14 @@ ParseError Parser::parseStatementList(SIMPLETokenStream &stream, int parentState
 			if (error.hasError()) {
 				return error;
 			}	
+		} else 
+		if (nextTwos[0].getValue() == "call" && nextTwos[1].getTokenType() == TokenType::name) {
+			int nextIndices = this->expectNextStatementIndex();
+			listIndices.emplace_back(nextIndices);
+			auto error = parseCallStatement(stream, parentStatementIndex);
+			if (error.hasError()) {
+				return error;
+			}
 		} else {
 			break;
 		}

@@ -7,6 +7,18 @@
 
 using namespace std;
 
+bool checkCallOfNonProcedure(unordered_map<string, vector<string> >& edges, set<string>& allProcedures) {
+    // cerr << allProcedures.size() << endl;
+    for (auto& listEdge: edges) {
+        for (auto& v: listEdge.second) {
+            if (allProcedures.find(v) == allProcedures.end()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 bool checkCyclicCalls(unordered_map<string, vector<string> >& edges) {
     map<string, int> degree;
 
@@ -36,8 +48,8 @@ bool checkCyclicCalls(unordered_map<string, vector<string> >& edges) {
             }
         }
     }
-    
-    return collected == needed;
+
+    return collected != needed;
 }
 
 #endif  //!__PARSERHELPER__H__
