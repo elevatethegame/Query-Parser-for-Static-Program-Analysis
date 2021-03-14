@@ -39,7 +39,7 @@ Indirect<T> extractStars(const Direct<T>& edges) {
     
 
     function<void(T, T)> dfs = [&](T u, T origin) {
-        results[origin].push_back(u);
+        if (edges.find(u) == edges.end()) return;
         for (auto &nxt: edges.at(u)) {
             collecting.insert(nxt);
             if (!was[nxt]) {
