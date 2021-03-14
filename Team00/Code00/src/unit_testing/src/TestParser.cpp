@@ -177,6 +177,5 @@ TEST_CASE("Calling non existing procedure") {
     
     auto error = parser.parseProgram(stream);
     REQUIRE(error.hasError());
-    cerr << error.getErrorMessage() << endl;
 }
 
