@@ -182,9 +182,9 @@ ParseError Parser::parseProgram(SIMPLETokenStream &stream) {
 			return error;
 		}
 	}
-	// if (checkCallOfNonProcedure(this->callingRelationships, this->procedures)) {
-	// 	return ParseError("There is a call of non-existance procedure");
-	// }
+	if (checkCallOfNonProcedure(this->callingRelationships, this->procedures)) {
+		return ParseError("There is a call of non-existance procedure");
+	}
 	if (checkCyclicCalls(this->callingRelationships)) {
 		return ParseError("There is a cyclic call");
 	}
