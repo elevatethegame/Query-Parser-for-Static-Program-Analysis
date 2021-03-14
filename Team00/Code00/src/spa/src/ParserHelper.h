@@ -40,6 +40,7 @@ bool checkCyclicCalls(unordered_map<string, vector<string> >& edges) {
     int collected = 0;
     while (qu.size() > 0) {
         auto u = qu.front();
+        qu.pop();
         ++collected;
         for (auto& v: edges[u]) {
             degree[v]--;

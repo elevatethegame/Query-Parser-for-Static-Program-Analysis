@@ -156,13 +156,13 @@ TEST_CASE("Two procedures with same name") {
     Parser parser{extractor};
     
     auto error = parser.parseProgram(stream);
-    REQUIRE(error.hasError());
+   REQUIRE(error.hasError());
 }
 
 TEST_CASE("Calling non existing procedure") {
     vector<string> codes = {
         "procedure Tuan {",
-        "call Chau;",
+        "call chau;",
         "}",
         "procedure Chau {",
         "c = d;",
