@@ -103,6 +103,7 @@ unordered_set<A> mergeSet(const unordered_set<A>& f, const unordered_set<A> &g) 
     return results;
 }
 
+///f or g combinations
 template<typename A, typename B>
 Ownership<A, B> combine(const Ownership<A, B>& f, const Ownership<A, B> &g) {
     Ownership<A, B> results;
@@ -126,7 +127,7 @@ Ownership<A, B> combine(const Ownership<A, B>& f, const Ownership<A, B> &g) {
     return results;
 }
 
-
+// a -> b, b -> c then a -> c
 template<typename A, typename B, typename C>
 Ownership<A, C> convolute(const Ownership<A, B> &f, const Ownership<B, C> &g) {
     ///need to solve in |A||B| + |A||C| + |B||C|

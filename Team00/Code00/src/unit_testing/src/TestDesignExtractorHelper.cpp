@@ -161,6 +161,71 @@ TEST_CASE("Test extract ownership simple") {
 
     normalize(answer);
     normalize(result);
-    
+
     REQUIRE(compareRelationships(answer, result));
+}
+
+TEST_CASE("Test merge set") {
+    unordered_set<string> f = {"A", "B"};
+    unordered_set<string> g = {"C", "D", "B"};
+    unordered_set<string> answer = {"A", "B", "C", "D"};
+
+    REQUIRE(answer == mergeSet(f, g));
+}
+
+TEST_CASE("Test combine") {
+    Ownership<int, string> f = {
+        {1, {"a", "b"}},
+        {2, {"c", "d"}},
+        {4, {}}
+    };
+
+    Ownership<int, string> g = {
+        {1, {"a", "c"}},
+        {2, {}},
+        {3, {"g"}},
+        {4, {"f"}},
+    };
+
+    auto result = combine(f, g);
+
+    Ownership<int, string> answer = {
+        {1, {"a", "b", "c"}},
+        {2, {"c", "d"}},
+        {3, {"g"}},
+        {4, {"f"}}
+    };
+
+    normalize(answer);
+    normalize(result);
+
+    REQUIRE(compareRelationships(answer, result));
+}
+
+TEST_CASE("Test convolute") {
+    Ownership<string, int> f = {
+        {"Tuan", {1, 2}},
+        {"Depzai", {1}},
+        {"Hello", {3}}
+    };
+
+    Ownership<int, string> g = {
+        {1, {"a", "b"}},
+        {2, {"c", "a"}},
+    };
+
+    auto result = convolute(f, g);
+
+    Ownership<string, string> answer = {
+        {"Tuan", {"a", "b", "c"}},
+        {"Depzai", {"a", "b"}},
+        {"Hello", {}}
+    };
+
+    normalize(answer);
+    normalize(result);
+
+    REQUIRE(compareRelationships(answer, result));
+
+
 }
