@@ -61,7 +61,7 @@ Indirect<T> extractStars(const Direct<T>& edges) {
     return results;
 }
 
-
+//return current ownership added with indirect ownerships
 template<typename K, typename V>
 Ownership<K, V> extractOwnerships(
 	const Indirect<K> & indirectRelationships,
@@ -72,12 +72,24 @@ Ownership<K, V> extractOwnerships(
     
     for (auto& u: allVertices) {
         unordered_set<V> collecting;
-        for (auto& v: indirectRelationships.at(u)) {
-            for (auto& w: directOwnerships.at(v)) {
+
+        auto directU = directOwnerships.find(u);
+        if (directU != directOwnerships.end()) {
+            for (auto& w: directU->second) {
                 collecting.insert(w);
             }
         }
-        copy(collecting.begin(), collecting.end(), std::back_inserter(results.at(u)));
+        if (indirectRelationships.find(u) != indirectRelationships.end()) {
+            for (auto& v: indirectRelationships.at(u)) {
+                if (directOwnerships.find(v) != directOwnerships.end()) {
+                    for (auto& w: directOwnerships.at(v)) {
+                        collecting.insert(w);
+                    }
+                }
+            }
+        }
+
+        copy(collecting.begin(), collecting.end(), std::back_inserter(results[u]));
     }
 
     return results;
