@@ -26,7 +26,7 @@ DesignExtractor::DesignExtractor() {
 	uses.emplace_back(0);
 	modifies.emplace_back(0);
 	nexts.emplace_back(0);
-	revFlows.emplace_back(0);
+	affects.emplace_back(0);
 	expressions.push_back({});
 }
 
@@ -38,7 +38,7 @@ void DesignExtractor::increaseNumberOfStatement(EntityType type) {
 	uses.emplace_back(0);
 	modifies.emplace_back(0);
 	nexts.emplace_back(0);
-	revFlows.emplace_back(0);
+	affects.emplace_back(0);
 	expressions.push_back({});
 }
 
@@ -70,9 +70,6 @@ void DesignExtractor::insertNext(int id1, int id2) {
 	nexts[id1].emplace_back(id2);
 }
 
-void DesignExtractor::insertRevFlow(int id1, int id2) {
-	revFlows[id1].emplace_back(id2);
-}
 
 int DesignExtractor::buildCFGBlock(int stmt) {
 	auto stmtType = types[stmt];
@@ -90,13 +87,9 @@ int DesignExtractor::buildCFGBlock(int stmt) {
 
 		insertNext(stmt, firstBlockIfSt);
 		insertNext(stmt, sndBlockIfSt);
-		insertRevFlow(firstBlockIfSt, stmt);
-		insertRevFlow(sndBlockIfSt, stmt);
 		if (nextStmt != -1) {
 			insertNext(firstBlockIfEnd, nextStmt);
 			insertNext(sndBlockIfEnd, nextStmt);
-			insertRevFlow(nextStmt, firstBlockIfEnd);
-			insertRevFlow(nextStmt, sndBlockIfEnd);
 		}
 	} 
 	else if (stmtType == EntityType::WHILE) {
@@ -106,19 +99,15 @@ int DesignExtractor::buildCFGBlock(int stmt) {
 		int blockEnd = buildCFGBlock(blockSt);
 
 		insertNext(stmt, blockSt);
-		insertRevFlow(blockSt, stmt);
-
 		insertNext(blockEnd, stmt);
 
 		if (nextStmt != -1) {
 			insertNext(stmt, nextStmt);
-			insertRevFlow(nextStmt, stmt);
 		}
 	}
 	else {
 		if (nextStmt != -1) {
 			insertNext(stmt, nextStmt);
-			insertRevFlow(nextStmt, stmt);
 		}
 	}
 
@@ -135,6 +124,50 @@ void DesignExtractor::buildCFG() {
 	int currentStmt = 1;
 	while (currentStmt <= numberOfStatement) {
 		currentStmt = buildCFGBlock(currentStmt) + 1;
+	}
+}
+
+void DesignExtractor::affectDFS(int startStmt, int curStmt, string var, vector<int>& visited){
+	if (visited[curStmt] == startStmt) {
+		/// already visit the statement 
+		return; 
+	}
+	visited[curStmt] = startStmt;
+
+	if (types[curStmt] == EntityType::ASSIGN) {
+		///TODO : check if curStmt use the var 
+		if (true) {
+			affects[startStmt].push_back(curStmt);
+		}
+	}
+	/// TODO : check if curStmt modifies the var
+
+	/// if statement call, then need relationship Modifies 
+	if (types[curStmt] == EntityType::CALL) {
+		if (true) {
+			return;
+		}
+	}
+	///else, only need direct modifies 
+	if (true) {
+		return;
+	}
+
+	for (auto nextStmt : nexts[curStmt]) {
+		affectDFS(startStmt, curStmt, var, visited);
+	}
+}
+
+void DesignExtractor::buildDirectAffect() {
+	vector<int> visited(numberOfStatement, 0);
+	for (int startStmt = 1; startStmt <= numberOfStatement; startStmt++) {
+		if (types[startStmt] == EntityType::ASSIGN) {
+			assert(modifies[startStmt].size() == 1);
+			string var = modifies[startStmt][0];
+			for (auto nextStmt : nexts[startStmt]) {
+				affectDFS(startStmt, nextStmt, var, visited);
+			}
+		}
 	}
 }
 
