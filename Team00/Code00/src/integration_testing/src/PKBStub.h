@@ -1,35 +1,60 @@
-#pragma once
 #include "PKBInterface.h"
+#include <memory>
 
 class PKBStub : public PKBInterface {
 public:
 
-	unordered_map<string, set<string>> relationshipClauseReturnValue;
-	unordered_map<string, set<string>> patternClauseReturnValue;
-	set<string> getEntitiesReturnValue;
-	bool boolReturnValue = true;
+	vector<unordered_map<string, set<string>>> mapResults;
+	int mapResultsCount;
+
+	vector<set<string>> setResults;
+	int setResultsCount;
+
+	vector<bool> boolReturnValues;
+	int boolCount;
 
 	// original api being stubbed
 
 	set<string> getEntities(const EntityType& type);
 
-	unordered_map<string, set<string>> getResultsOfRS(
-		const RelationshipType& type, shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
-
-
 	bool getBooleanResultOfRS(const RelationshipType& type,
+		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
+
+	unordered_map<string, set<string>> getMapResultsOfRS(const RelationshipType& type,
+		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
+
+	set<string> getSetResultsOfRS(const RelationshipType& type,
+		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
+
+	unordered_map<string, set<string>> getMapResultsOfAssignPattern(
+		shared_ptr<QueryInput> input, Expression expression);
+
+	set<string> getSetResultsOfAssignPattern(
+		shared_ptr<QueryInput> input, Expression expression);
+
+	unordered_map<string, set<string>> getMapResultsOfContainerPattern(
+		const EntityType& type, shared_ptr<QueryInput> input);
+
+	set<string> getSetResultsOfContainerPattern(
+		const EntityType& type, shared_ptr<QueryInput> input);
+
+
+	// Following 2 methods to be removed during iter2 merge with PKB
+	unordered_map<string, set<string>> getResultsOfRS(const RelationshipType& type,
 		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
 	unordered_map<string, set<string>> getResultsOfPattern(
 		const EntityType& type, shared_ptr<QueryInput> input, Expression expression);
 
-	// setter methods to set the return values for each different test case
+	// Methods to add the return values for each different test case
+	void addBooleanResult(bool value);
 
-	void setGetEntitiesReturnValue(set<string> value);
+	void addMapResult(unordered_map<string, set<string>> value);
 
-	void setGetResultsOfRSReturnValue(unordered_map<string, set<string>> value);
+	void addSetResult(set<string> value);
 
-	void setGetBooleanResultOfRSReturnValue(bool value);
+	// Other methods
+	PKBStub();
+	void resetCounts();
 
-	void setGetResultsOfPatternReturnValue(unordered_map<string, set<string>> value);
 };

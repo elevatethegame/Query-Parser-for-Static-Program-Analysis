@@ -282,7 +282,7 @@ TEST_CASE("testPatternClauseSuccess") {
 		shared_ptr<Expression> expression = make_shared<Expression>("1");
 
 		query->setSelectClause(declaration);
-		query->addPatternClause(declaration, identX, expression);
+		query->addAssignPatternClause(declaration, identX, expression);
 
 		QueryEvaluator qe = QueryEvaluator(query, pkb);
 
@@ -305,7 +305,7 @@ TEST_CASE("testPatternClauseSuccess") {
 		shared_ptr<Expression> expression = make_shared<Expression>("count");
 
 		query->setSelectClause(declaration);
-		query->addPatternClause(declaration, identX, expression);
+		query->addAssignPatternClause(declaration, identX, expression);
 
 		QueryEvaluator qe = QueryEvaluator(query, pkb);
 
@@ -328,7 +328,7 @@ TEST_CASE("testPatternClauseSuccess") {
 		shared_ptr<Expression> expression = make_shared<Expression>("_");
 
 		query->setSelectClause(declaration);
-		query->addPatternClause(declaration, identX, expression);
+		query->addAssignPatternClause(declaration, identX, expression);
 
 		QueryEvaluator qe = QueryEvaluator(query, pkb);
 
@@ -450,7 +450,7 @@ TEST_CASE("testSuchThatAndPatternClausesSuccess") {
 
 		query->setSelectClause(declaration);
 		query->addRelationshipClause(RelationshipType::USES, declaration, identT);
-		query->addPatternClause(declaration, identT, expression);
+		query->addAssignPatternClause(declaration, identT, expression);
 
 		QueryEvaluator qe = QueryEvaluator(query, pkb);
 
@@ -481,7 +481,7 @@ TEST_CASE("testSuchThatAndPatternClausesSuccess") {
 
 		query->setSelectClause(declarationV);
 		query->addRelationshipClause(RelationshipType::FOLLOWS_T, stmtnum, stmt);
-		query->addPatternClause(declarationA, identX, expression);
+		query->addAssignPatternClause(declarationA, identX, expression);
 
 		QueryEvaluator qe = QueryEvaluator(query, pkb);
 
@@ -507,7 +507,7 @@ TEST_CASE("testSuchThatAndPatternClausesSuccess") {
 
 		query->setSelectClause(declarationV);
 		query->addRelationshipClause(RelationshipType::USES, declarationA, declarationV);
-		query->addPatternClause(declarationA, identT, expression);
+		query->addAssignPatternClause(declarationA, identT, expression);
 
 		QueryEvaluator qe = QueryEvaluator(query, pkb);
 
@@ -533,7 +533,7 @@ TEST_CASE("testSuchThatAndPatternClausesSuccess") {
 
 		query->setSelectClause(declarationS);
 		query->addRelationshipClause(RelationshipType::FOLLOWS_T, declarationA, declarationS);
-		query->addPatternClause(declarationA, declarationV, expression);
+		query->addAssignPatternClause(declarationA, declarationV, expression);
 
 		QueryEvaluator qe = QueryEvaluator(query, pkb);
 
@@ -560,7 +560,7 @@ TEST_CASE("testSuchThatAndPatternClausesSuccess") {
 
 		query->setSelectClause(declarationW);
 		query->addRelationshipClause(RelationshipType::FOLLOWS_T, declarationW, wildcard);
-		query->addPatternClause(declarationA, declarationV, expression);
+		query->addAssignPatternClause(declarationA, declarationV, expression);
 
 		QueryEvaluator qe = QueryEvaluator(query, pkb);
 
