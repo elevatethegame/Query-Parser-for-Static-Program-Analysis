@@ -176,7 +176,7 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 	//Select a pattern a(v, _x_)
 	SECTION("Assign pattern clause has synonym input, evaluates to non empty results") {
 		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expression = make_shared<Expression>("x");
+		shared_ptr<Expression> expression = make_shared<Expression>("x", ExpressionType::EXACT);
 		query->addAssignPatternClause(assign, var, expression);
 
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
@@ -197,7 +197,7 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 	//Select a pattern a(_, _)
 	SECTION("Assign pattern clause has non synonym input, evaluates to non empty results") {
 		shared_ptr<QueryInput> wildcard = dynamic_pointer_cast<QueryInput>(make_shared<Any>("_"));
-		shared_ptr<Expression> expression = make_shared<Expression>("_");
+		shared_ptr<Expression> expression = make_shared<Expression>("_", ExpressionType::EMPTY);
 		query->addAssignPatternClause(assign, wildcard, expression);
 
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
@@ -218,7 +218,7 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 	//Select a pattern a(v, _x_)
 	SECTION("Assign pattern clause has synonym input, evaluates to empty results") {
 		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expression = make_shared<Expression>("x");
+		shared_ptr<Expression> expression = make_shared<Expression>("x", ExpressionType::EXACT);
 		query->addAssignPatternClause(assign, var, expression);
 
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
@@ -239,7 +239,7 @@ TEST_CASE("Evaluating query with only one pattern clause") {
 	//Select a pattern a(_, _)
 	SECTION("Assign pattern clause has non synonym input, evaluates to empty results") {
 		shared_ptr<QueryInput> wildcard = dynamic_pointer_cast<QueryInput>(make_shared<Any>("_"));
-		shared_ptr<Expression> expression = make_shared<Expression>("_");
+		shared_ptr<Expression> expression = make_shared<Expression>("_", ExpressionType::EMPTY);
 		query->addAssignPatternClause(assign, wildcard, expression);
 
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
@@ -441,7 +441,7 @@ TEST_CASE("Evaluating query with both such that and pattern clause") {
 		pkb->addMapResult(rsClauseResult);
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("x");
+		shared_ptr<Expression> expr = make_shared<Expression>("x", ExpressionType::EXACT);
 		shared_ptr<QueryInput> assign2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign2, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
@@ -470,7 +470,7 @@ TEST_CASE("Evaluating query with both such that and pattern clause") {
 		pkb->addMapResult(rsClauseResult);
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<Expression> expr = make_shared<Expression>("_", ExpressionType::EMPTY);
 		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
@@ -499,7 +499,7 @@ TEST_CASE("Evaluating query with both such that and pattern clause") {
 		pkb->addMapResult(rsClauseResult);
 
 		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<Expression> expr = make_shared<Expression>("_", ExpressionType::EMPTY);
 		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign, var, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count", "p"} } };
@@ -538,7 +538,7 @@ TEST_CASE("Evaluating query with both such that and pattern clause") {
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
 		shared_ptr<QueryInput> assign2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<Expression> expr = make_shared<Expression>("_", ExpressionType::EMPTY);
 		query->addAssignPatternClause(assign2, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
 		pkb->addMapResult(patternClauseResult);
@@ -567,7 +567,7 @@ TEST_CASE("Evaluating query with both such that and pattern clause") {
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
 		shared_ptr<QueryInput> assign2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<Expression> expr = make_shared<Expression>("_", ExpressionType::EMPTY);
 		query->addAssignPatternClause(assign2, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = {};
 		pkb->addMapResult(patternClauseResult);
@@ -588,7 +588,7 @@ TEST_CASE("Evaluating query with both such that and pattern clause") {
 		pkb->addMapResult(rsClauseResult);
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<Expression> expr = make_shared<Expression>("_", ExpressionType::EMPTY);
 		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
@@ -617,7 +617,7 @@ TEST_CASE("Evaluating query with both such that and pattern clause") {
 		pkb->addMapResult(rsClauseResult);
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<Expression> expr = make_shared<Expression>("_", ExpressionType::EMPTY);
 		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = {};
@@ -1042,7 +1042,7 @@ TEST_CASE("Evaluating query with multiple such that and pattern clauses") {
 		pkb->addMapResult(rsClauseResult2);
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("x");
+		shared_ptr<Expression> expr = make_shared<Expression>("x", ExpressionType::EXACT);
 		shared_ptr<QueryInput> assign2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign2, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} }, { "8", {"x", "y"} } };
@@ -1071,7 +1071,7 @@ TEST_CASE("Evaluating query with multiple such that and pattern clauses") {
 		pkb->addMapResult(rsClauseResult);
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("x");
+		shared_ptr<Expression> expr = make_shared<Expression>("x", ExpressionType::EXACT);
 		shared_ptr<QueryInput> assign2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign2, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
@@ -1111,7 +1111,7 @@ TEST_CASE("Evaluating query with multiple such that and pattern clauses") {
 		pkb->addMapResult(rsClauseResult);
 
 		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<Expression> expr = make_shared<Expression>("_", ExpressionType::EMPTY);
 		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign, var, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count", "p"} } };
@@ -1159,7 +1159,7 @@ TEST_CASE("Evaluating query with multiple such that and pattern clauses") {
 		pkb->addMapResult(rsClauseResult2);
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("x");
+		shared_ptr<Expression> expr = make_shared<Expression>("x", ExpressionType::EXACT);
 		shared_ptr<QueryInput> assign2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign2, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} }, { "8", {"x", "y"} } };
@@ -1181,7 +1181,7 @@ TEST_CASE("Evaluating query with multiple such that and pattern clauses") {
 		pkb->addMapResult(rsClauseResult);
 
 		shared_ptr<QueryInput> var2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("x");
+		shared_ptr<Expression> expr = make_shared<Expression>("x", ExpressionType::EXACT);
 		shared_ptr<QueryInput> assign2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign2, var2, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count"} }, { "51", {"x"} } };
@@ -1214,7 +1214,7 @@ TEST_CASE("Evaluating query with multiple such that and pattern clauses") {
 		pkb->addMapResult(rsClauseResult);
 
 		shared_ptr<QueryInput> var = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::VAR, varSynonym));
-		shared_ptr<Expression> expr = make_shared<Expression>("_");
+		shared_ptr<Expression> expr = make_shared<Expression>("_", ExpressionType::EMPTY);
 		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
 		query->addAssignPatternClause(assign, var, expr);
 		unordered_map<string, set<string>> patternClauseResult = { { "1", {"x1", "u"} }, { "3", {"count", "p"} } };
