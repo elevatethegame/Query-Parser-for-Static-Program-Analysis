@@ -43,13 +43,3 @@ procedure p;
 Select p such that Calls(p, p)
 none
 5000
-10 - comment
-procedure p;
-Select p such that Calls("e", p)
-none
-5000
-11 - comment
-procedure p;
-Select p such that Calls(p, "i")
-none
-5000
