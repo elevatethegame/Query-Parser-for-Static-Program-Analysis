@@ -44,6 +44,9 @@ private:
     bool declaration();
     bool suchThatClause();
     bool patternClause();
+    void patternAssign();
+    void patternWhile();
+    void patternIf();
     void relRef();
     std::shared_ptr<QueryInput> stmtRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
     std::shared_ptr<QueryInput> entRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
@@ -54,8 +57,10 @@ private:
     bool Calls();
     bool Next();
     std::shared_ptr<Expression> expressionSpec();
-    std::unique_ptr<Token> subExpression();
-    std::unique_ptr<Token> factor();
+    void expression(Expression& result);
+    std::unique_ptr<Token> acceptTermSymbol();
+    void term(Expression& result);
+    void factor(Expression& result);
 
 public:
 
