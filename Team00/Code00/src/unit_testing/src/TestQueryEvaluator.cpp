@@ -24,6 +24,8 @@ TEST_CASE("Evaluating query with select clause only, No optional clauses") {
 TEST_CASE("Evaluating query with only one relationship clause") {
 	string stmtSynonym = "s";
 	string assignSynonym = "a";
+	string progLineSynonym1 = "n1";
+	string progLineSynonym2 = "n2";
 
 	shared_ptr<QueryInterface> query = dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
 	shared_ptr<Declaration> declaration = make_shared<Declaration>(EntityType::ASSIGN, "a");
@@ -31,14 +33,14 @@ TEST_CASE("Evaluating query with only one relationship clause") {
 	
 	//Select a such that Follows(s, a)
 	SECTION("relationship clause has 2 synonym input, evaluates to non empty results") {
-		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
-		shared_ptr<QueryInput> assign = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::ASSIGN, assignSynonym));
-		query->addRelationshipClause(RelationshipType::FOLLOWS, stmt, assign);
+		shared_ptr<QueryInput> progLine1 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROG_LINE, progLineSynonym1));
+		shared_ptr<QueryInput> progLine2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROG_LINE, progLineSynonym2));
+		query->addRelationshipClause(RelationshipType::NEXT_T, progLine1, progLine2);
 
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
 		unordered_map<string, set<string>> pkbRsResult = { { "1", {"12", "13", "14"} }, { "2", {"22", "23", "24"} } };
 		pkb->addMapResult(pkbRsResult);
-		unordered_map<string, int> expectedMap = { {stmtSynonym, 0}, {assignSynonym, 1} };
+		unordered_map<string, int> expectedMap = { {progLineSynonym1, 0}, {progLineSynonym2, 1} };
 		vector<vector<string>> expectedTable = { {"1", "12"}, {"1", "13"}, {"1", "14"}, {"2", "22"}, {"2", "23"}, {"2", "24"} };
 		
 		QueryEvaluator qe = QueryEvaluator(query, pkb);
@@ -1095,13 +1097,13 @@ TEST_CASE("Evaluating query with multiple such that and pattern clauses") {
 		TestResultsTableUtil::checkTable(actualTable, expectedTable);
 	}
 
-	//Select a such that Next(1, 2) such that Parent*(s, w) pattern a(v, _) pattern ifs(v, _, _)
+	//Select a such that Next(n1, n2) such that Parent*(s, w) pattern a(v, _) pattern ifs(v, _, _)
 	SECTION("2 such that and 2 pattern clauses, all evaluates to non empty results") {
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
 
-		shared_ptr<QueryInput> progLine1 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROG_LINE, progLine1Synonym));
-		shared_ptr<QueryInput> progLine2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROG_LINE, progLine2Synonym));
-		query->addRelationshipClause(RelationshipType::NEXT, progLine1, progLine2);
+		shared_ptr<QueryInput> stmtNum1 = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>("1"));
+		shared_ptr<QueryInput> stmtNum2 = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>("2"));
+		query->addRelationshipClause(RelationshipType::NEXT, stmtNum1, stmtNum2);
 		pkb->addBooleanResult(true);
 
 		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
@@ -1202,9 +1204,9 @@ TEST_CASE("Evaluating query with multiple such that and pattern clauses") {
 	SECTION("2 such that and 2 pattern clauses, evaluates to empty results") {
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
 
-		shared_ptr<QueryInput> progLine1 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROG_LINE, progLine1Synonym));
-		shared_ptr<QueryInput> progLine2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROG_LINE, progLine2Synonym));
-		query->addRelationshipClause(RelationshipType::NEXT, progLine1, progLine2);
+		shared_ptr<QueryInput> stmtNum1 = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>("1"));
+		shared_ptr<QueryInput> stmtNum2 = dynamic_pointer_cast<QueryInput>(make_shared<StmtNum>("2"));
+		query->addRelationshipClause(RelationshipType::NEXT, stmtNum1, stmtNum2);
 		pkb->addBooleanResult(false);
 
 		shared_ptr<QueryInput> stmt = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::STMT, stmtSynonym));
