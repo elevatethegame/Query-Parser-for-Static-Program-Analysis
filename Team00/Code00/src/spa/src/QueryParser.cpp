@@ -392,15 +392,15 @@ bool QueryParser::next()
             relType = RelationshipType::NEXT;
 
         expect(TokenTypes::LeftParen);
-        std::shared_ptr<QueryInput> leftQueryInput = expect(entRef(std::set<EntityType>(
+        std::shared_ptr<QueryInput> leftQueryInput = expect(stmtRef(std::set<EntityType>(
             { EntityType::PROGLINE })
             , true)
-            , false);
+            , true);
         expect(TokenTypes::Comma);
-        std::shared_ptr<QueryInput> rightQueryInput = expect(entRef(std::set<EntityType>(
+        std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
             { EntityType::PROGLINE })
             , true)
-            , false);
+            , true);
         expect(TokenTypes::RightParen);
 
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);

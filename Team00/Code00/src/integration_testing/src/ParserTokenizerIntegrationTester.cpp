@@ -1196,6 +1196,250 @@ TEST_CASE("Test Calls( \"Ident\",  \"Ident\")")
 	REQUIRE(rightQueryInput->getValue() == "calculateLength");
 }
 
+// ----------------- Test Next -----------------
+
+TEST_CASE("Test Next(Any, Any)")
+{
+	std::string input = "prog_line pgl1;\nSelect pgl1 such that Next(_, _)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(selectClDeclaration->getValue() == "pgl1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::NEXT);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
+}
+
+TEST_CASE("Test Next(Synonym, Any)")
+{
+	std::string input = "prog_line pgl1;\nSelect pgl1 such that Next(pgl1, _)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(selectClDeclaration->getValue() == "pgl1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::NEXT);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "pgl1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
+}
+
+TEST_CASE("Test Next(Integer, Any)")
+{
+	std::string input = "prog_line pgl1, pgl2;\nSelect pgl1 such that Next*(777, _)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+	REQUIRE(synonyms["pgl2"] == EntityType::PROGLINE);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(selectClDeclaration->getValue() == "pgl1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::NEXT_T);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "777");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
+}
+
+TEST_CASE("Test Next(Any, Synonym)")
+{
+	std::string input = "prog_line pgl1;\nSelect pgl1 such that Next*(_, pgl1)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(selectClDeclaration->getValue() == "pgl1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::NEXT_T);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "pgl1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::PROGLINE);
+}
+
+TEST_CASE("Test Next(Synonym, Synonym)")
+{
+	std::string input = "prog_line pgl1, pgl2;\nSelect pgl1 such that Next*(pgl1, pgl2)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+	REQUIRE(synonyms["pgl2"] == EntityType::PROGLINE);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(selectClDeclaration->getValue() == "pgl1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::NEXT_T);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "pgl1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "pgl2");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::PROGLINE);
+}
+
+TEST_CASE("Test Next(Integer, Synonym)")
+{
+	std::string input = "prog_line pgl1;\nSelect pgl1 such that Next(82, pgl1)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(selectClDeclaration->getValue() == "pgl1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::NEXT);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "82");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "pgl1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::PROGLINE);
+}
+
+TEST_CASE("Test Next(Any, Integer)")
+{
+	std::string input = "prog_line pgl1;\nSelect pgl1 such that Next*(_, 32)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(selectClDeclaration->getValue() == "pgl1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::NEXT_T);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(rightQueryInput->getValue() == "32");
+}
+
+TEST_CASE("Test Next(Synonym, Integer)")
+{
+	std::string input = "prog_line pgl1;\nSelect pgl1 such that Next*(pgl1, 77)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(selectClDeclaration->getValue() == "pgl1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::NEXT_T);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "pgl1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(rightQueryInput->getValue() == "77");
+}
+
+TEST_CASE("Test Next(Integer, Integer)")
+{
+	std::string input = "prog_line pgl1;\nSelect pgl1 such that Next(55, 555)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROGLINE);
+	REQUIRE(selectClDeclaration->getValue() == "pgl1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::NEXT);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "55");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(rightQueryInput->getValue() == "555");
+}
+
 // ----------------- SelectCl + SuchThatCl + PatternCl -----------------
 
 TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
