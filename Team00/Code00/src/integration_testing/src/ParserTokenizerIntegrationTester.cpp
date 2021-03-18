@@ -953,6 +953,249 @@ TEST_CASE("Test Uses(Integer, Ident)")
 	REQUIRE(rightQueryInput->getValue() == "aVariable");
 }
 
+// ----------------- Test Calls -----------------
+
+TEST_CASE("Test Calls(Any, Any)")
+{
+	std::string input = "procedure pcd1;\nSelect pcd1 such that Calls(_, _)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROC);
+	REQUIRE(selectClDeclaration->getValue() == "pcd1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::CALLS);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
+}
+
+TEST_CASE("Test Calls(Synonym, Any)")
+{
+	std::string input = "procedure pcd1;\nSelect pcd1 such that Calls(pcd1, _)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROC);
+	REQUIRE(selectClDeclaration->getValue() == "pcd1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::CALLS);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "pcd1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::PROC);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
+}
+
+TEST_CASE("Test Calls(\"Ident\", Any)")
+{
+	std::string input = "procedure pcd1;\nSelect pcd1 such that Calls(\"findDist\", _)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROC);
+	REQUIRE(selectClDeclaration->getValue() == "pcd1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::CALLS);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(leftQueryInput->getValue() == "findDist");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
+}
+
+TEST_CASE("Test Calls(Any, Synonym)")
+{
+	std::string input = "procedure pcd1;\nSelect pcd1 such that Calls(_, pcd1)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROC);
+	REQUIRE(selectClDeclaration->getValue() == "pcd1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::CALLS);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "pcd1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::PROC);
+}
+
+TEST_CASE("Test Calls(Synonym, Synonym)")
+{
+	std::string input = "procedure pcd1, pcd2;\nSelect pcd1 such that Calls(pcd1, pcd2)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
+	REQUIRE(synonyms["pcd2"] == EntityType::PROC);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROC);
+	REQUIRE(selectClDeclaration->getValue() == "pcd1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::CALLS);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "pcd1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::PROC);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "pcd2");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::PROC);
+}
+
+TEST_CASE("Test Calls(\"Ident\", Synonym)")
+{
+	std::string input = "procedure pcd1;\nSelect pcd1 such that Calls(\"calculateLength\", pcd1)";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROC);
+	REQUIRE(selectClDeclaration->getValue() == "pcd1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::CALLS);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(leftQueryInput->getValue() == "calculateLength");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "pcd1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::PROC);
+}
+
+TEST_CASE("Test Calls(Any, \"Ident\")")
+{
+	std::string input = "procedure pcd1;\nSelect pcd1 such that Calls(_, \"findDist\")";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROC);
+	REQUIRE(selectClDeclaration->getValue() == "pcd1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::CALLS);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(rightQueryInput->getValue() == "findDist");
+}
+
+TEST_CASE("Test Calls(Synonym, \"Ident\")")
+{
+	std::string input = "procedure pcd1;\nSelect pcd1 such that Calls(pcd1, \"calculateLength\")";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROC);
+	REQUIRE(selectClDeclaration->getValue() == "pcd1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::CALLS);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "pcd1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::PROC);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(rightQueryInput->getValue() == "calculateLength");
+}
+
+TEST_CASE("Test Calls( \"Ident\",  \"Ident\")")
+{
+	std::string input = "procedure pcd1;\nSelect pcd1 such that Calls(\"findMax\", \"calculateLength\")";
+	auto query = std::make_shared<Query>();
+	QueryParser queryParser = QueryParser{ input, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
+
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PROC);
+	REQUIRE(selectClDeclaration->getValue() == "pcd1");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::CALLS);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(leftQueryInput->getValue() == "findMax");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(rightQueryInput->getValue() == "calculateLength");
+}
+
 // ----------------- SelectCl + SuchThatCl + PatternCl -----------------
 
 TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
