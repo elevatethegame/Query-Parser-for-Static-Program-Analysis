@@ -54,3 +54,12 @@ Select w such that Uses(w, "a") and Parent(w, r)
 26
 5000
 12 - comment
+variable v;
+Select v such that Uses("charlie", v) and Modifies("delta", v)
+p, s, e, r
+5000
+13 - comment
+variable v; if ifs; while w;
+Select v such that Uses(w, v)  and Uses(ifs, v)
+a, d, b, e, y, w, q, o, r, n, g
+5000
