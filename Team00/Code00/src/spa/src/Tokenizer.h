@@ -13,6 +13,7 @@ private:
 
     InputStream inputStream;
 
+    static bool isAlphanumericOrUnderscore(char c);
     std::unique_ptr<Token> readInteger();
     std::unique_ptr<Token> readIdentifier();
     std::string readWhile(std::function<bool(char)> predicate);

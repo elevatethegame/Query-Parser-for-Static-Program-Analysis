@@ -5,6 +5,9 @@ std::string Token::TokenTypeToString(TokenTypes type)
 {
     switch (type)
     {
+    case TokenTypes::And:
+        return "Token Type of And";
+        break;
     case TokenTypes::Asterisk:
         return "Token Type of Asterisk";
         break;
@@ -35,6 +38,12 @@ std::string Token::TokenTypeToString(TokenTypes type)
     case TokenTypes::Parent:
         return "Token Type of Parent";
         break;
+    case TokenTypes::Calls:
+        return "Token Type of Calls";
+        break;
+    case TokenTypes::Next:
+        return "Token Type of Next";
+        break;
     case TokenTypes::Pattern:
         return "Token Type of Pattern";
         break;
@@ -55,6 +64,12 @@ std::string Token::TokenTypeToString(TokenTypes type)
         break;
     case TokenTypes::Underscore:
         return "Token Type of Underscore";
+        break;
+    case TokenTypes::ExprSymbol:
+        return "Token Type of ExprSymbol";
+        break;
+    case TokenTypes::TermSymbol:
+        return "Token Type of TermSymbol";
         break;
     default:  // case TokenTypes::Uses
         return "Token Type of Uses";
@@ -93,6 +108,9 @@ std::string Token::EntityTypeToString(EntityType type)
     case EntityType::VAR:
         return "Entity Type of Variable";
         break;
+    case EntityType::PROGLINE:
+        return "Entity Type of Program line";
+        break;
     case EntityType::WHILE:
         return "Entity Type of While";
         break;
@@ -120,69 +138,14 @@ std::string Token::getValue()
 
 std::string Token::toString()
 {
-    switch (type)
-    {
-    case TokenTypes::Asterisk:
-        return "Token Type of Asterisk with value: " + value;
-        break;
-    case TokenTypes::Comma:
-        return "Token Type of Comma with value: " + value;
-        break;
-    case TokenTypes::DesignEntity:
-        return "Token Type of DesignEntity with value: " + value;
-        break;
-    case TokenTypes::DoubleQuote:
-        return "Token Type of DoubleQuote with value: " + value;
-        break;
-    case TokenTypes::Follows:
-        return "Token Type of Follows with value: " + value;
-        break;
-    case TokenTypes::Identifier:
-        return "Token Type of Identifier with value: " + value;
-        break;
-    case TokenTypes::Integer:
-        return "Token Type of Integer with value: " + value;
-        break;
-    case TokenTypes::LeftParen:
-        return "Token Type of LeftParen with value: " + value;
-        break;
-    case TokenTypes::Modifies:
-        return "Token Type of Modifies with value: " + value;
-        break;
-    case TokenTypes::Parent:
-        return "Token Type of Parent with value: " + value;
-        break;
-    case TokenTypes::Pattern:
-        return "Token Type of Pattern with value: " + value;
-        break;
-    case TokenTypes::RightParen:
-        return "Token Type of RightParen with value: " + value;
-        break;
-    case TokenTypes::Select:
-        return "Token Type of Select with value: " + value;
-        break;
-    case TokenTypes::Semicolon:
-        return "Token Type of Semicolon with value: " + value;
-        break;
-    case TokenTypes::Such:
-        return "Token Type of Such with value: " + value;
-        break;
-    case TokenTypes::That:
-        return "Token Type of That with value: " + value;
-        break;
-    case TokenTypes::Underscore:
-        return "Token Type of Underscore with value: " + value;
-        break;
-    default:  // case TokenTypes::Uses
-        return "Token Type of Uses with value: " + value;
-        break;
-    }
+    return Token::TokenTypeToString(type) + " with value: " + value;
 }
 
 EntityType Token::getEntityType() {
     if (type != TokenTypes::DesignEntity) return EntityType::NONETYPE;
     std::unordered_map<std::string, EntityType> stringToCase = { {"stmt", EntityType::STMT}, {"read", EntityType::READ},
         {"print", EntityType::PRINT}, {"while", EntityType::WHILE}, {"if", EntityType::IF}, {"assign", EntityType::ASSIGN},
-        {"variable", EntityType::VAR}, {"constant", EntityType::CONST}, {"procedure", EntityType::PROC} };
+        {"variable", EntityType::VAR}, {"constant", EntityType::CONST}, {"procedure", EntityType::PROC}, 
+        {"prog_line", EntityType::PROGLINE}, {"call", EntityType::CALL} };
     return stringToCase[value];
 }

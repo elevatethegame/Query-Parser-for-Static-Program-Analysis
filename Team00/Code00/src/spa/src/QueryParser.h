@@ -24,16 +24,6 @@ private:
 
     // To check whether all synonyms in select, such that and pattern clauses have been declared
     std::unordered_map<std::string, EntityType> synonyms;
-    
-    // Store for testing
-    std::shared_ptr<Declaration> selectClauseDeclaration;
-    std::shared_ptr<Declaration> patternDeclaration;
-    std::shared_ptr<QueryInput> patternQueryInput;
-    std::shared_ptr<Expression> patternExpression;
-    RelationshipType suchThatRelationshipType = RelationshipType::NONE;
-    std::shared_ptr<QueryInput> suchThatLeftQueryInput;
-    std::shared_ptr<QueryInput> suchThatRightQueryInput;
-
 
     void getNextToken();
     bool canTreatAsIdent(TokenTypes type);
@@ -44,18 +34,23 @@ private:
     bool declaration();
     bool suchThatClause();
     bool patternClause();
+    void patternAssign();
+    void patternWhile();
+    void patternIf();
     void relRef();
     std::shared_ptr<QueryInput> stmtRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
     std::shared_ptr<QueryInput> entRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
-    bool Modifies();
-    bool Uses();
-    bool Parent();
-    bool Follows();
-    bool Calls();
-    bool Next();
+    bool modifies();
+    bool uses();
+    bool parent();
+    bool follows();
+    bool calls();
+    bool next();
     std::shared_ptr<Expression> expressionSpec();
-    std::unique_ptr<Token> subExpression();
-    std::unique_ptr<Token> factor();
+    void expression(Expression& result);
+    std::unique_ptr<Token> acceptTermSymbol();
+    void term(Expression& result);
+    void factor(Expression& result);
 
 public:
 
@@ -65,13 +60,7 @@ public:
 
     // Getters for testing
     std::unordered_map<std::string, EntityType> getSynonyms();
-    std::shared_ptr<Declaration> getSelectClauseDeclaration();
-    std::shared_ptr<Declaration> getPatternDeclaration();
-    std::shared_ptr<QueryInput> getPatternQueryInput();
-    std::shared_ptr<Expression> getPatternExpression();
-    RelationshipType getSuchThatRelationshipType();
-    std::shared_ptr<QueryInput> getSuchThatLeftQueryInput();
-    std::shared_ptr<QueryInput> getSuchThatRightQueryInput();
+    std::shared_ptr<QueryInterface> getQuery();
 
 };
 

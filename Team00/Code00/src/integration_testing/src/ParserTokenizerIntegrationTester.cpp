@@ -9,22 +9,11 @@
 TEST_CASE("Test whether Declared Synonyms are Stored Correctly")
 {
 	std::string input = "read re1, re2\t\n  ; variable\nv1,v2; constant\n\tc; procedure\npcd; print\npn; while\nw;if ifs;"
-		"stmt s1; assign\n\ta1,a2,a3; Select v1;";
+		"stmt s1; assign\n\ta1,a2,a3; prog_line pgl1; prog_line pgl2; call cl1, cl2; Select v1;";
 	auto query = std::make_shared<Query>();
 	QueryParser queryParser = QueryParser{ input, query };
 	queryParser.parse();
 	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
-	/*INFO(Token::EntityTypeToString(synonyms["re1"]));
-	INFO(Token::EntityTypeToString(synonyms["re2"]));
-	INFO(Token::EntityTypeToString(synonyms["v1"]));
-	INFO(Token::EntityTypeToString(synonyms["v2"]));
-	INFO(Token::EntityTypeToString(synonyms["c"]));
-	INFO(Token::EntityTypeToString(synonyms["pcd"]));
-	INFO(Token::EntityTypeToString(synonyms["pn"]));
-	INFO(Token::EntityTypeToString(synonyms["w"]));
-	INFO(Token::EntityTypeToString(synonyms["ifs"]));
-	INFO(Token::EntityTypeToString(synonyms["s1"]));
-	INFO(Token::EntityTypeToString(synonyms["a1"]));*/
 
 	REQUIRE(synonyms["re1"] == EntityType::READ);
 	REQUIRE(synonyms["re2"] == EntityType::READ);
@@ -39,14 +28,19 @@ TEST_CASE("Test whether Declared Synonyms are Stored Correctly")
 	REQUIRE(synonyms["a1"] == EntityType::ASSIGN);
 	REQUIRE(synonyms["a2"] == EntityType::ASSIGN);
 	REQUIRE(synonyms["a3"] == EntityType::ASSIGN);
+	REQUIRE(synonyms["pgl1"] == EntityType::PROGLINE);
+	REQUIRE(synonyms["pgl2"] == EntityType::PROGLINE);
+	REQUIRE(synonyms["cl1"] == EntityType::CALL);
+	REQUIRE(synonyms["cl2"] == EntityType::CALL);
 
-	std::shared_ptr<Declaration> declaration = queryParser.getSelectClauseDeclaration();
+
+	std::shared_ptr<Declaration> declaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(declaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(declaration->getEntityType() == EntityType::VAR);
 	REQUIRE(declaration->getValue() == "v1");
 }
 
-// ----------------- SelectCl + PatternCl -----------------
+// ----------------- SelectCl + 1 PatternCl -----------------
 
 TEST_CASE("Test Query with Select And Pattern Clause1")
 {
@@ -60,14 +54,15 @@ TEST_CASE("Test Query with Select And Pattern Clause1")
 
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 	REQUIRE(selectClDeclaration->getValue() == "a");
 
-	std::shared_ptr<Declaration> patternClDeclaration = queryParser.getPatternDeclaration();
-	std::shared_ptr<QueryInput> patternQueryInput = queryParser.getPatternQueryInput();
-	std::shared_ptr<Expression> expression = queryParser.getPatternExpression();
+	std::shared_ptr<PatternClause> patternCl = query->getPatternClauses().at(0);
+	std::shared_ptr<Declaration> patternClDeclaration = patternCl->getSynonym();
+	std::shared_ptr<QueryInput> patternQueryInput = patternCl->getQueryInput();
+	std::shared_ptr<Expression> expression = patternCl->getExpression();
 	REQUIRE(patternClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(patternClDeclaration->getValue() == "a");
 	REQUIRE(patternClDeclaration->getEntityType() == EntityType::ASSIGN);
@@ -76,7 +71,7 @@ TEST_CASE("Test Query with Select And Pattern Clause1")
 	REQUIRE(expression->getValue() == "9");
 }
 
-// ----------------- SelectCl + SuchThatCl -----------------
+// ----------------- SelectCl + 1 SuchThatCl -----------------
 
 TEST_CASE("Test Query with Select And Such That Clause1")
 {
@@ -92,14 +87,15 @@ TEST_CASE("Test Query with Select And Such That Clause1")
 	REQUIRE(synonyms["pn"] == EntityType::PRINT);
 	REQUIRE(synonyms["s"] == EntityType::STMT);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::STMT);
 	REQUIRE(selectClDeclaration->getValue() == "s");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> leftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> rightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS_T);
 	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(leftQueryInput->getValue() == "pn");
@@ -121,14 +117,15 @@ TEST_CASE("Test Query with Select And Such That Clause2")
 
 	REQUIRE(synonyms["v"] == EntityType::VAR);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::VAR);
 	REQUIRE(selectClDeclaration->getValue() == "v");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> leftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> rightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::MODIFIES);
 	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
 	REQUIRE(leftQueryInput->getValue() == "80");
@@ -150,19 +147,20 @@ TEST_CASE("Test Follows(Any, Any)")
 
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 	REQUIRE(selectClDeclaration->getValue() == "a");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "_");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Follows(Any, Synonym)")
@@ -176,20 +174,21 @@ TEST_CASE("Test Follows(Any, Synonym)")
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 	REQUIRE(synonyms["ifs"] == EntityType::IF);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 	REQUIRE(selectClDeclaration->getValue() == "a");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "_");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "ifs");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::IF);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "ifs");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::IF);
 }
 
 TEST_CASE("Test Follows(Any, Integer)")
@@ -202,19 +201,20 @@ TEST_CASE("Test Follows(Any, Integer)")
 
 	REQUIRE(synonyms["pn"] == EntityType::PRINT);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PRINT);
 	REQUIRE(selectClDeclaration->getValue() == "pn");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "_");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "999");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(rightQueryInput->getValue() == "999");
 }
 
 TEST_CASE("Test Follows(Synonym, Any)")
@@ -227,20 +227,21 @@ TEST_CASE("Test Follows(Synonym, Any)")
 
 	REQUIRE(synonyms["re"] == EntityType::READ);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::READ);
 	REQUIRE(selectClDeclaration->getValue() == "re");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "re");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::READ);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "re");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::READ);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Follows(Synonym, Synonym)")
@@ -254,21 +255,22 @@ TEST_CASE("Test Follows(Synonym, Synonym)")
 	REQUIRE(synonyms["re"] == EntityType::READ);
 	REQUIRE(synonyms["s1"] == EntityType::STMT);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::READ);
 	REQUIRE(selectClDeclaration->getValue() == "re");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "re");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::READ);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "s1");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::STMT);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "re");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::READ);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "s1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::STMT);
 }
 
 TEST_CASE("Test Follows(Synonym, Integer)")
@@ -281,20 +283,21 @@ TEST_CASE("Test Follows(Synonym, Integer)")
 
 	REQUIRE(synonyms["re"] == EntityType::READ);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::READ);
 	REQUIRE(selectClDeclaration->getValue() == "re");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "re");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::READ);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "999");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "re");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::READ);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(rightQueryInput->getValue() == "999");
 }
 
 TEST_CASE("Test Follows(Integer, _)")
@@ -307,19 +310,20 @@ TEST_CASE("Test Follows(Integer, _)")
 
 	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Follows(Integer, Synonym)")
@@ -332,20 +336,21 @@ TEST_CASE("Test Follows(Integer, Synonym)")
 
 	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "w");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::WHILE);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "w");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::WHILE);
 }
 
 TEST_CASE("Test Follows(Integer, Integer)")
@@ -358,19 +363,20 @@ TEST_CASE("Test Follows(Integer, Integer)")
 
 	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::FOLLOWS);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "4000");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(rightQueryInput->getValue() == "4000");
 }
 
 // ----------------- Test Parent -----------------
@@ -387,19 +393,20 @@ TEST_CASE("Test Parent(Any, Any)")
 
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 	REQUIRE(selectClDeclaration->getValue() == "a");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "_");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Parent(Any, Synonym)")
@@ -413,20 +420,21 @@ TEST_CASE("Test Parent(Any, Synonym)")
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 	REQUIRE(synonyms["ifs"] == EntityType::IF);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 	REQUIRE(selectClDeclaration->getValue() == "a");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "_");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "ifs");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::IF);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "ifs");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::IF);
 }
 
 TEST_CASE("Test Parent(Any, Integer)")
@@ -439,99 +447,103 @@ TEST_CASE("Test Parent(Any, Integer)")
 
 	REQUIRE(synonyms["pn"] == EntityType::PRINT);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PRINT);
 	REQUIRE(selectClDeclaration->getValue() == "pn");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "_");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "999");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(leftQueryInput->getValue() == "_");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(rightQueryInput->getValue() == "999");
 }
 
 TEST_CASE("Test Parent(Synonym, Any)")
 {
-	std::string input = "read re;\nSelect re such that Parent(re, _)";
+	std::string input = "while w;\nSelect w such that Parent(w, _)";
 	auto query = std::make_shared<Query>();
 	QueryParser queryParser = QueryParser{ input, query };
 	queryParser.parse();
 	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
 
-	REQUIRE(synonyms["re"] == EntityType::READ);
+	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(selectClDeclaration->getEntityType() == EntityType::READ);
-	REQUIRE(selectClDeclaration->getValue() == "re");
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
+	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "re");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::READ);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "w");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::WHILE);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Parent(Synonym, Synonym)")
 {
-	std::string input = "read re; stmt s1;\nSelect re such that Parent(re, s1)";
+	std::string input = "while w; stmt s1;\nSelect w such that Parent(w, s1)";
 	auto query = std::make_shared<Query>();
 	QueryParser queryParser = QueryParser{ input, query };
 	queryParser.parse();
 	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
 
-	REQUIRE(synonyms["re"] == EntityType::READ);
+	REQUIRE(synonyms["w"] == EntityType::WHILE);
 	REQUIRE(synonyms["s1"] == EntityType::STMT);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(selectClDeclaration->getEntityType() == EntityType::READ);
-	REQUIRE(selectClDeclaration->getValue() == "re");
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
+	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "re");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::READ);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "s1");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::STMT);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "w");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::WHILE);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "s1");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::STMT);
 }
 
 TEST_CASE("Test Parent(Synonym, Integer)")
 {
-	std::string input = "read re;\nSelect re such that Parent(re, 999)";
+	std::string input = "while w;\nSelect w such that Parent(w, 999)";
 	auto query = std::make_shared<Query>();
 	QueryParser queryParser = QueryParser{ input, query };
 	queryParser.parse();
 	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
 
-	REQUIRE(synonyms["re"] == EntityType::READ);
+	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(selectClDeclaration->getEntityType() == EntityType::READ);
-	REQUIRE(selectClDeclaration->getValue() == "re");
+	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
+	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "re");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::READ);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "999");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "w");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::WHILE);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(rightQueryInput->getValue() == "999");
 }
 
 TEST_CASE("Test Parent(Integer, _)")
@@ -544,19 +556,20 @@ TEST_CASE("Test Parent(Integer, _)")
 
 	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Parent(Integer, Synonym)")
@@ -569,20 +582,21 @@ TEST_CASE("Test Parent(Integer, Synonym)")
 
 	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "w");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::WHILE);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "w");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::WHILE);
 }
 
 TEST_CASE("Test Parent(Integer, Integer)")
@@ -595,19 +609,20 @@ TEST_CASE("Test Parent(Integer, Integer)")
 
 	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "4000");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(rightQueryInput->getValue() == "4000");
 }
 
 // ----------------- Test Modifies -----------------
@@ -622,20 +637,21 @@ TEST_CASE("Test Modifies(Synonym, Any)")
 
 	REQUIRE(synonyms["re"] == EntityType::READ);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::READ);
 	REQUIRE(selectClDeclaration->getValue() == "re");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::MODIFIES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "re");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::READ);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "re");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::READ);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Modifies(Synonym, Synonym)")
@@ -649,21 +665,22 @@ TEST_CASE("Test Modifies(Synonym, Synonym)")
 	REQUIRE(synonyms["re"] == EntityType::READ);
 	REQUIRE(synonyms["v"] == EntityType::VAR);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::READ);
 	REQUIRE(selectClDeclaration->getValue() == "re");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::MODIFIES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "re");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::READ);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "v");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::VAR);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "re");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::READ);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::VAR);
 }
 
 TEST_CASE("Test Modifies(Synonym, \"Ident\")")
@@ -676,20 +693,21 @@ TEST_CASE("Test Modifies(Synonym, \"Ident\")")
 
 	REQUIRE(synonyms["re"] == EntityType::READ);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::READ);
 	REQUIRE(selectClDeclaration->getValue() == "re");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::MODIFIES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "re");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::READ);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::IDENT);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "hello1");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "re");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::READ);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(rightQueryInput->getValue() == "hello1");
 }
 
 TEST_CASE("Test Modifies(Integer, _)")
@@ -702,19 +720,20 @@ TEST_CASE("Test Modifies(Integer, _)")
 
 	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::MODIFIES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Modifies(Integer, Synonym)")
@@ -727,20 +746,21 @@ TEST_CASE("Test Modifies(Integer, Synonym)")
 
 	REQUIRE(synonyms["v"] == EntityType::VAR);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::VAR);
 	REQUIRE(selectClDeclaration->getValue() == "v");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::MODIFIES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "v");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::VAR);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::VAR);
 }
 
 TEST_CASE("Test Modifies(Integer, Ident)")
@@ -753,19 +773,20 @@ TEST_CASE("Test Modifies(Integer, Ident)")
 
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 	REQUIRE(selectClDeclaration->getValue() == "a");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::MODIFIES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::IDENT);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "aVariable");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(rightQueryInput->getValue() == "aVariable");
 }
 
 // ----------------- Test Uses -----------------
@@ -780,48 +801,50 @@ TEST_CASE("Test Uses(Synonym, Any)")
 
 	REQUIRE(synonyms["pn"] == EntityType::PRINT);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PRINT);
 	REQUIRE(selectClDeclaration->getValue() == "pn");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::USES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "pn");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::PRINT);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "pn");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::PRINT);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Uses(Synonym, Synonym)")
 {
-	std::string input = "print pn; constant c;\nSelect pn such that Uses(pn, c)";
+	std::string input = "print pn; variable v;\nSelect pn such that Uses(pn, v)";
 	auto query = std::make_shared<Query>();
 	QueryParser queryParser = QueryParser{ input, query };
 	queryParser.parse();
 	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
 
 	REQUIRE(synonyms["pn"] == EntityType::PRINT);
-	REQUIRE(synonyms["c"] == EntityType::CONST);
+	REQUIRE(synonyms["v"] == EntityType::VAR);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PRINT);
 	REQUIRE(selectClDeclaration->getValue() == "pn");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::USES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "pn");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::PRINT);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "c");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::CONST);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "pn");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::PRINT);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::VAR);
 }
 
 TEST_CASE("Test Uses(Synonym, \"Ident\")")
@@ -834,20 +857,21 @@ TEST_CASE("Test Uses(Synonym, \"Ident\")")
 
 	REQUIRE(synonyms["pn"] == EntityType::PRINT);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::PRINT);
 	REQUIRE(selectClDeclaration->getValue() == "pn");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::USES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "pn");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::PRINT);
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::IDENT);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "hello1");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(leftQueryInput->getValue() == "pn");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(leftQueryInput)->getEntityType() == EntityType::PRINT);
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(rightQueryInput->getValue() == "hello1");
 }
 
 TEST_CASE("Test Uses(Integer, _)")
@@ -860,19 +884,20 @@ TEST_CASE("Test Uses(Integer, _)")
 
 	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::USES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::ANY);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "_");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::ANY);
+	REQUIRE(rightQueryInput->getValue() == "_");
 }
 
 TEST_CASE("Test Uses(Integer, Synonym)")
@@ -885,20 +910,21 @@ TEST_CASE("Test Uses(Integer, Synonym)")
 
 	REQUIRE(synonyms["v"] == EntityType::VAR);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::VAR);
 	REQUIRE(selectClDeclaration->getValue() == "v");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::USES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "v");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::VAR);
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(rightQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(rightQueryInput)->getEntityType() == EntityType::VAR);
 }
 
 TEST_CASE("Test Uses(Integer, Ident)")
@@ -911,19 +937,20 @@ TEST_CASE("Test Uses(Integer, Ident)")
 
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 	REQUIRE(selectClDeclaration->getValue() == "a");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> leftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> rightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::USES);
-	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
-	REQUIRE(suchThatClLeftQueryInput->getValue() == "3203");
-	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::IDENT);
-	REQUIRE(suchThatClRightQueryInput->getValue() == "aVariable");
+	REQUIRE(leftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(leftQueryInput->getValue() == "3203");
+	REQUIRE(rightQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(rightQueryInput->getValue() == "aVariable");
 }
 
 // ----------------- SelectCl + SuchThatCl + PatternCl -----------------
@@ -942,14 +969,15 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 	REQUIRE(synonyms["var1"] == EntityType::VAR);
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::VAR);
 	REQUIRE(selectClDeclaration->getValue() == "var1");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> suchThatClRightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::USES);
 	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
 	REQUIRE(suchThatClLeftQueryInput->getValue() == "56");
@@ -957,9 +985,10 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 	REQUIRE(suchThatClRightQueryInput->getValue() == "var1");
 	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::VAR);
 
-	std::shared_ptr<Declaration> patternClDeclaration = queryParser.getPatternDeclaration();
-	std::shared_ptr<QueryInput> patternQueryInput = queryParser.getPatternQueryInput();
-	std::shared_ptr<Expression> expression = queryParser.getPatternExpression();
+	std::shared_ptr<PatternClause> patternCl = query->getPatternClauses().at(0);
+	std::shared_ptr<Declaration> patternClDeclaration = patternCl->getSynonym();
+	std::shared_ptr<QueryInput> patternQueryInput = patternCl->getQueryInput();
+	std::shared_ptr<Expression> expression = patternCl->getExpression();
 	REQUIRE(patternClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(patternClDeclaration->getValue() == "a");
 	REQUIRE(patternClDeclaration->getEntityType() == EntityType::ASSIGN);
@@ -982,14 +1011,15 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 2")
 	REQUIRE(synonyms["w"] == EntityType::WHILE);
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 
-	std::shared_ptr<Declaration> selectClDeclaration = queryParser.getSelectClauseDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 	REQUIRE(selectClDeclaration->getValue() == "w");
 
-	RelationshipType relationshipType = queryParser.getSuchThatRelationshipType();
-	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = queryParser.getSuchThatLeftQueryInput();
-	std::shared_ptr<QueryInput> suchThatClRightQueryInput = queryParser.getSuchThatRightQueryInput();
+	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> suchThatClRightQueryInput = relationshipCl->getRightInput();
 	REQUIRE(relationshipType == RelationshipType::PARENT_T);
 	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(suchThatClLeftQueryInput->getValue() == "w");
@@ -998,9 +1028,10 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 2")
 	REQUIRE(suchThatClRightQueryInput->getValue() == "a");
 	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::ASSIGN);
 
-	std::shared_ptr<Declaration> patternClDeclaration = queryParser.getPatternDeclaration();
-	std::shared_ptr<QueryInput> patternQueryInput = queryParser.getPatternQueryInput();
-	std::shared_ptr<Expression> expression = queryParser.getPatternExpression();
+	std::shared_ptr<PatternClause> patternCl = query->getPatternClauses().at(0);
+	std::shared_ptr<Declaration> patternClDeclaration = patternCl->getSynonym();
+	std::shared_ptr<QueryInput> patternQueryInput = patternCl->getQueryInput();
+	std::shared_ptr<Expression> expression = patternCl->getExpression();
 	REQUIRE(patternClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(patternClDeclaration->getValue() == "a");
 	REQUIRE(patternClDeclaration->getEntityType() == EntityType::ASSIGN);
@@ -1081,7 +1112,7 @@ TEST_CASE("Test synonym not of assignment type in Pattern Clause")
 		REQUIRE(false);
 	}
 	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "Synonym pcd not allowed, has Entity Type of Procedure");
+		REQUIRE(std::string(err.what()) == "None of pattern type synAssign, synWhile or synIf could be matched. Unexpected token: pcd");
 	}
 }
 
@@ -1096,7 +1127,7 @@ TEST_CASE("Test invalid expression spec in Pattern Clause")
 		REQUIRE(false);
 	}
 	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "Unexpected token found while parsing factor in subexpression of pattern");
+		REQUIRE(std::string(err.what()) == "Factor could not be parsed correctly. Unexpected token: ;");
 	}
 }
 
@@ -1231,7 +1262,7 @@ TEST_CASE("Test disallowed \"_\" in left argument of Such That Clause with Modif
 		REQUIRE(false);
 	}
 	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "Unexpected token encountered when parsing stmtRef: Token Type of Underscore with value: _");
+		REQUIRE(std::string(err.what()) == "Token Type of Underscore with value: _ is not allowed as first argument in stmtRef");
 	}
 }
 
@@ -1306,7 +1337,7 @@ TEST_CASE("Test disallowed \"_\" in left argument of Such That Clause with Uses"
 		REQUIRE(false);
 	}
 	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "Unexpected token encountered when parsing stmtRef: Token Type of Underscore with value: _");
+		REQUIRE(std::string(err.what()) == "Token Type of Underscore with value: _ is not allowed as first argument in stmtRef");
 	}
 }
 
