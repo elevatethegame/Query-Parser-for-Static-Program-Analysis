@@ -24,16 +24,6 @@ private:
 
     // To check whether all synonyms in select, such that and pattern clauses have been declared
     std::unordered_map<std::string, EntityType> synonyms;
-    
-    // Store for testing
-    std::shared_ptr<Declaration> selectClauseDeclaration;
-    std::shared_ptr<Declaration> patternDeclaration;
-    std::shared_ptr<QueryInput> patternQueryInput;
-    std::shared_ptr<Expression> patternExpression;
-    RelationshipType suchThatRelationshipType = RelationshipType::NONE;
-    std::shared_ptr<QueryInput> suchThatLeftQueryInput;
-    std::shared_ptr<QueryInput> suchThatRightQueryInput;
-
 
     void getNextToken();
     bool canTreatAsIdent(TokenTypes type);
@@ -70,13 +60,7 @@ public:
 
     // Getters for testing
     std::unordered_map<std::string, EntityType> getSynonyms();
-    std::shared_ptr<Declaration> getSelectClauseDeclaration();
-    std::shared_ptr<Declaration> getPatternDeclaration();
-    std::shared_ptr<QueryInput> getPatternQueryInput();
-    std::shared_ptr<Expression> getPatternExpression();
-    RelationshipType getSuchThatRelationshipType();
-    std::shared_ptr<QueryInput> getSuchThatLeftQueryInput();
-    std::shared_ptr<QueryInput> getSuchThatRightQueryInput();
+    std::shared_ptr<QueryInterface> getQuery();
 
 };
 
