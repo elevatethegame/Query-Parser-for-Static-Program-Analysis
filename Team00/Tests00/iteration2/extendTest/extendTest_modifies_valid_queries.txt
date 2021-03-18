@@ -76,7 +76,7 @@ alpha, charlie, delta
 16 - comment
 variable v;
 Select v such that Modifies("alpha", v)
-u, o, a, b, c, z, d, e, p, s, r, z
+u, o, a, b, c, z, d, e, p, s, r
 5000
 17 - comment
 variable v;
