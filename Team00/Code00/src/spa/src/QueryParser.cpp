@@ -513,7 +513,7 @@ void QueryParser::patternAssign()
     patternDeclaration = synonym;
     patternQueryInput = queryInput;
     patternExpression = expression;
-    query->addPatternClause(synonym, queryInput, expression);
+    query->addAssignPatternClause(synonym, queryInput, expression);
 }
 
 void QueryParser::patternWhile()
@@ -525,7 +525,7 @@ void QueryParser::patternWhile()
     expect(TokenTypes::Comma);
     expect(TokenTypes::Underscore);
     expect(TokenTypes::RightParen);
-    /*TODO: QE API FOR DIFFERENT PATTERN CLAUSES*/
+    query->addContainerPatternClause(synonym, queryInput);
 }
 
 void QueryParser::patternIf()
@@ -539,7 +539,7 @@ void QueryParser::patternIf()
     expect(TokenTypes::Comma);
     expect(TokenTypes::Underscore);
     expect(TokenTypes::RightParen);
-    /*TODO: QE API FOR DIFFERENT PATTERN CLAUSES*/
+    query->addContainerPatternClause(synonym, queryInput);
 }
 
 std::shared_ptr<Expression> QueryParser::expressionSpec()

@@ -10,7 +10,7 @@
 
 using namespace std;
 
-class Query : public QueryInterface{
+class Query : public QueryInterface {
 private:
 	shared_ptr<SelectClause> aSelectClause;
 	vector<shared_ptr<RelationshipClause>> aRelationshipClauses;
@@ -21,7 +21,8 @@ public:
 	void setSelectClause(shared_ptr<Declaration> declaration);
 	void addRelationshipClause(RelationshipType relationshipType,
 		shared_ptr<QueryInput> leftQueryInput, shared_ptr<QueryInput> rightQueryInput);
-	void addPatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression);
+	void addAssignPatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression);
+	void addContainerPatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput);
 
 	shared_ptr<SelectClause> getSelectClause();
 	vector<shared_ptr<RelationshipClause>> getRelationshipClauses();

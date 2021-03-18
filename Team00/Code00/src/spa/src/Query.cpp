@@ -14,8 +14,13 @@ void Query::addRelationshipClause(RelationshipType relationshipType, shared_ptr<
 	this->aRelationshipClauses.push_back(relationshipClause);
 }
 
-void Query::addPatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression) {
+void Query::addAssignPatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression) {
 	shared_ptr<PatternClause> patternClause = make_shared<PatternClause>(synonym, queryInput, expression);
+	this->aPatternClauses.push_back(patternClause);
+}
+
+void Query::addContainerPatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput) {
+	shared_ptr<PatternClause> patternClause = make_shared<PatternClause>(synonym, queryInput);
 	this->aPatternClauses.push_back(patternClause);
 }
 
