@@ -39,9 +39,8 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluateRelationshipClauses(vector<shar
 		RelationshipType relationshipType = relationshipClause->getRelationshipType();
 
 		// None of query inputs are declarations
-		if ((leftQueryInput->getQueryInputType() != QueryInputType::DECLARATION &&
-			rightQueryInput->getQueryInputType() != QueryInputType::DECLARATION) || 
-			relationshipType == RelationshipType::NEXT || relationshipType == RelationshipType::NEXT_T) {
+		if (leftQueryInput->getQueryInputType() != QueryInputType::DECLARATION &&
+			rightQueryInput->getQueryInputType() != QueryInputType::DECLARATION) {
 			bool hasResults = aPKB->getBooleanResultOfRS(relationshipType, leftQueryInput, rightQueryInput);
 			if (!hasResults) {
 				// clause returns no results, no need to further evaluate
