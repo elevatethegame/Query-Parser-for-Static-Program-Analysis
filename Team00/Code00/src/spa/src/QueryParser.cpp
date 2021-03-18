@@ -80,7 +80,6 @@ void QueryParser::selectClause()
     }
 
     auto declaration = std::make_shared<Declaration>(synonyms[selectedSynToken->getValue()], selectedSynToken->getValue());
-    selectClauseDeclaration = declaration;
     query->setSelectClause(declaration);
 
     // Can have any number of such-that and pattern clauses in any order
@@ -238,9 +237,6 @@ bool QueryParser::modifies()
         expect(TokenTypes::Comma);
         std::shared_ptr<QueryInput> rightQueryInput = expect(entRef(std::set<EntityType>({ EntityType::VAR }), true), false);
         expect(TokenTypes::RightParen);
-        suchThatRelationshipType = RelationshipType::MODIFIES;
-        suchThatLeftQueryInput = leftQueryInput;
-        suchThatRightQueryInput = rightQueryInput;
         query->addRelationshipClause(RelationshipType::MODIFIES, leftQueryInput, rightQueryInput);
         return true;
     }
@@ -263,9 +259,6 @@ bool QueryParser::uses()
         expect(TokenTypes::Comma);
         std::shared_ptr<QueryInput> rightQueryInput = expect(entRef(std::set<EntityType>({ EntityType::VAR }), true), false);
         expect(TokenTypes::RightParen);
-        suchThatRelationshipType = RelationshipType::USES;
-        suchThatLeftQueryInput = leftQueryInput;
-        suchThatRightQueryInput = rightQueryInput;
         query->addRelationshipClause(RelationshipType::USES, leftQueryInput, rightQueryInput);
         return true;
     }
@@ -306,9 +299,6 @@ bool QueryParser::parent()
                 throw std::runtime_error(errorMsg.c_str());
             }
         }
-        suchThatRelationshipType = relType;
-        suchThatLeftQueryInput = leftQueryInput;
-        suchThatRightQueryInput = rightQueryInput;
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
@@ -351,9 +341,6 @@ bool QueryParser::follows()
                 throw std::runtime_error(errorMsg.c_str());
             }
         }
-        suchThatRelationshipType = relType;
-        suchThatLeftQueryInput = leftQueryInput;
-        suchThatRightQueryInput = rightQueryInput;
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
@@ -388,10 +375,6 @@ bool QueryParser::calls()
             if (leftQueryInput->getValue() == rightQueryInput->getValue())
                 throw std::runtime_error("Same synonym detected on both sides");
         }
-
-        suchThatRelationshipType = relType;
-        suchThatLeftQueryInput = leftQueryInput;
-        suchThatRightQueryInput = rightQueryInput;
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
@@ -420,9 +403,6 @@ bool QueryParser::next()
             , false);
         expect(TokenTypes::RightParen);
 
-        suchThatRelationshipType = relType;
-        suchThatLeftQueryInput = leftQueryInput;
-        suchThatRightQueryInput = rightQueryInput;
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
@@ -510,9 +490,6 @@ void QueryParser::patternAssign()
     expect(TokenTypes::Comma);
     std::shared_ptr<Expression> expression = expressionSpec();
     expect(TokenTypes::RightParen);
-    patternDeclaration = synonym;
-    patternQueryInput = queryInput;
-    patternExpression = expression;
     query->addAssignPatternClause(synonym, queryInput, expression);
 }
 
@@ -633,31 +610,7 @@ std::unordered_map<std::string, EntityType> QueryParser::getSynonyms()
     return synonyms;
 }
 
-std::shared_ptr<Declaration> QueryParser::getSelectClauseDeclaration()
+std::shared_ptr<QueryInterface> QueryParser::getQuery()
 {
-    return selectClauseDeclaration;
-}
-std::shared_ptr<Declaration> QueryParser::getPatternDeclaration()
-{
-    return patternDeclaration;
-}
-std::shared_ptr<QueryInput> QueryParser::getPatternQueryInput()
-{
-    return patternQueryInput;
-}
-std::shared_ptr<Expression> QueryParser::getPatternExpression()
-{
-    return patternExpression;
-}
-RelationshipType QueryParser::getSuchThatRelationshipType()
-{
-    return suchThatRelationshipType;
-}
-std::shared_ptr<QueryInput> QueryParser::getSuchThatLeftQueryInput()
-{
-    return suchThatLeftQueryInput;
-}
-std::shared_ptr<QueryInput> QueryParser::getSuchThatRightQueryInput()
-{
-    return suchThatRightQueryInput;
+    return query;
 }
