@@ -15,10 +15,15 @@ std::unique_ptr<Token> Tokenizer::readInteger()
     return std::unique_ptr<Token>(new Token{ TokenTypes::Integer, integer });
 }
 
+bool Tokenizer::isAlphanumericOrUnderscore(char c)
+{
+    return std::isalnum(c) || c == '_';
+}
+
 std::unique_ptr<Token> Tokenizer::readIdentifier()
 {
     std::string identifier = std::string(1, inputStream.next());
-    identifier += readWhile(std::isalnum);
+    identifier += readWhile(Tokenizer::isAlphanumericOrUnderscore);
     std::string designEntities[] = { "stmt", "read", "print", "while", "if", "assign", 
             "variable", "constant", "procedure", "prog_line", "call" };
     std::unique_ptr<Token> token;
@@ -59,6 +64,15 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
         token = std::unique_ptr<Token>(new Token{ TokenTypes::DesignEntity, identifier });
     }
     else {
+        bool isValidIdentifier = true;
+        for (char const& c : identifier) {
+            if (c == '_') {
+                isValidIdentifier = false;
+                break;
+            }
+        }
+        if (!isValidIdentifier)
+            throw std::invalid_argument("Invalid identifier encountered: " + identifier);
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Identifier, identifier });
     }
     return token;

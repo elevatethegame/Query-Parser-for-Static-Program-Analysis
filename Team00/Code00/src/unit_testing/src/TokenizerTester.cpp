@@ -214,7 +214,7 @@ TEST_CASE("Test Combination 7")
 		current = std::move(tokenizer.readNext());
 	}
 
-	REQUIRE(tokens.size() == (size_t)23);
+	REQUIRE(tokens.size() == (size_t) 23);
 	TokenTypes tokenTypes[] = {
 		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::Select, TokenTypes::Identifier, TokenTypes::Such,
@@ -227,6 +227,10 @@ TEST_CASE("Test Combination 7")
 			"(","pgl2",",","pgl1",")","and","Next","(","pgl1",",","pgl2",")" };
 
 	for (size_t i = 0; i < tokens.size(); i++) {
+		INFO(tokens[i]->toString());
+		INFO(Token::TokenTypeToString(tokenTypes[i]));
+		INFO(tokenValues[i]);
+		INFO("=====================================");
 		REQUIRE(tokens[i]->getType() == tokenTypes[i]);
 		REQUIRE(tokens[i]->getValue() == tokenValues[i]);
 	}
