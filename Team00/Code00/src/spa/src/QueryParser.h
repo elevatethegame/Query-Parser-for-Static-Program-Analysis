@@ -50,12 +50,12 @@ private:
     void relRef();
     std::shared_ptr<QueryInput> stmtRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
     std::shared_ptr<QueryInput> entRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
-    bool Modifies();
-    bool Uses();
-    bool Parent();
-    bool Follows();
-    bool Calls();
-    bool Next();
+    bool modifies();
+    bool uses();
+    bool parent();
+    bool follows();
+    bool calls();
+    bool next();
     std::shared_ptr<Expression> expressionSpec();
     void expression(Expression& result);
     std::unique_ptr<Token> acceptTermSymbol();

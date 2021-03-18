@@ -136,22 +136,22 @@ bool QueryParser::suchThatClause()
 
 void QueryParser::relRef()
 {
-    if (Modifies()) {
+    if (modifies()) {
 
     }
-    else if (Uses()) {
+    else if (uses()) {
 
     }
-    else if (Follows()) {
+    else if (follows()) {
 
     }
-    else if (Parent()) {
+    else if (parent()) {
 
     }
-    else if (Calls()) {
+    else if (calls()) {
 
     }
-    else if (Next()) {
+    else if (next()) {
 
     }
     else {
@@ -222,7 +222,7 @@ std::shared_ptr<QueryInput> QueryParser::entRef(std::set<EntityType> allowedDesi
     }
 }
 
-bool QueryParser::Modifies()
+bool QueryParser::modifies()
 {
     if (accept(TokenTypes::Modifies)) {
         expect(TokenTypes::LeftParen);
@@ -247,7 +247,7 @@ bool QueryParser::Modifies()
     return false;
 }
 
-bool QueryParser::Uses()
+bool QueryParser::uses()
 {
     if (accept(TokenTypes::Uses)) {
         expect(TokenTypes::LeftParen);
@@ -272,7 +272,7 @@ bool QueryParser::Uses()
     return false;
 }
 
-bool QueryParser::Parent()
+bool QueryParser::parent()
 {
     if (accept(TokenTypes::Parent)) {
         RelationshipType relType;
@@ -315,7 +315,7 @@ bool QueryParser::Parent()
     return false;
 }
 
-bool QueryParser::Follows()
+bool QueryParser::follows()
 {
     if (accept(TokenTypes::Follows)) {
         RelationshipType relType;
@@ -360,7 +360,7 @@ bool QueryParser::Follows()
     return false;
 }
 
-bool QueryParser::Calls()
+bool QueryParser::calls()
 {
     if (accept(TokenTypes::Calls)) {
         RelationshipType relType;
@@ -398,7 +398,7 @@ bool QueryParser::Calls()
     return false;
 }
 
-bool QueryParser::Next()
+bool QueryParser::next()
 {
     if (accept(TokenTypes::Next)) {
         RelationshipType relType;
