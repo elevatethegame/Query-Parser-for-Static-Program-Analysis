@@ -101,6 +101,14 @@ std::unique_ptr<Token> Tokenizer::readNext()
     case '*':
         return std::unique_ptr<Token>(new Token{ TokenTypes::Asterisk, std::string(1, inputStream.next()) });
         break;
+    case '+':
+    case '-':
+        return std::unique_ptr<Token>(new Token{ TokenTypes::ExprSymbol, std::string(1, inputStream.next()) });
+        break;
+    case '/':
+    case '%':
+        return std::unique_ptr<Token>(new Token{ TokenTypes::TermSymbol, std::string(1, inputStream.next()) });
+        break;
     default:
         break;
     }

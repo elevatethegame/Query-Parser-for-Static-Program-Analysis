@@ -24,7 +24,9 @@ enum class TokenTypes
     RightParen,
     Comma,
     DoubleQuote,
-    Asterisk
+    Asterisk,
+    ExprSymbol,
+    TermSymbol
 };
 
 #endif
