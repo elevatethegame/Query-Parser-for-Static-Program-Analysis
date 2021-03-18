@@ -298,58 +298,39 @@ TEST_CASE("Test Combination 9")
 	}
 }
 
-//TEST_CASE("Test Combination 10")
-//{
-//	Tokenizer tokenizer = Tokenizer{ "assign a; \nSelect a pattern a(\"sourceVar\", \"3 + 2 / sourceVar % v1 - v2 + v3\")" };
-//	std::vector<std::unique_ptr<Token>> tokens;
-//	std::unique_ptr<Token> current = std::move(tokenizer.readNext());
-//	while (current) {
-//		tokens.push_back(std::move(current));
-//		current = std::move(tokenizer.readNext());
-//	}
-//
-//	REQUIRE(tokens.size() == (size_t)26);
-//	TokenTypes tokenTypes[] = {
-//		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Semicolon,
-//		TokenTypes::Select, TokenTypes::Identifier, TokenTypes::Pattern,
-//		TokenTypes::Identifier, TokenTypes::LeftParen, TokenTypes::DoubleQuote,
-//		TokenTypes::Identifier, TokenTypes::DoubleQuote, TokenTypes::Comma, TokenTypes::DoubleQuote,
-//		TokenTypes::Integer, TokenTypes::ExprSymbol, TokenTypes::Integer, TokenTypes::TermSymbol,
-//		TokenTypes::Identifier, TokenTypes::TermSymbol, TokenTypes::Identifier, TokenTypes::ExprSymbol, TokenTypes::Identifier,
-//		TokenTypes::ExprSymbol, TokenTypes::Identifier, TokenTypes::DoubleQuote, TokenTypes::RightParen };
-//	std::string tokenValues[] = { "assign","a",";","Select","a","pattern","a","(",
-//			"\"","sourceVar","\"",",","\"","3","+","2","/","sourceVar","%","v1","-","v2","+","v3","\"",")" };
-//
-//	for (size_t i = 0; i < tokens.size(); i++) {
-//		REQUIRE(tokens[i]->getType() == tokenTypes[i]);
-//		REQUIRE(tokens[i]->getValue() == tokenValues[i]);
-//	}
-//}
-//
-//TEST_CASE("Test Combination 11")
-//{
-//	Tokenizer tokenizer = Tokenizer{ "assign a; \nSelect a pattern a(\"sourceVar\", \"3 + 2 / sourceVar % v1 - v2 + v3\")" };
-//	std::vector<std::unique_ptr<Token>> tokens;
-//	std::unique_ptr<Token> current = std::move(tokenizer.readNext());
-//	while (current) {
-//		tokens.push_back(std::move(current));
-//		current = std::move(tokenizer.readNext());
-//	}
-//
-//	REQUIRE(tokens.size() == (size_t)26);
-//	TokenTypes tokenTypes[] = {
-//		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Semicolon,
-//		TokenTypes::Select, TokenTypes::Identifier, TokenTypes::Pattern,
-//		TokenTypes::Identifier, TokenTypes::LeftParen, TokenTypes::DoubleQuote,
-//		TokenTypes::Identifier, TokenTypes::DoubleQuote, TokenTypes::Comma, TokenTypes::DoubleQuote,
-//		TokenTypes::Integer, TokenTypes::ExprSymbol, TokenTypes::Integer, TokenTypes::TermSymbol,
-//		TokenTypes::Identifier, TokenTypes::TermSymbol, TokenTypes::Identifier, TokenTypes::ExprSymbol, TokenTypes::Identifier,
-//		TokenTypes::ExprSymbol, TokenTypes::Identifier, TokenTypes::DoubleQuote, TokenTypes::RightParen };
-//	std::string tokenValues[] = { "assign","a",";","Select","a","pattern","a","(",
-//			"\"","sourceVar","\"",",","\"","3","+","2","/","sourceVar","%","v1","-","v2","+","v3","\"",")" };
-//
-//	for (size_t i = 0; i < tokens.size(); i++) {
-//		REQUIRE(tokens[i]->getType() == tokenTypes[i]);
-//		REQUIRE(tokens[i]->getValue() == tokenValues[i]);
-//	}
-//}
+TEST_CASE("Test Combination 10")
+{
+	Tokenizer tokenizer = Tokenizer{ "call c1, c2; \nSelect c1 such that Follows(c1, c2)" };
+	std::vector<std::unique_ptr<Token>> tokens;
+	std::unique_ptr<Token> current = std::move(tokenizer.readNext());
+	while (current) {
+		tokens.push_back(std::move(current));
+		current = std::move(tokenizer.readNext());
+	}
+
+	REQUIRE(tokens.size() == (size_t)15);
+	TokenTypes tokenTypes[] = {
+		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier, TokenTypes::Semicolon,
+		TokenTypes::Select, TokenTypes::Identifier, TokenTypes::Such,
+		TokenTypes::That, TokenTypes::Follows, TokenTypes::LeftParen,
+		TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier, TokenTypes::RightParen };
+	std::string tokenValues[] = { "call","c1",",","c2",";","Select","c1","such","that","Follows","(","c1",",","c2",")" };
+
+	for (size_t i = 0; i < tokens.size(); i++) {
+		REQUIRE(tokens[i]->getType() == tokenTypes[i]);
+		REQUIRE(tokens[i]->getValue() == tokenValues[i]);
+	}
+}
+
+TEST_CASE("Test Combination 11")
+{
+	Tokenizer tokenizer = Tokenizer{ "prog_line_dsa" };
+	std::vector<std::unique_ptr<Token>> tokens;
+	try {
+		std::unique_ptr<Token> current = std::move(tokenizer.readNext());
+		REQUIRE(false);
+	}
+	catch (std::invalid_argument const& err) {
+		REQUIRE(std::string(err.what()) == "Invalid identifier encountered: prog_line_dsa");
+	}
+}
