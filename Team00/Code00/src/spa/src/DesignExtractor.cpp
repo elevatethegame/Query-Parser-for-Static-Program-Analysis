@@ -63,13 +63,12 @@ shared_ptr<PKB> DesignExtractor::extractToPKB() {
 			result->insertFollow(follow, i);
 		}
 		for (auto variable : modifies[i]) {
-			result->insertDirectModifies(i, variable);
+			result->insertModifies(i, variable);
 		}
-		set<string> S;
 		for (auto variable : uses[i]) {
-			S.insert(variable);
+			result->insertUses(i, variable);
 		}
-		result->insertDirectUses(i, S);
+		
 		for (auto expression : expressions[i]) {
 			result->insertExpression(i, expression.getValue());
 		}

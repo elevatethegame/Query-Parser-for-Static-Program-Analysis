@@ -28,24 +28,16 @@ public:
 		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
 	unordered_map<string, set<string>> getMapResultsOfAssignPattern(
-		shared_ptr<QueryInput> input, Expression expression);
+		shared_ptr<QueryInput> input, Expression& expression);
 
 	set<string> getSetResultsOfAssignPattern(
-		shared_ptr<QueryInput> input, Expression expression);
+		shared_ptr<QueryInput> input, Expression& expression);
 
 	unordered_map<string, set<string>> getMapResultsOfContainerPattern(
 		const EntityType& type, shared_ptr<QueryInput> input);
 
 	set<string> getSetResultsOfContainerPattern(
 		const EntityType& type, shared_ptr<QueryInput> input);
-
-
-	// Following 2 methods to be removed during iter2 merge with PKB
-	unordered_map<string, set<string>> getResultsOfRS(const RelationshipType& type, 
-		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
-
-	unordered_map<string, set<string>> getResultsOfPattern(
-		const EntityType& type, shared_ptr<QueryInput> input, Expression expression);
 
 	// Methods to add the return values for each different test case
 	void addBooleanResult(bool value);
