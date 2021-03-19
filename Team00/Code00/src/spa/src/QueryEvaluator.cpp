@@ -99,7 +99,7 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluatePatternClauses(vector<shared_pt
 	for (vector<shared_ptr<PatternClause>>::iterator iterator = patternClauses.begin();
 		iterator != patternClauses.end(); iterator++) {
 		shared_ptr<PatternClause> patternClause = *iterator;
-		shared_ptr<Declaration> synonym = dynamic_pointer_cast<Declaration>(patternClause->getSynonym());
+		shared_ptr<Declaration> synonym = patternClause->getSynonym();
 		shared_ptr<QueryInput> queryInput = patternClause->getQueryInput();
 		shared_ptr<Expression> expression;
 		
