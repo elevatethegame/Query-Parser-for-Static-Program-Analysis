@@ -33,7 +33,7 @@ set<string> PKBStub::getSetResultsOfRS(
 }
 
 unordered_map<string, set<string>> PKBStub::getMapResultsOfAssignPattern(
-	shared_ptr<QueryInput> input, Expression expression) {
+	shared_ptr<QueryInput> input, Expression& expression) {
 	if (this->mapResults.size() <= this->mapResultsCount) {
 		return {};
 	}
@@ -41,7 +41,7 @@ unordered_map<string, set<string>> PKBStub::getMapResultsOfAssignPattern(
 }
 
 set<string> PKBStub::getSetResultsOfAssignPattern(
-	shared_ptr<QueryInput> input, Expression expression) {
+	shared_ptr<QueryInput> input, Expression& expression) {
 	if (this->setResults.size() <= this->setResultsCount) {
 		return {};
 	}
@@ -70,20 +70,6 @@ bool PKBStub::getBooleanResultOfRS(const RelationshipType& type,
 		return {};
 	}
 	return this->boolReturnValues.at(this->boolCount++);
-}
-
-
-
-unordered_map<string, set<string>> PKBStub::getResultsOfPattern(
-	const EntityType& type, shared_ptr<QueryInput> input, Expression expressio) {
-	unordered_map<string, set<string>> res;
-	return res;
-}
-
-unordered_map<string, set<string>> PKBStub::getResultsOfRS(
-	const RelationshipType& type, shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2) {
-	unordered_map<string, set<string>> res;
-	return res;
 }
 
 // setter methods to set the return values for each different test case
