@@ -548,7 +548,7 @@ void QueryParser::expression(Expression& result)
     while (token) {
         Expression subResult("", result.getType());
         term(subResult);
-        result.combineExpression(token->getValue(), subResult, result.getType());
+        result = result.combineExpression(token->getValue(), subResult, result.getType());
         // Try to accept another ExprSymbol to loop again
         token = std::move(accept(TokenTypes::ExprSymbol));
     }
@@ -569,7 +569,7 @@ void QueryParser::term(Expression& result)
     while (token) {
         Expression subResult("", result.getType());
         factor(subResult);
-        result.combineExpression(token->getValue(), subResult, result.getType());
+        result = result.combineExpression(token->getValue(), subResult, result.getType());
         // Try to accept another TermSymbol to loop again
         token = std::move(acceptTermSymbol());
     }
