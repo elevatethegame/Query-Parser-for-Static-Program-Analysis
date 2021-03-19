@@ -33,8 +33,8 @@ TEST_CASE("Evaluating query with only one relationship clause") {
 	
 	//Select a such that Follows(s, a)
 	SECTION("relationship clause has 2 synonym input, evaluates to non empty results") {
-		shared_ptr<QueryInput> progLine1 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROG_LINE, progLineSynonym1));
-		shared_ptr<QueryInput> progLine2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROG_LINE, progLineSynonym2));
+		shared_ptr<QueryInput> progLine1 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROGLINE, progLineSynonym1));
+		shared_ptr<QueryInput> progLine2 = dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROGLINE, progLineSynonym2));
 		query->addRelationshipClause(RelationshipType::NEXT_T, progLine1, progLine2);
 
 		shared_ptr<PKBStub> pkb = make_shared<PKBStub>();
