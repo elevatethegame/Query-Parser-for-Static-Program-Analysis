@@ -21,8 +21,8 @@ public:
 	void setSelectClause(shared_ptr<Declaration> declaration);
 	void addRelationshipClause(RelationshipType relationshipType,
 		shared_ptr<QueryInput> leftQueryInput, shared_ptr<QueryInput> rightQueryInput);
-	void addAssignPatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression);
-	void addContainerPatternClause(shared_ptr<QueryInput> synonym, shared_ptr<QueryInput> queryInput);
+	void addAssignPatternClause(shared_ptr<Declaration> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression);
+	void addContainerPatternClause(shared_ptr<Declaration> synonym, shared_ptr<QueryInput> queryInput);
 
 	shared_ptr<SelectClause> getSelectClause();
 	vector<shared_ptr<RelationshipClause>> getRelationshipClauses();
