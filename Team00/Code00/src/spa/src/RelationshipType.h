@@ -11,6 +11,8 @@ enum RelationshipType {
 	CALLS_T = 7,
 	NEXT = 8,
 	NEXT_T = 9,
-	NONE = 99
+	AFFECTS = 10,
+	AFFECTS_T = 11,
+	NONE = 6
 };
 
