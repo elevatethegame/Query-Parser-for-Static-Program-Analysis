@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "Declaration.h"
+#include "QueryInput.h"
 #include "Expression.h"
 
 class PatternClause {
