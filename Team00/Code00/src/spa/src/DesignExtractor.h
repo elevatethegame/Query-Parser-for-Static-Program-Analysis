@@ -42,10 +42,20 @@ public:
 	vector<string> getUses(int index) const;
 
 	vector<string> getModifies(int index) const;
+
+	vector<string> getIndirectUses(int index) const;
+
+	vector<string> getIndirectModifies(int index) const;
+
+	vector<string> getCallStars(string procName) const;
+
+	vector<int> getNext(int index) const;
+
+	vector<int> getNextStar(int index) const;
 private:
 	int numberOfStatement;
 
-	vector<vector<int>> nexts;	
+	vector<vector<int> > nexts;	
 	vector<vector<int> > parents;
 	vector<vector<int> > follows;
 	vector<EntityType> types;
@@ -58,6 +68,20 @@ private:
 	vector<vector<Expression> > expressions;
 	set<string> constants;
 	string procName;
+
+	///indirect relationships
+	Indirect<string> callStar;
+	Indirect<int> parentStar;
+	Indirect<int> followStar;
+	Indirect<int> nextStar;
+	Ownership<int, string> directUses;
+	Ownership<int, string> indirectUses;
+	Ownership<int, string> directModifies;
+	Ownership<int, string> indirectModifies;
+	Ownership<string, string> directProcedureUses;
+	Ownership<string, string> indirectProcedureUses;
+	Ownership<string, string> directProcedureModifies;
+	Ownership<string, string> indirectProcedureModifies;
 
 	void insertNext(int id1, int id2);
 
