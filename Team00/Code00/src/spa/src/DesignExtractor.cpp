@@ -211,6 +211,30 @@ vector<string> DesignExtractor::getModifies(int index) const {
 	return modifies[index];
 }
 
+vector<string> DesignExtractor::getIndirectUses(int index) const {
+	if (indirectUses.find(index) == indirectUses.end()) return {};
+	return indirectUses.at(index);
+}
+
+vector<string> DesignExtractor::getIndirectModifies(int index) const {
+	if (indirectModifies.find(index) == indirectModifies.end()) return {};
+	return indirectModifies.at(index);
+}
+
+vector<string> DesignExtractor::getCallStars(string procName) const {
+	if (callStar.find(procName) == callStar.end()) return {};
+	return callStar.at(procName);
+}
+
+vector<int> DesignExtractor::getNext(int index) const {
+	return nexts[index];
+}
+
+vector<int> DesignExtractor::getNextStar(int index) const {
+	if (nextStar.find(index) == nextStar.end()) return {};
+	return nextStar.at(index);
+}
+
 void DesignExtractor::setCalls(unordered_map<string, vector<string>> &edges) {
 	calls = edges;
 }
@@ -229,21 +253,21 @@ void DesignExtractor::setProcedure(string name, int low, int high) {
 }
 
 void DesignExtractor::buildIndirectRelationships() {
-	Indirect<string> callStar = extractStars<string>(calls);
-	Indirect<int> parentStar = extractStars<int>(convertToMapForm<int, int>(parents, 1, numberOfStatement));
-	Indirect<int> followStar = extractStars<int>(convertToMapForm<int, int>(follows, 1, numberOfStatement));
-	Indirect<int> nextStar = extractStars<int>(convertToMapForm<int, int>(nexts, 1, numberOfStatement));
-	Ownership<int, string> directUses = convertToMapForm<int, string>(uses, 1, numberOfStatement);
-	Ownership<int, string> directModifies = convertToMapForm<int, string>(modifies, 1, numberOfStatement);
-	Ownership<string, string> directProcedureUses = convolute<string, int, string>(procedures, directModifies);
-	Ownership<string, string> directProcedureModifies = convolute<string, int, string>(procedures, directModifies);
+	callStar = extractStars<string>(calls);
+	parentStar = extractStars<int>(convertToMapForm<int, int>(parents, 1, numberOfStatement));
+	followStar = extractStars<int>(convertToMapForm<int, int>(follows, 1, numberOfStatement));
+	nextStar = extractStars<int>(convertToMapForm<int, int>(nexts, 1, numberOfStatement));
+	directUses = convertToMapForm<int, string>(uses, 1, numberOfStatement);
+	directModifies = convertToMapForm<int, string>(modifies, 1, numberOfStatement);
+	directProcedureUses = convolute<string, int, string>(procedures, directModifies);
+	directProcedureModifies = convolute<string, int, string>(procedures, directModifies);
 
-	Ownership<string, string> indirectProcedureUses = combine(
+	indirectProcedureUses = combine(
 		directProcedureUses,
 		convolute<string, string, string>(callStar, directProcedureUses)
 	);
 
-	Ownership<string, string> indirectProcedureModifies = combine(
+	indirectProcedureModifies = combine(
 		directProcedureModifies,
 		convolute<string, string, string>(callStar, directProcedureModifies)
 	);
@@ -258,9 +282,9 @@ void DesignExtractor::buildIndirectRelationships() {
 		convolute<int, string, string>(statementCalls, indirectProcedureModifies)
 	);
 
-	Ownership<int, string> indirectUses = extractOwnerships<int, string>(parentStar, directUses);
+	indirectUses = extractOwnerships<int, string>(parentStar, directUses);
 
-	Ownership<int, string> indirectModifies = extractOwnerships<int, string>(parentStar, directModifies);
+	indirectModifies = extractOwnerships<int, string>(parentStar, directModifies);
 }
 
 

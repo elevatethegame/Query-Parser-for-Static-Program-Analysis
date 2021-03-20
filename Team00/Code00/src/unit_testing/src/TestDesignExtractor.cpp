@@ -1,11 +1,5 @@
-#include "PKB.h"
-#include "StmtNum.h"
-#include "Any.h"
-#include "SimpleParseError.h"
-#include "SIMPLEToken.h"
-#include "SIMPLETokenStream.h"
-#include "Parser.h"
-#include "SimpleParseError.h"
+#include "DesignExtractor.h"
+#include "DesignExtractorHelper.h"
 
 #include "catch.hpp"
 #include <memory>
@@ -14,7 +8,3 @@
 
 
 using namespace std;
-
-TEST_CASE("Test recursive calls") {
-    
-}
