@@ -1,11 +1,16 @@
 #pragma once
 #include "PKBInterface.h"
 #include <memory>
+#include <set>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
 
 class PKBStub : public PKBInterface {
 public:
 
-	vector<unordered_map<string, set<string>>> mapResults;
+	vector<unordered_map<string, set<string> > > mapResults;
 	int mapResultsCount;
 
 	vector<set<string>> setResults;
@@ -21,19 +26,19 @@ public:
 	bool getBooleanResultOfRS(const RelationshipType& type,
 		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
-	unordered_map<string, set<string>> getMapResultsOfRS(const RelationshipType& type,
+	unordered_map<string, set<string> > getMapResultsOfRS(const RelationshipType& type,
 		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
 	set<string> getSetResultsOfRS(const RelationshipType& type,
 		shared_ptr<QueryInput> input1, shared_ptr<QueryInput> input2);
 
-	unordered_map<string, set<string>> getMapResultsOfAssignPattern(
+	unordered_map<string, set<string> > getMapResultsOfAssignPattern(
 		shared_ptr<QueryInput> input, Expression& expression);
 
 	set<string> getSetResultsOfAssignPattern(
 		shared_ptr<QueryInput> input, Expression& expression);
 
-	unordered_map<string, set<string>> getMapResultsOfContainerPattern(
+	unordered_map<string, set<string> > getMapResultsOfContainerPattern(
 		const EntityType& type, shared_ptr<QueryInput> input);
 
 	set<string> getSetResultsOfContainerPattern(
