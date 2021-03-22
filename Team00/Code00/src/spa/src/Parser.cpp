@@ -380,56 +380,8 @@ ParseError Parser::parseStatementList(SIMPLETokenStream& stream, int parentState
 		} else {
 			break;
 		}
-		else
-			if (nextTwos[0].getValue() == "while" && nextTwos[1].getValue() == "(") {
-				int nextIndices = this->expectNextStatementIndex();
-				listIndices.emplace_back(nextIndices);
-				auto error = parseWhileStatement(stream, parentStatementIndex);
-				if (error.hasError()) {
-					return error;
-				}
-			}
-			else
-				if (nextTwos[0].getValue() == "if" && nextTwos[1].getValue() == "(") {
-					int nextIndices = this->expectNextStatementIndex();
-					listIndices.emplace_back(nextIndices);
-					auto error = parseIfStatement(stream, parentStatementIndex);
-					if (error.hasError()) {
-						return error;
-					}
-				}
-				else
-					if (nextTwos[0].getTokenType() == TokenType::name && nextTwos[1].getValue() == "=") {
-						int nextIndices = this->expectNextStatementIndex();
-						listIndices.emplace_back(nextIndices);
-						auto error = parseAssignmentStatement(stream, parentStatementIndex);
-						if (error.hasError()) {
-							return error;
-						}
-					}
-					else
-						if (nextTwos[0].getValue() == "read" && nextTwos[1].getTokenType() == TokenType::name) {
-							int nextIndices = this->expectNextStatementIndex();
-							listIndices.emplace_back(nextIndices);
-							auto error = parseReadStatement(stream, parentStatementIndex);
-							if (error.hasError()) {
-								return error;
-							}
-						}
-						else
-							if (nextTwos[0].getValue() == "print" && nextTwos[1].getTokenType() == TokenType::name) {
-								int nextIndices = this->expectNextStatementIndex();
-								listIndices.emplace_back(nextIndices);
-								auto error = parsePrintStatement(stream, parentStatementIndex);
-								if (error.hasError()) {
-									return error;
-								}
-							}
-							else {
-								break;
-							}
 	}
-
+	
 	//TODO
 	if (listIndices.size() == 0) {
 		return ParseError(stream.getLastConsumedToken(), "statement list should not be empty");
