@@ -25,16 +25,16 @@ enum class TokenType {
 
 class SIMPLEHelper {
 private:
-    const vector<string> relSymbols = {">", ">=", "<", "<=", "==", "!="};
-    const vector<string> condSymbols = {"&&", "||"};
-    const vector<string> notSymbols = {"!"};
+    const vector<string> relSymbols = { ">", ">=", "<", "<=", "==", "!=" };
+    const vector<string> condSymbols = { "&&", "||" };
+    const vector<string> notSymbols = { "!" };
 
     /// Take note of the priority and possible expression
-    const vector<string> exprSymbols = {"+", "-"};
-    const vector<string> termSymbols = {"*", "/", "%"};
-    const vector<string> braces = {"{", "}", "(", ")"};
-    const vector<string> semicolon = {";"};
-    const vector<char> separators = {' ', '\t', '\v'};
+    const vector<string> exprSymbols = { "+", "-" };
+    const vector<string> termSymbols = { "*", "/", "%" };
+    const vector<string> braces = { "{", "}", "(", ")" };
+    const vector<string> semicolon = { ";" };
+    const vector<char> separators = { ' ', '\t', '\v' };
 
     const vector<string> keywords = {
         "procedure",
@@ -72,4 +72,3 @@ public:
 };
 
 #endif  //!__SIMPLEHELPER__H__
-

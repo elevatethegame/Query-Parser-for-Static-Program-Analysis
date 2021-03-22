@@ -29,12 +29,12 @@ bool equals(vector<string> a, vector<string> b) {
 TEST_CASE("Positive condition very very very very very very very complicated") {
     string condition = "((!(x - 3 < 2)) && (!(a / 2 * 3 + 6 < ((10) * (4 - x - 1) / 8 - 6 / x)))) || (x == 1)";
 
-    SIMPLETokenStream stream{{condition}};
+    SIMPLETokenStream stream{ {condition} };
 
     DesignExtractor extractor;
     extractor.increaseNumberOfStatement(EntityType::IF);
-    Parser parser{extractor};
-    
+    Parser parser{ extractor };
+
     auto error = parser.parseConditionExpression(stream, 1);
     REQUIRE_FALSE(error.hasError());
     REQUIRE(stream.isEmpty());
@@ -43,12 +43,12 @@ TEST_CASE("Positive condition very very very very very very very complicated") {
 TEST_CASE("Negative condition very very very very complicated") {
     string condition = "(!(a + b + c < 3 * 2)) && (3 * a - 4 / b < ((10 * x)) - (2)) }";
 
-    SIMPLETokenStream stream{{condition}};
+    SIMPLETokenStream stream{ {condition} };
 
     DesignExtractor extractor;
     extractor.increaseNumberOfStatement(EntityType::IF);
-    Parser parser{extractor};
-    
+    Parser parser{ extractor };
+
     auto error = parser.parseConditionExpression(stream, 1);
     REQUIRE_FALSE(error.hasError());
     REQUIRE_FALSE(stream.isEmpty());
@@ -59,15 +59,15 @@ TEST_CASE("Negative condition very very very very complicated") {
 TEST_CASE("Negative condition very very very very very very complicated") {
     string condition = "(b > c)";
 
-    SIMPLETokenStream stream{{condition}};
+    SIMPLETokenStream stream{ {condition} };
 
 
 
     DesignExtractor extractor;
-    Parser parser{extractor};
+    Parser parser{ extractor };
     extractor.increaseNumberOfStatement(EntityType::IF);
-    
-    auto error = parser.parseConditionExpression(stream, 1);    
+
+    auto error = parser.parseConditionExpression(stream, 1);
     REQUIRE(error.hasError());
 }
 
@@ -79,15 +79,15 @@ TEST_CASE("Source code parsing very simple") {
         "}",
     };
 
-    SIMPLETokenStream stream{codes};
+    SIMPLETokenStream stream{ codes };
 
-    SIMPLETokenStream secondStream{stream};
+    SIMPLETokenStream secondStream{ stream };
     // while (secondStream.isEmpty() == false) {
     //     cerr << secondStream.getToken().toString() << endl;
     // }
 
     DesignExtractor extractor;
-    Parser parser{extractor};
+    Parser parser{ extractor };
     extractor.increaseNumberOfStatement(EntityType::IF);
 
     auto error = parser.parseProcedure(stream);
@@ -106,11 +106,11 @@ TEST_CASE("Source code parsing more difficult ... ") {
         "}",
     };
 
-    SIMPLETokenStream stream{codes};
-    SIMPLETokenStream secondStream{stream};
+    SIMPLETokenStream stream{ codes };
+    SIMPLETokenStream secondStream{ stream };
 
     DesignExtractor extractor;
-    Parser parser{extractor};
+    Parser parser{ extractor };
 
     auto error = parser.parseProcedure(stream);
     REQUIRE_FALSE(error.hasError());

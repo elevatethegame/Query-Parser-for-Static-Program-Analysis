@@ -15,7 +15,7 @@ TEST_CASE("Populating a results table with PKB results") {
 			{"2", "e"}, {"2","f"}, {"2", "g"} };
 
 		ResultsTable* resultsTable = new ResultsTable();
-		resultsTable->populate(PKBResult, synonyms);
+		resultsTable->populateWithMap(PKBResult, synonyms);
 		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
 		vector<vector<string>> actualTable = resultsTable->getTableValues();
 
@@ -24,14 +24,13 @@ TEST_CASE("Populating a results table with PKB results") {
 	}
 
 	SECTION("Populating a results table with PKB results of one synonym") {
-		unordered_map<string, set<string>> PKBResult = { {"dunmmy", {"a", "b", "c", "e", "f", "g"}} };
-		vector<string> synonyms = { stmtSynonym };
+		set<string> PKBResult = { "a", "b", "c", "e", "f", "g" };
 
 		unordered_map<string, int> expectedMap = { { stmtSynonym, 0 } };
 		vector<vector<string>> expectedTable = { {"a"}, {"b"}, {"c"}, {"e"}, {"f"}, {"g"} };
 
 		ResultsTable* resultsTable = new ResultsTable();
-		resultsTable->populate(PKBResult, synonyms);
+		resultsTable->populateWithSet(PKBResult, stmtSynonym);
 		unordered_map<string, int> actualMap = resultsTable->getSynonymIndexMap();
 		vector<vector<string>> actualTable = resultsTable->getTableValues();
 

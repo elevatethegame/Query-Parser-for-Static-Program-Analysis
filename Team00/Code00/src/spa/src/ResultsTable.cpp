@@ -38,35 +38,27 @@ bool ResultsTable::isTableEmpty() {
 	return (this->aValues.size() == 0);
 }
 
-void ResultsTable::populate(unordered_map<string, set<string>> PKBResult, vector<string> synonyms) {
-	if (synonyms.size() == 1) {
-		string synonym = synonyms.at(0);
-		this->aSynonymIndex.insert({ synonym, 0 });
-		for (unordered_map<string, set<string>>::iterator it = PKBResult.begin(); it != PKBResult.end(); it++) {
-			set<string> values = it->second;
-			for (set<string>::iterator setIt = values.begin(); setIt != values.end(); setIt++) {
-				vector<string> row = { *setIt };
-				this->aValues.push_back(row);
-			}
+void ResultsTable::populateWithMap(unordered_map<string, set<string>> PKBResult, vector<string> synonyms) {
+	string leftSynonym = synonyms.at(0);
+	string rightSynonym = synonyms.at(1);
+	this->aSynonymIndex.insert({ leftSynonym, 0 });
+	this->aSynonymIndex.insert({ rightSynonym, 1 });
+	for (unordered_map<string, set<string>>::iterator it = PKBResult.begin(); it != PKBResult.end(); it++) {
+		string leftSynonymValue = it->first;
+		set<string> values = it->second;
+
+		for (set<string>::iterator setIt = values.begin(); setIt != values.end(); setIt++) {
+			string rightSynonymValue = *setIt;
+			vector<string> row = { leftSynonymValue, rightSynonymValue };
+			this->aValues.push_back(row);
 		}
-		return;
 	}
+}
 
-	if (synonyms.size() == 2) {
-		string leftSynonym = synonyms.at(0);
-		string rightSynonym = synonyms.at(1);
-		this->aSynonymIndex.insert({ leftSynonym, 0 });
-		this->aSynonymIndex.insert({ rightSynonym, 1 });
-		for (unordered_map<string, set<string>>::iterator it = PKBResult.begin(); it != PKBResult.end(); it++) {
-			string leftSynonymValue = it->first;
-			set<string> values = it->second;
-
-			for (set<string>::iterator setIt = values.begin(); setIt != values.end(); setIt++) {
-				string rightSynonymValue = *setIt;
-				vector<string> row = { leftSynonymValue, rightSynonymValue };
-				this->aValues.push_back(row);
-			}
-		}
-		return;
+void ResultsTable::populateWithSet(set<string> PKBResult, string synonym) {
+	this->aSynonymIndex.insert({ synonym, 0 });
+	for (set<string>::iterator it = PKBResult.begin(); it != PKBResult.end(); it++) {
+		vector<string> row = { *it };
+		this->aValues.push_back(row);
 	}
 }

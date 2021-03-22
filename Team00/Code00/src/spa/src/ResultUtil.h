@@ -14,10 +14,16 @@ public:
 	
 	static set<string> getCommonSynonyms(vector<string> PKBResultSynonyms, set<string> currentResultSynonyms);
 
-	static shared_ptr<ResultsTable> getCartesianProduct(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	static shared_ptr<ResultsTable> getCartesianProductFromMap(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
 		shared_ptr<ResultsTable> currentResults);
 
-	static shared_ptr<ResultsTable> getNaturalJoin(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	static shared_ptr<ResultsTable> getNaturalJoinFromMap(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		shared_ptr<ResultsTable> currentResults, set<string> commonSynonyms);
+
+	static shared_ptr<ResultsTable> getCartesianProductFromSet(set<string> PKBResults, string synonym,
+		shared_ptr<ResultsTable> currentResults);
+
+	static shared_ptr<ResultsTable> getNaturalJoinFromSet(set<string> PKBResults, string synonym,
 		shared_ptr<ResultsTable> currentResults, set<string> commonSynonyms);
 
 private:

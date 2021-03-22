@@ -36,12 +36,12 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluateRelationshipClauses(vector<shar
 		shared_ptr<RelationshipClause> relationshipClause = *iterator;
 		shared_ptr<QueryInput> leftQueryInput = relationshipClause->getLeftInput();
 		shared_ptr<QueryInput> rightQueryInput = relationshipClause->getRightInput();
+		RelationshipType relationshipType = relationshipClause->getRelationshipType();
 
-		// None of query inputs are delcarations
+		// None of query inputs are declarations
 		if (leftQueryInput->getQueryInputType() != QueryInputType::DECLARATION &&
 			rightQueryInput->getQueryInputType() != QueryInputType::DECLARATION) {
-			bool hasResults = aPKB->getBooleanResultOfRS(relationshipClause->getRelationshipType(),
-				leftQueryInput, rightQueryInput);
+			bool hasResults = aPKB->getBooleanResultOfRS(relationshipType, leftQueryInput, rightQueryInput);
 			if (!hasResults) {
 				// clause returns no results, no need to further evaluate
 				currentResults->setIsNoResult();
@@ -52,13 +52,11 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluateRelationshipClauses(vector<shar
 			}
 		}
 
-		unordered_map<string, set<string>> PKBResults = aPKB->getResultsOfRS(relationshipClause->getRelationshipType(),
-			leftQueryInput, rightQueryInput);
-
-
 		// Both query inputs are declarations
 		if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION &&
 			rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
+
+			unordered_map<string, set<string>> PKBResults = aPKB->getMapResultsOfRS(relationshipType, leftQueryInput, rightQueryInput);
 
 			if (PKBResults.size() == 0) {
 				currentResults->setIsNoResult();
@@ -67,12 +65,15 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluateRelationshipClauses(vector<shar
 
 			string leftSynonym = leftQueryInput->getValue();
 			string rightSynonym = rightQueryInput->getValue();
-			currentResults = mergeResults(PKBResults, {leftSynonym, rightSynonym}, currentResults);
+			currentResults = mergeMapResults(PKBResults, {leftSynonym, rightSynonym}, currentResults);
 			continue;
 		}
 
 		// only one query input can be declaration
-		if (PKBResults.find("")->second.size() == 0) {
+		set<string> PKBResults = aPKB->getSetResultsOfRS(relationshipClause->getRelationshipType(),
+			leftQueryInput, rightQueryInput);
+
+		if (PKBResults.size() == 0) {
 			currentResults->setIsNoResult();
 			return currentResults;
 		}
@@ -85,7 +86,7 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluateRelationshipClauses(vector<shar
 			synonym = rightQueryInput->getValue();
 		}
 
-		currentResults = mergeResults(PKBResults, { synonym }, currentResults);
+		currentResults = mergeSetResults(PKBResults, synonym, currentResults);
 
 	}
 
@@ -98,30 +99,59 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluatePatternClauses(vector<shared_pt
 	for (vector<shared_ptr<PatternClause>>::iterator iterator = patternClauses.begin();
 		iterator != patternClauses.end(); iterator++) {
 		shared_ptr<PatternClause> patternClause = *iterator;
-		shared_ptr<Declaration> synonym = dynamic_pointer_cast<Declaration>(patternClause->getSynonym());
+		shared_ptr<Declaration> synonym = patternClause->getSynonym();
 		shared_ptr<QueryInput> queryInput = patternClause->getQueryInput();
-		shared_ptr<Expression> expression = patternClause->getExpression();
-
-		unordered_map<string, set<string>> PKBResults = aPKB->getResultsOfPattern(synonym->getEntityType(), queryInput, *expression);
-
+		shared_ptr<Expression> expression;
 		
+		if (queryInput->getQueryInputType() == QueryInputType::DECLARATION) { // 2 synonyms in pattern clause
+			unordered_map<string, set<string>> PKBResults;
+			switch (synonym->getEntityType()) {
+			case EntityType::ASSIGN:
+				expression = patternClause->getExpression();
+				PKBResults = aPKB->getMapResultsOfAssignPattern(queryInput, *expression);
+				break;
 
-		vector<string> synonyms = { synonym->getValue() };
-		if (queryInput->getQueryInputType() == QueryInputType::DECLARATION) {
+			case EntityType::WHILE:
+			case EntityType::IF:
+				PKBResults = aPKB->getMapResultsOfContainerPattern(synonym->getEntityType(), queryInput);
+				break;
+
+			default:
+				break;
+			}
+
 			if (PKBResults.size() == 0) {
 				currentResults->setIsNoResult();
 				return currentResults;
 			}
 
-			synonyms.push_back(queryInput->getValue());
-		}
+			currentResults = mergeMapResults(PKBResults, { synonym->getValue(), queryInput->getValue() }, currentResults);
 
-		if (PKBResults.find("")->second.size() == 0) {
-			currentResults->setIsNoResult();
-			return currentResults;
 		}
+		else { // else first argument of clause is not a synonym: clause has only 1 synonym
+			set<string> PKBResults;
+			switch (synonym->getEntityType()) {
+			case EntityType::ASSIGN:
+				expression = patternClause->getExpression();
+				PKBResults = aPKB->getSetResultsOfAssignPattern(queryInput, *expression);
+				break;
 
-		currentResults = mergeResults(PKBResults, synonyms, currentResults);
+			case EntityType::WHILE:
+			case EntityType::IF:
+				PKBResults = aPKB->getSetResultsOfContainerPattern(synonym->getEntityType(), queryInput);
+				break;
+
+			default:
+				break;
+			}
+
+			if (PKBResults.size() == 0) {
+				currentResults->setIsNoResult();
+				return currentResults;
+			}
+
+			currentResults = mergeSetResults(PKBResults, synonym->getValue(), currentResults);
+		}
 	}
 
 	return currentResults;
@@ -129,17 +159,33 @@ shared_ptr<ResultsTable> QueryEvaluator::evaluatePatternClauses(vector<shared_pt
 
 // PKBResult is assumed to be non empty here - QE must check if results from PKB are empty before merging
 // only case when currentResult is empty is when mergining the first PKBResult
-shared_ptr<ResultsTable> QueryEvaluator::mergeResults(unordered_map <string, set<string>> PKBResults, vector<string> synonyms, shared_ptr<ResultsTable> currentResults) {
+shared_ptr<ResultsTable> QueryEvaluator::mergeMapResults(unordered_map <string, set<string>> PKBResults, vector<string> synonyms, shared_ptr<ResultsTable> currentResults) {
 	if (currentResults->isTableEmpty()) {
-		currentResults->populate(PKBResults, synonyms);
+		currentResults->populateWithMap(PKBResults, synonyms);
 		return currentResults;
 	}
 
 	set<string> commonSynonyms = ResultUtil::getCommonSynonyms(synonyms, currentResults->getSynonyms());
 	if (commonSynonyms.size() == 0) {
-		return ResultUtil::getCartesianProduct(PKBResults, synonyms, currentResults);
+		return ResultUtil::getCartesianProductFromMap(PKBResults, synonyms, currentResults);
 	}
 	else {
-		return ResultUtil::getNaturalJoin(PKBResults, synonyms, currentResults, commonSynonyms);
+		return ResultUtil::getNaturalJoinFromMap(PKBResults, synonyms, currentResults, commonSynonyms);
+	}
+}
+
+shared_ptr<ResultsTable> QueryEvaluator::mergeSetResults(set<string> PKBResults, string synonym,
+	shared_ptr<ResultsTable> currentResults) {
+	if (currentResults->isTableEmpty()) {
+		currentResults->populateWithSet(PKBResults, synonym);
+		return currentResults;
+	}
+
+	set<string> commonSynonyms = ResultUtil::getCommonSynonyms({ synonym }, currentResults->getSynonyms());
+	if (commonSynonyms.size() == 0) {
+		return ResultUtil::getCartesianProductFromSet(PKBResults, synonym, currentResults);
+	}
+	else {
+		return ResultUtil::getNaturalJoinFromSet(PKBResults, synonym, currentResults, commonSynonyms);
 	}
 }

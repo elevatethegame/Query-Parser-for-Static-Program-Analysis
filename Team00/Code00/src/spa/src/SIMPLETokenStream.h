@@ -27,7 +27,7 @@ private:
         This function will ignore empty token.
     **/
     void insertToken(string token, int row, int column);
-    
+
 
 public:
     SIMPLETokenStream(vector<string> lineVector);

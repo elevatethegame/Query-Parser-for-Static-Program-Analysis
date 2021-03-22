@@ -11,17 +11,22 @@ enum class TokenTypes
     Uses,
     Parent,
     Follows,
+    Calls,
+    Next,
     Select,
     Such,
     That,
     Pattern,
+    And,
     Semicolon,
     Underscore,
     LeftParen,
     RightParen,
     Comma,
     DoubleQuote,
-    Asterisk
+    Asterisk,
+    ExprSymbol,
+    TermSymbol
 };
 
 #endif

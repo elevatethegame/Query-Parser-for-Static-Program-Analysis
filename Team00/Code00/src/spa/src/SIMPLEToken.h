@@ -11,7 +11,7 @@
     Represent a lexical token, store information of where it actually is in the text as well.
     Guarantee that the value is of correct type
 **/
-class SIMPLEToken{
+class SIMPLEToken {
 private:
     static SIMPLEHelper helper;
 

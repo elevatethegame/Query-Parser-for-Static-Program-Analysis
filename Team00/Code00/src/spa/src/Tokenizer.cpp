@@ -15,11 +15,17 @@ std::unique_ptr<Token> Tokenizer::readInteger()
     return std::unique_ptr<Token>(new Token{ TokenTypes::Integer, integer });
 }
 
+bool Tokenizer::isAlphanumericOrUnderscore(char c)
+{
+    return std::isalnum(c) || c == '_';
+}
+
 std::unique_ptr<Token> Tokenizer::readIdentifier()
 {
     std::string identifier = std::string(1, inputStream.next());
-    identifier += readWhile(std::isalnum);
-    std::string designEntities[] = { "stmt", "read", "print", "while", "if", "assign", "variable", "constant", "procedure" };
+    identifier += readWhile(Tokenizer::isAlphanumericOrUnderscore);
+    std::string designEntities[] = { "stmt", "read", "print", "while", "if", "assign", 
+            "variable", "constant", "procedure", "prog_line", "call" };
     std::unique_ptr<Token> token;
     if (identifier == "Select") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Select, identifier });
@@ -33,6 +39,9 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     else if (identifier == "pattern") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Pattern, identifier });
     }
+    else if (identifier == "and") {
+        token = std::unique_ptr<Token>(new Token{ TokenTypes::And, identifier });
+    }
     else if (identifier == "Modifies") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Modifies, identifier });
     }
@@ -45,10 +54,25 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     else if (identifier == "Follows") {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Follows, identifier });
     }
+    else if (identifier == "Calls") {
+        token = std::unique_ptr<Token>(new Token{ TokenTypes::Calls, identifier });
+    }
+    else if (identifier == "Next") {
+        token = std::unique_ptr<Token>(new Token{ TokenTypes::Next, identifier });
+    }
     else if (std::find(std::begin(designEntities), std::end(designEntities), identifier) != std::end(designEntities)) {
         token = std::unique_ptr<Token>(new Token{ TokenTypes::DesignEntity, identifier });
     }
     else {
+        bool isValidIdentifier = true;
+        for (char const& c : identifier) {
+            if (c == '_') {
+                isValidIdentifier = false;
+                break;
+            }
+        }
+        if (!isValidIdentifier)
+            throw std::invalid_argument("Invalid identifier encountered: " + identifier);
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Identifier, identifier });
     }
     return token;
@@ -90,6 +114,14 @@ std::unique_ptr<Token> Tokenizer::readNext()
         break;
     case '*':
         return std::unique_ptr<Token>(new Token{ TokenTypes::Asterisk, std::string(1, inputStream.next()) });
+        break;
+    case '+':
+    case '-':
+        return std::unique_ptr<Token>(new Token{ TokenTypes::ExprSymbol, std::string(1, inputStream.next()) });
+        break;
+    case '/':
+    case '%':
+        return std::unique_ptr<Token>(new Token{ TokenTypes::TermSymbol, std::string(1, inputStream.next()) });
         break;
     default:
         break;

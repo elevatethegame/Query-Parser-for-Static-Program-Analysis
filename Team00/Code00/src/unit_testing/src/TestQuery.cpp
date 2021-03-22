@@ -29,25 +29,42 @@ TEST_CASE("Adding Relationship clause pointer to vector") {
 
 TEST_CASE("Adding Pattern clause pointer to vector") {
 	Query query;
-	shared_ptr<QueryInput> leftQueryInput = make_shared<QueryInput>();
+	shared_ptr<Declaration> assignDeclaration1 = make_shared<Declaration>(EntityType::ASSIGN, "a");
+	shared_ptr<Declaration> containerDeclaration1 = make_shared<Declaration>(EntityType::WHILE, "w");
 	shared_ptr<QueryInput> rightQueryInput = make_shared<QueryInput>();
 	shared_ptr<Expression> expression = make_shared<Expression>("_");
+
+	shared_ptr<Declaration> assignDeclaration2 = make_shared<Declaration>(EntityType::ASSIGN, "a");
+	shared_ptr<Declaration> containerDeclaration2 = make_shared<Declaration>(EntityType::IF, "ifs");
+	shared_ptr<QueryInput> rightQueryInput2 = make_shared<QueryInput>();
+	shared_ptr<Expression> expression2 = make_shared<Expression>("_");
+
 	shared_ptr<Declaration> declaration = make_shared<Declaration>(EntityType::ASSIGN, "x");
 	query.setSelectClause(declaration);
 
-	SECTION("Adding to empty vector") {
+	SECTION("Adding assign pattern clause to empty vector") {
 		REQUIRE(query.getPatternClauses().size() == 0);
-		query.addPatternClause(leftQueryInput, rightQueryInput, expression);
+		query.addAssignPatternClause(assignDeclaration1, rightQueryInput, expression);
 		REQUIRE(query.getPatternClauses().size() == 1);
 	}
 
-	SECTION("Adding to non empty vector") {
-		shared_ptr<QueryInput> leftQueryInput2 = make_shared<QueryInput>();
-		shared_ptr<QueryInput> rightQueryInput2 = make_shared<QueryInput>();
-		shared_ptr<Expression> expression2 = make_shared<Expression>("_");
-		query.addPatternClause(leftQueryInput, rightQueryInput, expression);
+	SECTION("Adding assign pattern clause to non empty vector") {
+		query.addAssignPatternClause(assignDeclaration1, rightQueryInput, expression);
 		REQUIRE(query.getPatternClauses().size() == 1);
-		query.addPatternClause(leftQueryInput2, rightQueryInput2, expression2);
+		query.addAssignPatternClause(assignDeclaration2, rightQueryInput2, expression2);
+		REQUIRE(query.getPatternClauses().size() == 2);
+	}
+
+	SECTION("Adding container pattern clause to empty vector") {
+		REQUIRE(query.getPatternClauses().size() == 0);
+		query.addContainerPatternClause(containerDeclaration1, rightQueryInput);
+		REQUIRE(query.getPatternClauses().size() == 1);
+	}
+
+	SECTION("Adding container pattern clause to non empty vector") {
+		query.addContainerPatternClause(containerDeclaration1, rightQueryInput);
+		REQUIRE(query.getPatternClauses().size() == 1);
+		query.addContainerPatternClause(containerDeclaration2, rightQueryInput2);
 		REQUIRE(query.getPatternClauses().size() == 2);
 	}
 }
