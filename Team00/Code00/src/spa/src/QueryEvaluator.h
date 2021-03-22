@@ -18,7 +18,10 @@ private:
 
 	shared_ptr<ResultsTable> evaluatePatternClauses(vector<shared_ptr<PatternClause>> patternClauses, shared_ptr<ResultsTable> results);
 
-	shared_ptr<ResultsTable> mergeResults(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+	shared_ptr<ResultsTable> mergeMapResults(unordered_map <string, set<string>> PKBResults, vector<string> synonyms,
+		shared_ptr<ResultsTable> currentResults);
+
+	shared_ptr<ResultsTable> mergeSetResults(set<string> PKBResults, string synonym,
 		shared_ptr<ResultsTable> currentResults);
 	
 public:

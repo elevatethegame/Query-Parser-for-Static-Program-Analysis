@@ -9,8 +9,8 @@ using namespace std;
 
 ParseError::ParseError(
     const SIMPLEToken token,
-    string errorMessage): token(token), errorMessage(errorMessage) {
-        hasErrorValue = true;
+    string errorMessage) : token(token), errorMessage(errorMessage) {
+    hasErrorValue = true;
 }
 
 ParseError::ParseError(string errorMessage) {
@@ -26,10 +26,11 @@ bool ParseError::hasError() const {
     return this->hasErrorValue;
 }
 
-ParseError ParseError::combineWith(const ParseError &other) {
+ParseError ParseError::combineWith(const ParseError& other) {
     if (this->hasError()) {
         return *this;
-    } else return other;
+    }
+    else return other;
 }
 
 string ParseError::getErrorMessage() const {

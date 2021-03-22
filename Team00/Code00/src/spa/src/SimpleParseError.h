@@ -17,7 +17,7 @@ public:
     /* Returns true of this is an error*/
     bool hasError() const;
 
-    /* For combining error*/ 
+    /* For combining error*/
     ParseError combineWith(const ParseError& other);
 
     string getErrorMessage() const;

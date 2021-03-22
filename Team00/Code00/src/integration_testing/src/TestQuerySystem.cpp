@@ -19,7 +19,7 @@ TEST_CASE("First Test") {
         queryParser.parse();
 
         auto pkb = make_shared<PKBStub>();
-        pkb->setGetEntitiesReturnValue({"x", "y", "z", "c", "a", "b"});
+        pkb->addSetResult({"x", "y", "z", "c", "a", "b"});
         QueryEvaluator queryEvaluator = QueryEvaluator(query, pkb);
         auto evaluatedResults = queryEvaluator.evaluate();
         ResultsProjector::projectResults(evaluatedResults, query->getSelectClause(), pkb, results);
@@ -36,8 +36,8 @@ TEST_CASE("First Test") {
 
         auto pkb = make_shared<PKBStub>();
         std::unordered_map<std::string, std::set<std::string>> expectedMap = { {"2", {"3", "4"}}, { "5", {"1", "8"} }, {"13", {"14", "15"} } };
-        pkb->setGetEntitiesReturnValue({ "2", "3", "5", "7", "11", "13" });
-        pkb->setGetResultsOfRSReturnValue(expectedMap);
+        pkb->addSetResult({ "2", "3", "5", "7", "11", "13" });
+        pkb->addMapResult(expectedMap);
         QueryEvaluator queryEvaluator = QueryEvaluator(query, pkb);
         auto evaluatedResults = queryEvaluator.evaluate();
         ResultsProjector::projectResults(evaluatedResults, query->getSelectClause(), pkb, results);
@@ -54,8 +54,8 @@ TEST_CASE("First Test") {
 
         auto pkb = make_shared<PKBStub>();
         std::unordered_map<std::string, std::set<std::string>> expectedMap = { {"2", {"x1", "count"}}, { "5", {"i", "x"} }, {"13", {"num8"} } };
-        pkb->setGetEntitiesReturnValue({ "henz", "count", "num8", "i", "david", "x", "x2", "x1" });
-        pkb->setGetResultsOfPatternReturnValue(expectedMap);
+        pkb->addSetResult({ "henz", "count", "num8", "i", "david", "x", "x2", "x1" });
+        pkb->addMapResult(expectedMap);
         QueryEvaluator queryEvaluator = QueryEvaluator(query, pkb);
         auto evaluatedResults = queryEvaluator.evaluate();
         ResultsProjector::projectResults(evaluatedResults, query->getSelectClause(), pkb, results);
@@ -73,9 +73,9 @@ TEST_CASE("First Test") {
         auto pkb = make_shared<PKBStub>();
         std::unordered_map<std::string, std::set<std::string>> expectedPatternMap = { {"2", {"x1", "count"}}, { "5", {"i", "x"} }, {"13", {"num8"} } };
         std::unordered_map<std::string, std::set<std::string>> expectedRelationshipMap = { {"4", {"x1"}}, { "53", {"x", "martin"} }, {"5", {"bruce"}}, {"2", {"x2"}} };
-        pkb->setGetEntitiesReturnValue({ "henz", "count", "num8", "i", "x", "x2", "x1", "martin", "bruce", "tuan" });
-        pkb->setGetResultsOfPatternReturnValue(expectedPatternMap);
-        pkb->setGetResultsOfRSReturnValue(expectedRelationshipMap);
+        pkb->addSetResult({ "henz", "count", "num8", "i", "x", "x2", "x1", "martin", "bruce", "tuan" });
+        pkb->addMapResult(expectedRelationshipMap);
+        pkb->addMapResult(expectedPatternMap);
         QueryEvaluator queryEvaluator = QueryEvaluator(query, pkb);
         auto evaluatedResults = queryEvaluator.evaluate();
         ResultsProjector::projectResults(evaluatedResults, query->getSelectClause(), pkb, results);
@@ -93,9 +93,9 @@ TEST_CASE("First Test") {
         auto pkb = make_shared<PKBStub>();
         std::unordered_map<std::string, std::set<std::string>> expectedPatternMap = { {"2", {"x1", "count"}}, { "5", {"i", "x"} }, {"13", {"num8"} } };
         std::unordered_map<std::string, std::set<std::string>> expectedRelationshipMap = { {"4", {"x1"}}, { "15", {"x", "martin"} }, {"5", {"bruce"}}, {"2", {"x2"}} };
-        pkb->setGetEntitiesReturnValue({ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" });
-        pkb->setGetResultsOfPatternReturnValue(expectedPatternMap);
-        pkb->setGetResultsOfRSReturnValue(expectedRelationshipMap);
+        pkb->addSetResult({ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" });
+        pkb->addMapResult(expectedRelationshipMap);
+        pkb->addMapResult(expectedPatternMap);
         QueryEvaluator queryEvaluator = QueryEvaluator(query, pkb);
         auto evaluatedResults = queryEvaluator.evaluate();
         ResultsProjector::projectResults(evaluatedResults, query->getSelectClause(), pkb, results);

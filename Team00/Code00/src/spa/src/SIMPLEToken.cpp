@@ -32,7 +32,7 @@ bool SIMPLEToken::operator == (const SIMPLEToken& oth) const {
     return (value == oth.value
         && row == oth.row
         && column == oth.column
-    );
+        );
 }
 
 string SIMPLEToken::toString() const {

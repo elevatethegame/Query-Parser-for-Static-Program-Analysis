@@ -22,5 +22,6 @@ public:
 	void setIsNoResult();
 
 	bool isTableEmpty();
-	void populate(unordered_map<string, set<string>> PKBResult, vector<string> synonyms);
+	void populateWithMap(unordered_map<string, set<string>> PKBResult, vector<string> synonyms);
+	void populateWithSet(set<string> PKBResult, string synonym);
 };

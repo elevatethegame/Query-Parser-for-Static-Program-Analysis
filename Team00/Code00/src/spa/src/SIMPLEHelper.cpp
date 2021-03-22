@@ -35,7 +35,7 @@ bool SIMPLEHelper::isDigit(char ch) {
 
 bool SIMPLEHelper::isInteger(string token) {
     assert(token.size() > 0);
-    for (auto &ch : token) {
+    for (auto& ch : token) {
         if (!isDigit(ch)) return false;
     }
 
@@ -50,7 +50,7 @@ bool SIMPLEHelper::isInteger(string token) {
 bool SIMPLEHelper::isName(string token) {
     assert(token.size() > 0);
     if (!isAlpha(token[0])) return false;
-    for (auto &ch : token) {
+    for (auto& ch : token) {
         if (!isAlphaNumeric(ch)) return false;
     }
     return true;
@@ -95,37 +95,34 @@ TokenType SIMPLEHelper::getTokenType(string token) {
 
 string SIMPLEHelper::getTokenTypeName(TokenType type) {
     switch (type) {
-    case TokenType::notSymbol :
+    case TokenType::notSymbol:
         return "!";
-    case TokenType::keyword :
+    case TokenType::keyword:
         return "keyword";
-    case TokenType::relSymbol :
+    case TokenType::relSymbol:
         return "relSymbol";
-    case TokenType::condSymbol :
+    case TokenType::condSymbol:
         return "condSymbol";
-    case TokenType::exprSymbol :
+    case TokenType::exprSymbol:
         return "exprSymbol";
-    case TokenType::termSymbol :
+    case TokenType::termSymbol:
         return "termSymbol";
-    case TokenType::name :
+    case TokenType::name:
         return "name";
-    case TokenType::integer :
+    case TokenType::integer:
         return "integer";
-    case TokenType::brace :
+    case TokenType::brace:
         return "brace";
-    case TokenType::semicolon :
+    case TokenType::semicolon:
         return "semicolon";
-    case TokenType::other :
+    case TokenType::other:
         return "other";
     };
 }
 
 bool SIMPLEHelper::isSeparator(char ch) {
-    for(auto i : separators) {
+    for (auto i : separators) {
         if (i == ch) return true;
     }
     return false;
 }
-
-
-

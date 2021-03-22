@@ -19,7 +19,7 @@ public:
 
 	void insertParent(int parent, int child);
 
-    void insertFollow(int before, int after);
+	void insertFollow(int before, int after);
 
 	void insertUses(int id, const string& variable);
 

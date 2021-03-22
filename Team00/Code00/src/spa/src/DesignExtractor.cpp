@@ -47,7 +47,7 @@ void DesignExtractor::insertExpression(int id, const Expression& expression) {
 }
 
 void DesignExtractor::insertParent(int parent, int child) {
-    this->parents[child].emplace_back(parent);
+	this->parents[child].emplace_back(parent);
 }
 
 void DesignExtractor::insertFollow(int before, int after) {
@@ -175,26 +175,25 @@ shared_ptr<PKB> DesignExtractor::extractToPKB() {
 	auto result = make_shared<PKB>(this->numberOfStatement);
 	for (int i = 1; i <= numberOfStatement; i++) {
 		result->setStatementType(i, types[i]);
-		for (auto parent: parents[i]) {
+		for (auto parent : parents[i]) {
 			result->insertParent(parent, i);
 		}
-		for (auto follow: follows[i]) {
+		for (auto follow : follows[i]) {
 			result->insertFollow(follow, i);
 		}
-		for (auto variable: modifies[i]) {
-			result->insertDirectModifies(i, variable);
-		}	
-		set<string> S;
-		for (auto variable : uses[i]) {
-			S.insert(variable);
+		for (auto variable : modifies[i]) {
+			result->insertModifies(i, variable);
 		}
-		result->insertDirectUses(i, S);
+		for (auto variable : uses[i]) {
+			result->insertUses(i, variable);
+		}
+		
 		for (auto expression : expressions[i]) {
 			result->insertExpression(i, expression.getValue());
 		}
 	}
 
-	for (auto c: constants) {
+	for (auto c : constants) {
 		result->insertConst(c);
 	}
 

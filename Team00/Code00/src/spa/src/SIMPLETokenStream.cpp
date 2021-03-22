@@ -12,7 +12,8 @@ void SIMPLETokenStream::insertToken(string token, int row, int column) {
     }
     try {
         tokenQ.push_back(SIMPLEToken(token, row, column));
-    } catch (...){
+    }
+    catch (...) {
         usable = false;
         printf(nonregconizedTokenErr, row, column, token.c_str());
     }
@@ -23,7 +24,7 @@ SIMPLETokenStream::SIMPLETokenStream(vector<string> lineVector) {
     int curRow = 1, curCol = 1;
 
     SIMPLEHelper helper;
-    for (const auto &line : lineVector) {
+    for (const auto& line : lineVector) {
 
         string curToken = "";
         for (const auto& ch : line) {
@@ -92,7 +93,7 @@ vector<SIMPLEToken> SIMPLETokenStream::lookAhead(int k) {
         return {};
     }
     vector<SIMPLEToken> answer;
-    for(int i = 0; i < k; i++) answer.push_back(tokenQ[i]);
+    for (int i = 0; i < k; i++) answer.push_back(tokenQ[i]);
     return answer;
 }
 
