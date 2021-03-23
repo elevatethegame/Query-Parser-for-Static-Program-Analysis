@@ -178,5 +178,4 @@ TEST_CASE("Test multipleProcedures") {
         ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
         TestResultsTableUtil::checkList(result, expected);
     }
-
 }
