@@ -15,9 +15,9 @@
 
 using namespace std;
 
-inline bool operator==(const Expression& a, const Expression& b) {
-	return a.getType() == b.getType() && a.getValue() == b.getValue();
-}
+// inline bool operator==(const Expression& a, const Expression& b) {
+// 	return a.getType() == b.getType() && a.getValue() == b.getValue();
+// }
 
 /*
 struct KeyHash {
