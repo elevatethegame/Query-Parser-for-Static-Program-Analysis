@@ -75,7 +75,7 @@ void DesignExtractor::insertNext(int id1, int id2) {
 
 
 
-int DesignExtractor::buildCFGBlock(int stmt) {
+vector<int> DesignExtractor::buildCFGBlock(int stmt) {
 	auto stmtType = types[stmt];
 
 	assert(follows[stmt].size() <= 1);
@@ -83,51 +83,71 @@ int DesignExtractor::buildCFGBlock(int stmt) {
 
 	if (stmtType == EntityType::IF) { /// if statement, jump in one scope
 		int firstBlockIfSt = stmt + 1; /// alway the next statement is in first if block
-		int firstBlockIfEnd = buildCFGBlock(firstBlockIfSt);
+		vector<int> firstBlockIfEnd = buildCFGBlock(firstBlockIfSt);
 		
 		/// the next statement after last statement of 1st if block is begin of 2nd if block
 		int sndBlockIfSt = firstBlockIfEnd + 1; 
-		int sndBlockIfEnd = buildCFGBlock(sndBlockIfSt);
+		vector<int> sndBlockIfEnd = buildCFGBlock(sndBlockIfSt);
+
+		vector<int> blockEnds;
+		for (auto stmt : firstBlockIfEnd) {
+			blockEnds.push_back(stmt);
+		}
+		for (auto stmt : sndBlockIfEnd) {
+			blockEnds.push_back(stmt);
+		}
 
 		insertNext(stmt, firstBlockIfSt);
 		insertNext(stmt, sndBlockIfSt);
 		if (nextStmt != -1) {
-			insertNext(firstBlockIfEnd, nextStmt);
-			insertNext(sndBlockIfEnd, nextStmt);
+			for (auto stmt : blockEnds) {
+				insertNext(stmt, nextStmt);
+			}
+			return buildCFGBlock(nextStmt);
+		}
+		else {
+			return blockEnds;
 		}
 	} 
 	else if (stmtType == EntityType::WHILE) {
 		/// while statement, jump in 1 scope 
 
 		int blockSt = stmt + 1; /// alway the next statement is in first if block
-		int blockEnd = buildCFGBlock(blockSt);
+		vector<int> blockEnds = buildCFGBlock(blockSt);
 
-		insertNext(stmt, blockSt);
-		insertNext(blockEnd, stmt);
+		insertNext(stmt, blockSt);		
+		for (auto endStmt : blockEnds) {
+			insertNext(endStmt, stmt);
+		}
 
 		if (nextStmt != -1) {
 			insertNext(stmt, nextStmt);
+			return buildCFGBlock(nextStmt);
+		}
+		else {
+			return { stmt };
 		}
 	}
 	else {
 		if (nextStmt != -1) {
 			insertNext(stmt, nextStmt);
+			return buildCFGBlock(nextStmt);
 		}
-	}
-
-	/// if this statement does not have a follow statement, then it should be the last statement in this scope.
-	if (nextStmt == -1) {
-		return stmt;
-	}
-	else {
-		return buildCFGBlock(nextStmt);
+		else {
+			return { stmt };
+		}
 	}
 }
 
 void DesignExtractor::buildCFG() {
 	int currentStmt = 1;
 	while (currentStmt <= numberOfStatement) {
-		currentStmt = buildCFGBlock(currentStmt) + 1;
+		vector<int> blockEnds = buildCFGBlock(currentStmt);
+		int lastStmt = -1;
+		for (auto stmt : blockEnds) {
+			lastStmt = max(lastStmt, stmt);
+		}
+		currentStmt = lastStmt + 1;
 	}
 }
 

@@ -92,8 +92,8 @@ private:
 
 	void insertNext(int id1, int id2);
 
-	/// Return last statement of each block 
-	int buildCFGBlock(int stmt);
+	/// Return last statements of each block 
+	vector<int> buildCFGBlock(int stmt);
 	void buildCFG();
 
 	void affectDFS(int startStmt, int curStmt, string var, vector<int>& visited);
