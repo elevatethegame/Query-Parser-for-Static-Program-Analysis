@@ -8,77 +8,77 @@
 <id ReturnTuple="1" UnnamedVar="1" Uses="1" SuchThat="1" CondNum="4" RelNum="1" comment="comment">1</id><querystr><![CDATA[stmt s; Select s such that Uses(s, _)]]></querystr>
 <stuans>2,3,4</stuans>
 <correct>2,3,4</correct>
-<time_taken>26.000000</time_taken>
+<time_taken>32.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">2</id><querystr><![CDATA[stmt s; Select s such that Uses(s, "a")]]></querystr>
 <stuans>2,3</stuans>
 <correct>2,3</correct>
-<time_taken>34.000000</time_taken>
+<time_taken>38.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">3</id><querystr><![CDATA[stmt s; Select s such that Uses(s, "c")]]></querystr>
 <stuans>4</stuans>
 <correct>4</correct>
-<time_taken>28.000000</time_taken>
+<time_taken>31.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" UnnamedVar="1" Uses="1" SuchThat="1" CondNum="4" RelNum="1" comment="comment">4</id><querystr><![CDATA[assign a; Select a such that Uses(a, _)]]></querystr>
 <stuans>2,3,4</stuans>
 <correct>2,3,4</correct>
-<time_taken>45.000000</time_taken>
+<time_taken>41.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">5</id><querystr><![CDATA[assign a; Select a such that Uses(a, "a")]]></querystr>
 <stuans>2,3</stuans>
 <correct>2,3</correct>
-<time_taken>32.000000</time_taken>
+<time_taken>34.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">6</id><querystr><![CDATA[variable v; Select v such that Uses(2, v)]]></querystr>
 <stuans>a</stuans>
 <correct>a</correct>
-<time_taken>29.000000</time_taken>
+<time_taken>34.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">7</id><querystr><![CDATA[variable v; Select v such that Uses(3, v)]]></querystr>
 <stuans>a,b</stuans>
 <correct>a,b</correct>
-<time_taken>30.000000</time_taken>
+<time_taken>35.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">8</id><querystr><![CDATA[variable v; stmt s; Select v such that Uses(s, v)]]></querystr>
 <stuans>a,b,c</stuans>
 <correct>a,b,c</correct>
-<time_taken>32.000000</time_taken>
+<time_taken>34.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">9</id><querystr><![CDATA[variable v; stmt s; Select s such that Uses(s, v)]]></querystr>
 <stuans>2,3,4</stuans>
 <correct>2,3,4</correct>
-<time_taken>35.000000</time_taken>
+<time_taken>34.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">10</id><querystr><![CDATA[variable v; assign a; Select v such that Uses(a, v)]]></querystr>
 <stuans>a,b,c</stuans>
 <correct>a,b,c</correct>
-<time_taken>32.000000</time_taken>
+<time_taken>34.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">11</id><querystr><![CDATA[variable v; assign a; Select a such that Uses(a, v)]]></querystr>
 <stuans>2,3,4</stuans>
 <correct>2,3,4</correct>
-<time_taken>31.000000</time_taken>
+<time_taken>35.000000</time_taken>
 <passed/>
 </query>
 </queries>
