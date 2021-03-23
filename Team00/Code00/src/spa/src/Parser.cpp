@@ -76,6 +76,7 @@ void Parser::addExpression(int statementId, Expression expression) {
 
 void Parser::addCallingRelationship(int statementId, string callee) {
 	this->callingRelationships[currentProcName].emplace_back(callee);
+	this->designExtractor.insertStatementCall(statementId, callee);
 }
 
 ParseResult combineResult(ParseResult first, ParseResult second, SIMPLEToken operand) {
