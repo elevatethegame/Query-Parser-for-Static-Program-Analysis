@@ -465,6 +465,7 @@ ParseError Parser::parseExpression(SIMPLETokenStream& stream, Expression& result
 		}
 	}
 
+	result.setType(ExpressionType::EXACT);
 	this->addExpression(userStatement, result);
 	return error;
 }

@@ -290,9 +290,17 @@ shared_ptr<PKB> DesignExtractor::extractToPKB() {
 			return types[index] == EntityType::WHILE;
 		}
 	);
-	sendInformation<int, string>(controlIF, [&](int a, string b) {
+	sendInformation<int, string>(controlWHILE, [&](int a, string b) {
 		result->setControlVariable(a, b);
 	});
+
+
+	///extract expression
+	sendInformation<int, Expression>(convertToMapForm<int, Expression>(expressions, 1, numberOfStatement),
+		[&](int a, Expression b) {
+			result->insertExpression(a, b);
+		}
+	);
 
 	return result;
 }

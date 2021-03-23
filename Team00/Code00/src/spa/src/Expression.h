@@ -27,5 +27,9 @@ public:
 
 	void setType(ExpressionType type);
 
+	bool operator == (const Expression other) const  {
+		return this->aValue == other.aValue && this->type == other.type;
+	}
+
 };
 
