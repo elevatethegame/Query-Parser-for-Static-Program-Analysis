@@ -185,6 +185,8 @@ void sendInformation(const Ownership<K, V>& edges, function<void(K first, V seco
 
 shared_ptr<PKB> DesignExtractor::extractToPKB() {
 	auto result = make_shared<PKB>(this->numberOfStatement);
+	this->buildCFG();
+	this->buildIndirectRelationships();
 
 	for (auto c : constants) {
 		result->insertConst(c);
