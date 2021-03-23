@@ -126,8 +126,8 @@ TEST_CASE("Test multipleProcedures") {
         TestResultsTableUtil::checkList(result, expected);
     }
 
-    SECTION("stmt modifies") {
-        // select s such that uses(s, "count")
+    SECTION("stmtModifies") {
+        // select s such that modifies(s, "count")
         shared_ptr<QueryInterface> query =
             dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
         shared_ptr<Declaration> declaration =
@@ -178,4 +178,72 @@ TEST_CASE("Test multipleProcedures") {
         ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
         TestResultsTableUtil::checkList(result, expected);
     }
+
+    SECTION("procCallsT") {
+        // select p such that calls*("main", p)
+        shared_ptr<QueryInterface> query =
+            dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
+        shared_ptr<Declaration> declaration =
+            make_shared<Declaration>(EntityType::PROC, "p");
+
+        shared_ptr<QueryInput> proc =
+            dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROC, "p"));
+        shared_ptr<QueryInput> procName =
+            dynamic_pointer_cast<QueryInput>(make_shared<Ident>("main"));
+
+        query->setSelectClause(declaration);
+        query->addRelationshipClause(RelationshipType::CALLS_T, procName, proc);
+
+        QueryEvaluator qe = QueryEvaluator(query, pkb);
+
+        list<string> expected{ "first", "second" };
+        list<string> result{ };
+        shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+        ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
+        TestResultsTableUtil::checkList(result, expected);
+    }
+
+    SECTION("assignPattern") {
+        // select a pattern a("count", _"count"_)
+        shared_ptr<QueryInterface> query =
+            dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
+        shared_ptr<Declaration> declaration =
+            make_shared<Declaration>(EntityType::ASSIGN, "a");
+        shared_ptr<QueryInput> variable =
+            dynamic_pointer_cast<QueryInput>(make_shared<Ident>("count"));
+        shared_ptr<Expression> expression = 
+            make_shared<Expression>("count", ExpressionType::PARTIAL);
+
+        query->setSelectClause(declaration);
+        query->addAssignPatternClause(declaration, variable, expression);
+
+        QueryEvaluator qe = QueryEvaluator(query, pkb);
+
+        list<string> expected{ "9", "10" };
+        list<string> result{ };
+        shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+        ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
+        TestResultsTableUtil::checkList(result, expected);
+    }
+
+    SECTION("containerPattern") {
+        // select w pattern w(_, _)
+        shared_ptr<QueryInterface> query =
+            dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
+        shared_ptr<Declaration> declaration =
+            make_shared<Declaration>(EntityType::WHILE, "w");
+        shared_ptr<QueryInput> wildcard = make_shared<Any>();
+
+        query->setSelectClause(declaration);
+        query->addContainerPatternClause(declaration, wildcard);
+
+        QueryEvaluator qe = QueryEvaluator(query, pkb);
+
+        list<string> expected{ "3", "6" };
+        list<string> result{ };
+        shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+        ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
+        TestResultsTableUtil::checkList(result, expected);
+    }
+
 }
