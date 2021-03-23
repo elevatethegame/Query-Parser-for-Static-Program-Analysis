@@ -230,6 +230,8 @@ ParseError Parser::parseAssignmentStatement(SIMPLETokenStream& stream, int paren
 	error = error.combineWith(parseExpression(stream, result, thisStatementIndex));
 	error = error.combineWith(consumeTerminal(";", stream));
 
+	result.setType(ExpressionType::EXACT);
+	this->addExpression(thisStatementIndex, result);
 	if (error.hasError()) {
 		return error;
 	}
@@ -465,7 +467,7 @@ ParseError Parser::parseExpression(SIMPLETokenStream& stream, Expression& result
 		}
 	}
 
-	result.setType(ExpressionType::EXACT);
+	result.setType(ExpressionType::PARTIAL);
 	this->addExpression(userStatement, result);
 	return error;
 }
