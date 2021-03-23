@@ -67,7 +67,8 @@ private:
 	Ownership<int, string> statementCalls;
 	vector<vector<Expression> > expressions;
 	set<string> constants;
-	string procName;
+	set<string> proceduresList;
+	set<string> variables;
 
 	///indirect relationships
 	Indirect<string> callStar;
@@ -82,6 +83,7 @@ private:
 	Ownership<string, string> indirectProcedureUses;
 	Ownership<string, string> directProcedureModifies;
 	Ownership<string, string> indirectProcedureModifies;
+	Ownership<int, string> controlVariables;
 
 	void insertNext(int id1, int id2);
 

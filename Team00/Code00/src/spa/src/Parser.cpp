@@ -13,6 +13,7 @@ using namespace std;
 #include "SimpleParseError.h"
 #include "SIMPLEToken.h"
 #include "ParserHelper.h"
+#include "ExpressionType.h"
 
 Parser::Parser(DesignExtractor& extractor) : designExtractor(extractor) {
 	this->numberOfStatements = 0;
@@ -210,7 +211,6 @@ ParseError Parser::parseProcedure(SIMPLETokenStream& stream) {
 	error = error.combineWith(parseStatementList(stream));
 	error = error.combineWith(consumeTerminal("}", stream));
 	this->endAProcedure(procedureName.getValue());
-	this->designExtractor.setProcName(procedureName.getValue());
 	return error;
 }
 
@@ -218,7 +218,7 @@ ParseError Parser::parseAssignmentStatement(SIMPLETokenStream& stream, int paren
 	int thisStatementIndex = this->startNewStatement(parentStatementIndex, EntityType::ASSIGN);
 
 	SIMPLEToken leftHandSide;
-	Expression result("");
+	Expression result("", ExpressionType::EMPTY);
 	auto error = consumeToken(TokenType::name, stream, leftHandSide);
 	error = error.combineWith(consumeTerminal("=", stream));
 	error = error.combineWith(parseExpression(stream, result, thisStatementIndex));
@@ -402,13 +402,13 @@ ParseError Parser::parseFactor(SIMPLETokenStream& stream, Expression& result, in
 
 	if (nextToken.getTokenType() == TokenType::name) {
 		this->addUses(userStatement, nextToken.getValue());
-		result = Expression(nextToken.getValue());
+		result = Expression(nextToken.getValue(), ExpressionType::PARTIAL);
 		this->addExpression(userStatement, result);
 		return ParseError();
 	}
 
 	if (nextToken.getTokenType() == TokenType::integer) {
-		result = Expression(nextToken.getValue());
+		result = Expression(nextToken.getValue(), ExpressionType::PARTIAL);
 		this->addExpression(userStatement, result);
 		this->designExtractor.insertConstant(nextToken.getValue());
 		return ParseError();
@@ -429,11 +429,10 @@ ParseError Parser::parseTerm(SIMPLETokenStream& stream, Expression& result, int 
 	while (!stream.isEmpty()) {
 		SIMPLEToken nextToken = stream.lookAheadSingle();
 		if (nextToken.getTokenType() == TokenType::termSymbol) {
-			Expression subResult("");
+			Expression subResult("", ExpressionType::EMPTY);
 			error = error.combineWith(consumeToken(TokenType::termSymbol, stream, nextToken));
 			error = error.combineWith(parseFactor(stream, subResult, userStatement));
-			result = result.combineExpression(nextToken.getValue(), subResult);
-			//TODO
+			result = result.combineExpression(nextToken.getValue(), subResult, ExpressionType::PARTIAL);
 		}
 		else {
 			return error;
@@ -450,10 +449,10 @@ ParseError Parser::parseExpression(SIMPLETokenStream& stream, Expression& result
 	while (!stream.isEmpty()) {
 		SIMPLEToken nextToken = stream.lookAheadSingle();
 		if (nextToken.getTokenType() == TokenType::exprSymbol) {
-			Expression subResult("");
+			Expression subResult("", ExpressionType::EMPTY);
 			error = error.combineWith(consumeToken(TokenType::exprSymbol, stream, nextToken));
 			error = error.combineWith(parseTerm(stream, subResult, userStatement));
-			result = result.combineExpression(nextToken.getValue(), subResult);
+			result = result.combineExpression(nextToken.getValue(), subResult, ExpressionType::PARTIAL);
 		}
 		else {
 			break;
