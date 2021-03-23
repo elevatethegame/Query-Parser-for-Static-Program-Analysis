@@ -48,6 +48,8 @@ public:
 
 	vector<string> getIndirectModifies(int index) const;
 
+	vector<int> getFollows(int index) const;
+
 	vector<string> getCallStars(string procName) const;
 
 	vector<int> getNext(int index) const;

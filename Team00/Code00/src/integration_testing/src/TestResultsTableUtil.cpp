@@ -1,5 +1,8 @@
 #include "TestResultsTableUtil.h"
 
+#include <iostream>
+using namespace std;
+
 void TestResultsTableUtil::checkTable(vector<vector<string>> actualTable, vector<vector<string>> expectedTable) {
 	REQUIRE(actualTable.size() == expectedTable.size());
 
@@ -34,12 +37,14 @@ void TestResultsTableUtil::checkMap(unordered_map<string, int> actualMap, unorde
 void  TestResultsTableUtil::checkList(list<string> actualList, list<string> expectedList) {
 	REQUIRE(actualList.size() == expectedList.size());
 
-	list<string>::iterator actualListIt = actualList.begin();
-	list<string>::iterator expectedListIt = expectedList.begin();
+	vector<string> A;
+	for (auto x: actualList) A.emplace_back(x);
+	vector<string> B;
+	for (auto x: expectedList) B.emplace_back(x);
+	sort(A.begin(), A.end());
+	sort(B.begin(), B.end());
 
-	while (actualListIt != actualList.end() || expectedListIt != expectedList.end()) {
-		REQUIRE(*actualListIt == *expectedListIt);
-		actualListIt++;
-		expectedListIt++;
+	for (int i = 0; i < A.size(); i++) {
+		REQUIRE(A[i] == B[i]);
 	}
 }

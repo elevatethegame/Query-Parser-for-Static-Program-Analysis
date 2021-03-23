@@ -14,6 +14,7 @@
 #include "catch.hpp"
 #include "Parser.h"
 #include "DesignExtractor.h"
+#include "DesignExtractorHelper.h"
 
 TEST_CASE("Test multipleProcedures") {
     vector<string> codes = {
@@ -41,9 +42,11 @@ TEST_CASE("Test multipleProcedures") {
     DesignExtractor extractor;
     Parser parser{ extractor };
 
-    auto error = parser.parseProcedure(stream);
+    auto error = parser.parseProgram(stream);
     REQUIRE_FALSE(error.hasError());
     shared_ptr<PKB> pkb = extractor.extractToPKB();
+
+
     
     SECTION("followsT") {
         // select s such that follow*(1, s)
@@ -68,8 +71,32 @@ TEST_CASE("Test multipleProcedures") {
         ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
         TestResultsTableUtil::checkList(result, expected);
     }
+
+
+    SECTION("call Star") {
+        // select p such that Call*(p, "second")
+        shared_ptr<QueryInterface> query =
+            dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
+        shared_ptr<Declaration> declaration =
+            make_shared<Declaration>(EntityType::PROC, "p");
+
+        shared_ptr<QueryInput> caller =
+            dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROC, "p"));
+        shared_ptr<QueryInput> callee =
+            dynamic_pointer_cast<QueryInput>(make_shared<Ident>("second"));
+
+        query->setSelectClause(declaration);
+        query->addRelationshipClause(RelationshipType::CALLS_T, caller, callee);
+
+        QueryEvaluator qe = QueryEvaluator(query, pkb);
+
+        list<string> expected{"main", "first" };
+        list<string> result{ };
+        shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+        ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
+        TestResultsTableUtil::checkList(result, expected);
+    } 
     
-    /*
     SECTION("stmtUses") {
         // select s such that uses(s, "count")
         shared_ptr<QueryInterface> query =
@@ -87,13 +114,17 @@ TEST_CASE("Test multipleProcedures") {
 
         QueryEvaluator qe = QueryEvaluator(query, pkb);
 
-        list<string> expected{ "1", "3", "4", "5", "6", "7", "8", "9", "10" };
+        list<string> expected{ "1", "3", "4", "5", "6", "7", "9", "10" };
         list<string> result{ };
         shared_ptr<ResultsTable> resultsTable = qe.evaluate();
         ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
+        // cerr << "using " << endl;
+        // for (auto x: result) {
+        //     cerr << x << " ";
+        // }
+        // cerr << endl;
         TestResultsTableUtil::checkList(result, expected);
     }
-    */
 
     SECTION("procUses") {
         // select p such that uses(p, "count")
