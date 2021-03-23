@@ -68,7 +68,8 @@ TEST_CASE("Test multipleProcedures") {
         ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
         TestResultsTableUtil::checkList(result, expected);
     }
-
+    
+    /*
     SECTION("stmtUses") {
         // select s such that uses(s, "count")
         shared_ptr<QueryInterface> query =
@@ -87,6 +88,31 @@ TEST_CASE("Test multipleProcedures") {
         QueryEvaluator qe = QueryEvaluator(query, pkb);
 
         list<string> expected{ "1", "3", "4", "5", "6", "7", "8", "9", "10" };
+        list<string> result{ };
+        shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+        ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
+        TestResultsTableUtil::checkList(result, expected);
+    }
+    */
+
+    SECTION("procUses") {
+        // select p such that uses(p, "count")
+        shared_ptr<QueryInterface> query =
+            dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
+        shared_ptr<Declaration> declaration =
+            make_shared<Declaration>(EntityType::PROC, "p");
+
+        shared_ptr<QueryInput> proc =
+            dynamic_pointer_cast<QueryInput>(make_shared<Declaration>(EntityType::PROC, "p"));
+        shared_ptr<QueryInput> variable =
+            dynamic_pointer_cast<QueryInput>(make_shared<Ident>("count"));
+
+        query->setSelectClause(declaration);
+        query->addRelationshipClause(RelationshipType::USES, proc, variable);
+
+        QueryEvaluator qe = QueryEvaluator(query, pkb);
+
+        list<string> expected{ "main", "first", "second" };
         list<string> result{ };
         shared_ptr<ResultsTable> resultsTable = qe.evaluate();
         ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
