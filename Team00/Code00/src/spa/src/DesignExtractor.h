@@ -55,6 +55,8 @@ public:
 	vector<int> getNext(int index) const;
 
 	vector<int> getNextStar(int index) const;
+
+	vector<Expression> getExpression(int index) const;
 private:
 	int numberOfStatement;
 

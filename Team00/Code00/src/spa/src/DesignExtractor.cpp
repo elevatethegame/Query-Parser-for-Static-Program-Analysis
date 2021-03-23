@@ -73,6 +73,8 @@ void DesignExtractor::insertNext(int id1, int id2) {
 }
 
 
+
+
 int DesignExtractor::buildCFGBlock(int stmt) {
 	auto stmtType = types[stmt];
 
@@ -339,6 +341,10 @@ vector<int> DesignExtractor::getNext(int index) const {
 vector<int> DesignExtractor::getNextStar(int index) const {
 	if (nextStar.find(index) == nextStar.end()) return {};
 	return nextStar.at(index);
+}
+
+vector<Expression> DesignExtractor::getExpression(int index) const {
+	return expressions[index];
 }
 
 void DesignExtractor::setCalls(unordered_map<string, vector<string>> &edges) {
