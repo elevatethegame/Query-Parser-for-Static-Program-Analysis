@@ -49,11 +49,11 @@ void DesignExtractor::insertExpression(int id, const Expression& expression) {
 }
 
 void DesignExtractor::insertParent(int parent, int child) {
-	this->parents[child].emplace_back(parent);
+	this->parents[parent].emplace_back(child);
 }
 
 void DesignExtractor::insertFollow(int before, int after) {
-	this->follows[after].emplace_back(before);
+	this->follows[before].emplace_back(after);
 }
 
 void DesignExtractor::insertUses(int index, const string& value) {
@@ -297,6 +297,10 @@ shared_ptr<PKB> DesignExtractor::extractToPKB() {
 	return result;
 }
 
+vector<int> DesignExtractor::getFollows(int index) const {
+	return follows[index];
+}
+
 vector<string> DesignExtractor::getUses(int index) const {
 	return uses[index];
 }
@@ -349,7 +353,7 @@ void DesignExtractor::buildIndirectRelationships() {
 	nextStar = extractStars<int>(convertToMapForm<int, int>(nexts, 1, numberOfStatement));
 	directUses = convertToMapForm<int, string>(uses, 1, numberOfStatement);
 	directModifies = convertToMapForm<int, string>(modifies, 1, numberOfStatement);
-	directProcedureUses = convolute<string, int, string>(procedures, directModifies);
+	directProcedureUses = convolute<string, int, string>(procedures, directUses);
 	directProcedureModifies = convolute<string, int, string>(procedures, directModifies);
 
 	indirectProcedureUses = combine(
@@ -372,9 +376,15 @@ void DesignExtractor::buildIndirectRelationships() {
 		convolute<int, string, string>(statementCalls, indirectProcedureModifies)
 	);
 
-	indirectUses = extractOwnerships<int, string>(parentStar, directUses);
+	indirectUses = combine<int, string> (
+		directUses,
+		extractOwnerships<int, string>(parentStar, directUses)
+	);
 
-	indirectModifies = extractOwnerships<int, string>(parentStar, directModifies);
+	indirectModifies = combine<int, string> (
+		directModifies,
+		extractOwnerships(parentStar, directModifies)
+	);
 }
 
 

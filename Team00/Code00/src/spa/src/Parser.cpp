@@ -47,6 +47,11 @@ void Parser::startAProcedure(string procName) {
 
 void Parser::endAProcedure(string procName) {
 	rangeProcedure[procName].second = this->numberOfStatements;
+	this->designExtractor.setProcedure(
+		procName, 
+		rangeProcedure[procName].first, 
+		rangeProcedure[procName].second
+	);
 }
 
 int Parser::startNewStatement(int parentStatement, EntityType type) {
