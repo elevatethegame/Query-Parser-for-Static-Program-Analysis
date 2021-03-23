@@ -292,6 +292,7 @@ shared_ptr<PKB> DesignExtractor::extractToPKB() {
 			return types[index] == EntityType::WHILE;
 		}
 	);
+
 	sendInformation<int, string>(controlWHILE, [&](int a, string b) {
 		result->setControlVariable(a, b);
 	});

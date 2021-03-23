@@ -441,6 +441,7 @@ ParseError Parser::parseTerm(SIMPLETokenStream& stream, Expression& result, int 
 			error = error.combineWith(consumeToken(TokenType::termSymbol, stream, nextToken));
 			error = error.combineWith(parseFactor(stream, subResult, userStatement));
 			result = result.combineExpression(nextToken.getValue(), subResult, ExpressionType::PARTIAL);
+			this->addExpression(userStatement, result);
 		}
 		else {
 			return error;
@@ -461,6 +462,7 @@ ParseError Parser::parseExpression(SIMPLETokenStream& stream, Expression& result
 			error = error.combineWith(consumeToken(TokenType::exprSymbol, stream, nextToken));
 			error = error.combineWith(parseTerm(stream, subResult, userStatement));
 			result = result.combineExpression(nextToken.getValue(), subResult, ExpressionType::PARTIAL);
+			this->addExpression(userStatement, result);
 		}
 		else {
 			break;
