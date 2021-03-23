@@ -86,7 +86,10 @@ vector<int> DesignExtractor::buildCFGBlock(int stmt) {
 		vector<int> firstBlockIfEnd = buildCFGBlock(firstBlockIfSt);
 		
 		/// the next statement after last statement of 1st if block is begin of 2nd if block
-		int sndBlockIfSt = firstBlockIfEnd + 1; 
+		int sndBlockIfSt = -1;
+		for (auto endStmt : firstBlockIfEnd) {
+			sndBlockIfSt = max(sndBlockIfSt, endStmt + 1);
+		}
 		vector<int> sndBlockIfEnd = buildCFGBlock(sndBlockIfSt);
 
 		vector<int> blockEnds;
