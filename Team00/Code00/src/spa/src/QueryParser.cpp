@@ -393,12 +393,14 @@ bool QueryParser::next()
 
         expect(TokenTypes::LeftParen);
         std::shared_ptr<QueryInput> leftQueryInput = expect(stmtRef(std::set<EntityType>(
-            { EntityType::PROGLINE })
+            { EntityType::PROGLINE, EntityType::ASSIGN, EntityType::STMT, EntityType::CALL, EntityType::PRINT, EntityType::READ,
+                    EntityType::IF, EntityType::WHILE })
             , true)
             , true);
         expect(TokenTypes::Comma);
         std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
-            { EntityType::PROGLINE })
+            { EntityType::PROGLINE, EntityType::ASSIGN, EntityType::STMT, EntityType::CALL, EntityType::PRINT, EntityType::READ,
+                    EntityType::IF, EntityType::WHILE })
             , true)
             , true);
         expect(TokenTypes::RightParen);
