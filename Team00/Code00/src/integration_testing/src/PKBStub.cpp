@@ -1,4 +1,11 @@
 #include "PKBStub.h"
+
+#include <unordered_map>
+#include <set>
+#include <vector>
+
+using namespace std;
+
 void PKBStub::resetCounts() {
 	this->setResultsCount = 0;
 	this->mapResultsCount = 0;

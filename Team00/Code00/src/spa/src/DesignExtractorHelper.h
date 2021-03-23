@@ -61,6 +61,17 @@ Indirect<T> extractStars(const Direct<T>& edges) {
     return results;
 }
 
+template<typename K, typename V>
+Ownership<K, V> filterOwnership(const Ownership<K, V>& edges, function<bool(K)> filter) {
+    Ownership<K, V> result;
+    for (auto& single: edges) {
+        if (filter(single.first)) {
+            result[single.first] = single.second;
+        }
+    }
+    return result;
+}
+
 //return current ownership added with indirect ownerships
 template<typename K, typename V>
 Ownership<K, V> extractOwnerships(

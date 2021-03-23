@@ -12,6 +12,7 @@ using namespace std;
 
 
 #include "PKB.h"
+#include "EntityType.h"
 #include "DesignExtractor.h"
 #include "EntityType.h"
 #include "DesignExtractorHelper.h"
@@ -171,33 +172,124 @@ void DesignExtractor::buildDirectAffect() {
 	}
 }
 
-shared_ptr<PKB> DesignExtractor::extractToPKB() {
-	auto result = make_shared<PKB>(this->numberOfStatement);
-	for (int i = 1; i <= numberOfStatement; i++) {
-		result->setStatementType(i, types[i]);
-		for (auto parent : parents[i]) {
-			result->insertParent(parent, i);
-		}
-		for (auto follow : follows[i]) {
-			result->insertFollow(follow, i);
-		}
-		for (auto variable : modifies[i]) {
-			result->insertModifies(i, variable);
-		}
-		for (auto variable : uses[i]) {
-			result->insertUses(i, variable);
-		}
-		
-		for (auto expression : expressions[i]) {
-			result->insertExpression(i, expression.getValue());
+template<typename K, typename V>
+void sendInformation(const Ownership<K, V>& edges, function<void(K first, V second)> consumer) {
+	for (auto& entry: edges) {
+		auto& x = entry.first;
+		for (auto& y: entry.second) {
+			consumer(x, y);
 		}
 	}
+}
+
+shared_ptr<PKB> DesignExtractor::extractToPKB() {
+	auto result = make_shared<PKB>(this->numberOfStatement);
 
 	for (auto c : constants) {
 		result->insertConst(c);
 	}
+	for (int i = 1; i <= numberOfStatement; i++) {
+		result->setStatementType(i, types[i]);
+	}
+	
+	///extract parent
+	sendInformation<int, int>(convertToMapForm<int, int>(parents, 1, numberOfStatement),
+		[&](int a, int b) {
+			result->insertParent(a, b);
+		}	
+	);
 
-	result->insertProcedure(this->procName);
+	///extract parentStar
+	sendInformation<int, int>(parentStar, [&](int a, int b) {
+		result->insertParentStar(a, b);
+	});
+
+	///extract follow
+	sendInformation<int, int>(convertToMapForm<int, int>(follows, 1, numberOfStatement),
+		[&](int a, int b) {
+			result->insertFollow(a, b);
+		}
+	);
+
+	///extract followStar
+	sendInformation<int, int>(followStar, [&](int a, int b) {
+		result->insertFollowStar(a, b);
+	});
+
+	///extract next
+	sendInformation<int, int>(convertToMapForm<int, int>(nexts, 1, numberOfStatement), 
+		[&](int a, int b) {
+			result->insertNext(a, b);
+		}
+	);
+
+	//extract nextStar
+	sendInformation<int, int>(nextStar, [&](int a, int b) {
+		result->insertNextStar(a, b);
+	});
+
+	///extract uses
+	sendInformation<int, string>(indirectUses, [&](int a, string b){
+		result->insertUses(a, b);
+	});
+
+	///extract ProcUses
+	sendInformation<string, string>(indirectProcedureUses, [&](string a, string b) {
+		result->insertProcUses(a, b);
+	});
+
+	///extract modifies
+	sendInformation<int, string>(indirectModifies, [&](int a, string b) {
+		result->insertModifies(a, b);
+	});
+
+	///extract ProcUses
+	sendInformation<string, string>(indirectProcedureModifies, [&](string a, string b) {
+		result->insertProcModifies(a, b);
+	});
+
+	///exgtract Calls
+	sendInformation<string, string>(calls, [&](string a, string b) {
+		result->insertCalls(a, b);
+	});
+	
+	///extract CallStar
+	sendInformation<string, string>(callStar, [&](string a, string b) {
+		result->insertCallsStar(a, b);
+	});
+
+	///extract procedure
+	for (auto x: proceduresList) {
+		result->insertProcedure(x);
+	}
+
+	///extract variables
+	for (auto x: variables) {
+		result->insertVariable(x);
+	}
+
+	///extract control variable for IF statement
+	auto controlIF = filterOwnership<int, string>(
+		convertToMapForm<int, string>(uses, 1, numberOfStatement),
+		[&](int index) {
+			return types[index] == EntityType::IF;
+		}
+	);
+	sendInformation<int, string>(controlIF, [&](int a, string b) {
+		result->setControlVariable(a, b);
+	});
+
+
+	///extract control variable for WHILE statement
+	auto controlWHILE = filterOwnership<int, string>(
+		convertToMapForm<int, string>(uses, 1, numberOfStatement),
+		[&](int index) {
+			return types[index] == EntityType::WHILE;
+		}
+	);
+	sendInformation<int, string>(controlIF, [&](int a, string b) {
+		result->setControlVariable(a, b);
+	});
 
 	return result;
 }
@@ -240,10 +332,6 @@ void DesignExtractor::setCalls(unordered_map<string, vector<string>> &edges) {
 
 void DesignExtractor::insertConstant(string c) {
 	constants.insert(c);
-}
-
-void DesignExtractor::setProcName(string name) {
-	this->procName = name;
 }
 
 void DesignExtractor::setProcedure(string name, int low, int high) {

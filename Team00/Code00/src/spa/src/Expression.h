@@ -15,7 +15,7 @@ public:
 
 	Expression(string value); // remove after merge with QPP
 
-	Expression combineExpression(string operand, const Expression& other); // remove after merge with PKB/Parser side
+	//Expression combineExpression(string operand, const Expression& other); // remove after merge with PKB/Parser side
 
 	Expression combineExpression(string operand, const Expression& other, ExpressionType t);
 
@@ -24,6 +24,8 @@ public:
 	string getValue() const;
 
 	ExpressionType getType() const;
+
+	void setType(ExpressionType type);
 
 };
 

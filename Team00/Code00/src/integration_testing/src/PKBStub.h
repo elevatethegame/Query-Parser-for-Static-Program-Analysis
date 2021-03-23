@@ -1,5 +1,11 @@
 #include "PKBInterface.h"
 #include <memory>
+#include <unordered_map>
+#include <set>
+#include <vector>
+
+
+using namespace std;
 
 class PKBStub : public PKBInterface {
 public:
