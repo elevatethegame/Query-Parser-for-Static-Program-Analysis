@@ -405,6 +405,14 @@ bool QueryParser::next()
             , true);
         expect(TokenTypes::RightParen);
 
+        // Semantic checks for Next
+        // Cannot have same synonym on both sides
+        if (leftQueryInput->getQueryInputType() == QueryInputType::DECLARATION
+            && rightQueryInput->getQueryInputType() == QueryInputType::DECLARATION) {
+            if (leftQueryInput->getValue() == rightQueryInput->getValue())
+                throw std::runtime_error("Same synonym detected on both sides");
+        }
+
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
