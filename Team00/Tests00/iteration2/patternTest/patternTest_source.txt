@@ -19,13 +19,13 @@ procedure  ifpattern {
 		read b;
 	}
 
-	if (((a >= 0) || (b < a)) && (c == d) && (e < f)) then {
+	if ((((a >= 0) || (b < a)) && (c == d)) && (e < f)) then {
 		read a;
 	} else {
 		read b;
 	}
 
-	if (((a >= 0) || (b < a)) && (c == d) || (x < z) || (e < f)) then {
+	if (((a >= 0) || (b < a)) && ((c == d) || ((x < z) || (e < f)))) then {
 		read a;
 	} else {
 		read b;
@@ -47,11 +47,11 @@ procedure whilepattern {
 		print z;
 	}
 
-	while ((x > 0) && ((a > b) || (d == e)) && (w < q)){
+	while (((x > 0) && ((a > b) || (d == e))) && (w < q)){
 		print z;
 	}
 
-	while ((x > 0) && (a > b) || ((d == e) && (w < q))){
+	while (((x > 0) && (a > b)) || ((d == e) && (w < q))){
 		print z;
 	}
 	

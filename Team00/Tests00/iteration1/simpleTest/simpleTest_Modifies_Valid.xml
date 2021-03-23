@@ -1,7 +1,7 @@
 <?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
 <test_results>
 <info>
-<name>autotester</name><parsing_time_taken>0.000000</parsing_time_taken>
+<name>autotester</name><parsing_time_taken>1.000000</parsing_time_taken>
 </info>
 <queries>
 <query>
@@ -15,77 +15,77 @@
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">2</id><querystr><![CDATA[stmt s; Select s such that Modifies(s, "a")]]></querystr>
 <stuans>1</stuans>
 <correct>1</correct>
-<time_taken>32.000000</time_taken>
+<time_taken>35.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">3</id><querystr><![CDATA[stmt s;  Select s such that Modifies(s, "d")]]></querystr>
 <stuans>4</stuans>
 <correct>4</correct>
-<time_taken>34.000000</time_taken>
+<time_taken>33.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="comment">4</id><querystr><![CDATA[assign a; Select a such that Modifies(a, _)]]></querystr>
 <stuans>1,2,3,4</stuans>
 <correct>1,2,3,4</correct>
-<time_taken>35.000000</time_taken>
+<time_taken>40.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">5</id><querystr><![CDATA[assign a; Select a such that Modifies(a, "b")]]></querystr>
 <stuans>2</stuans>
 <correct>2</correct>
-<time_taken>29.000000</time_taken>
+<time_taken>36.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">6</id><querystr><![CDATA[assign a; Select a such that Modifies(a, "c")]]></querystr>
 <stuans>3</stuans>
 <correct>3</correct>
-<time_taken>28.000000</time_taken>
+<time_taken>46.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">7</id><querystr><![CDATA[variable v; Select v such that Modifies(4, v)]]></querystr>
 <stuans>d</stuans>
 <correct>d</correct>
-<time_taken>31.000000</time_taken>
+<time_taken>38.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">8</id><querystr><![CDATA[variable v; Select v such that Modifies(2, v)]]></querystr>
 <stuans>b</stuans>
 <correct>b</correct>
-<time_taken>33.000000</time_taken>
+<time_taken>39.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">9</id><querystr><![CDATA[variable v; stmt s; Select s such that Modifies(s, v)]]></querystr>
 <stuans>1,2,3,4</stuans>
 <correct>1,2,3,4</correct>
-<time_taken>33.000000</time_taken>
+<time_taken>35.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">10</id><querystr><![CDATA[variable  v; stmt s; Select v such that Modifies(s, v)]]></querystr>
 <stuans>a,b,c,d</stuans>
 <correct>a,b,c,d</correct>
-<time_taken>31.000000</time_taken>
+<time_taken>34.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">11</id><querystr><![CDATA[variable v; assign a; Select a such that Modifies(a, v)]]></querystr>
 <stuans>1,2,3,4</stuans>
 <correct>1,2,3,4</correct>
-<time_taken>33.000000</time_taken>
+<time_taken>36.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">12</id><querystr><![CDATA[variable v; assign a; Select v such that Modifies(a, v)]]></querystr>
 <stuans>a,b,c,d</stuans>
 <correct>a,b,c,d</correct>
-<time_taken>33.000000</time_taken>
+<time_taken>36.000000</time_taken>
 <passed/>
 </query>
 </queries>
