@@ -16,6 +16,69 @@
 #include "DesignExtractor.h"
 #include "DesignExtractorHelper.h"
 
+
+TEST_CASE("second test") {
+    vector<string> codes = {
+    "procedure main {",
+        "while (1 == 2) {",
+        "m = 1;",
+        "while (x == 0) {",
+        "while (2 > 3) {",
+        "call first;",
+        "}}}}",
+    "procedure first {",
+        "while (y + 1 == t) {",
+        "call second;",
+        "}}",
+    "procedure second {",
+        "count = 0;",
+        "count = count + z;",
+        "a = a * b - c / d + e - f * g % h;",
+        "}"
+    };
+     
+    SIMPLETokenStream stream{ codes };
+    SIMPLETokenStream secondStream{ stream };
+
+    DesignExtractor extractor;
+    Parser parser{ extractor };
+
+    auto error = parser.parseProgram(stream);
+    cerr << error.getErrorMessage() << endl;
+    REQUIRE_FALSE(error.hasError());
+    shared_ptr<PKB> pkb = extractor.extractToPKB();
+
+    // auto expressions = extractor.getExpression(10);
+    // cerr << "All the expressions of 10" << endl;
+    // for (auto ex: expressions) {
+    //     cerr << ex.getValue() << endl;
+    // }
+    // cerr << "End of getting expressions" << endl;
+ 
+    SECTION("assignPattern1") {
+        // select a pattern a("count", _"count"_)
+        shared_ptr<QueryInterface> query =
+            dynamic_pointer_cast<QueryInterface>(make_shared<Query>());
+        shared_ptr<Declaration> declaration =
+            make_shared<Declaration>(EntityType::ASSIGN, "a");
+        shared_ptr<QueryInput> variable =
+            dynamic_pointer_cast<QueryInput>(make_shared<Ident>("a"));
+        shared_ptr<Expression> expression = 
+            make_shared<Expression>("(a*b)", ExpressionType::PARTIAL);
+
+        query->setSelectClause(declaration);
+        query->addAssignPatternClause(declaration, variable, expression);
+
+        QueryEvaluator qe = QueryEvaluator(query, pkb);
+
+        list<string> expected{ "10" };
+        list<string> result{ };
+        shared_ptr<ResultsTable> resultsTable = qe.evaluate();
+        ResultsProjector::projectResults(resultsTable, query->getSelectClause(), pkb, result);
+        TestResultsTableUtil::checkList(result, expected);
+    } 
+}
+
 TEST_CASE("First test") {
     vector<string> codes = {
     "procedure main {",
