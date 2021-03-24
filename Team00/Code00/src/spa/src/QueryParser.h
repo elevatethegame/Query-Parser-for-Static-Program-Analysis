@@ -2,7 +2,7 @@
 #ifndef QUERYPARSER_H
 #define QUERYPARSER_H
 
-#include "Tokenizer.h"
+#include "TokenizerInterface.h"
 #include <vector>
 #include <unordered_map>
 #include <set>
@@ -18,7 +18,8 @@ class QueryParser
 private:
 
     std::unique_ptr<Token> currToken;
-    Tokenizer tokenizer;
+    // Tokenizer to be used
+    std::shared_ptr<TokenizerInterface> tokenizer;
     // Object to pass to Query Evaluator
     std::shared_ptr<QueryInterface> query;
 
@@ -54,7 +55,7 @@ private:
 
 public:
 
-    QueryParser(const std::string givenInput, std::shared_ptr<QueryInterface> query);
+    QueryParser(std::shared_ptr<TokenizerInterface> tokenizer, std::shared_ptr<QueryInterface> query);
 
     void parse();
 
