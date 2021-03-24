@@ -17,6 +17,7 @@ using namespace std;
 PKB::PKB(const int& n) : number(n) {
 	for (int i = 1; i <= n; i++) {
 		this->entities[EntityType::STMT].insert(to_string(i));
+		this->entities[EntityType::PROGLINE].insert(to_string(i));
 	}
 }
 
