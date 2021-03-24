@@ -6,6 +6,7 @@
 #include "ResultsProjector.h"
 #include "PKBStub.h"
 #include "TestResultsTableUtil.h"
+#include "Tokenizer.h"
 
 TEST_CASE("First Test") {
     list<string> results;
@@ -15,7 +16,8 @@ TEST_CASE("First Test") {
         input = "read re1, re2\t\n  ; variable\nv1,v2; constant\n\tc; procedure\npcd; print\npn; while\nw;if ifs;"
             "stmt s1; assign\n\ta1,a2,a3; Select v1;";
         auto query = std::make_shared<Query>();
-        QueryParser queryParser = QueryParser{ input, query };
+        auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+        QueryParser queryParser = QueryParser{ tokenizer, query };
         queryParser.parse();
 
         auto pkb = make_shared<PKBStub>();
@@ -31,7 +33,8 @@ TEST_CASE("First Test") {
         input = "print pn; stmt s1; Select s1 such that Follows*(s1, pn);";
             
         auto query = std::make_shared<Query>();
-        QueryParser queryParser = QueryParser{ input, query };
+        auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+        QueryParser queryParser = QueryParser{ tokenizer, query };
         queryParser.parse();
 
         auto pkb = make_shared<PKBStub>();
@@ -49,7 +52,8 @@ TEST_CASE("First Test") {
         input = "assign a; variable x; Select x pattern a(x, _);";
 
         auto query = std::make_shared<Query>();
-        QueryParser queryParser = QueryParser{ input, query };
+        auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+        QueryParser queryParser = QueryParser{ tokenizer, query };
         queryParser.parse();
 
         auto pkb = make_shared<PKBStub>();
@@ -67,7 +71,8 @@ TEST_CASE("First Test") {
         input = "assign a; variable x; stmt s; Select x such that Uses(s, x) pattern a(x, _);";
 
         auto query = std::make_shared<Query>();
-        QueryParser queryParser = QueryParser{ input, query };
+        auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+        QueryParser queryParser = QueryParser{ tokenizer, query };
         queryParser.parse();
 
         auto pkb = make_shared<PKBStub>();
@@ -87,7 +92,8 @@ TEST_CASE("First Test") {
         input = "assign a; variable x; stmt s; Select s such that Uses(a, x) pattern a(x, _);";
 
         auto query = std::make_shared<Query>();
-        QueryParser queryParser = QueryParser{ input, query };
+        auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+        QueryParser queryParser = QueryParser{ tokenizer, query };
         queryParser.parse();
 
         auto pkb = make_shared<PKBStub>();
