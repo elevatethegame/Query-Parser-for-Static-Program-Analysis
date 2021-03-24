@@ -16,7 +16,7 @@ beta, charlie
 4 - comment
 procedure p;
 Select p such that Calls(p, "beta")
-alpha
+alpha, charlie
 5000
 5 - comment
 procedure p; procedure q;

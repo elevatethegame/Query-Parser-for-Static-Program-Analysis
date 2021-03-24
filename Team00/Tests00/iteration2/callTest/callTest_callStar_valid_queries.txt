@@ -1,27 +1,27 @@
 1 - comment
 procedure p;
-Select p such that Calls(p, _)
+Select p such that Calls*(p, _)
 a, b, c, d, f, g, i, j
 5000
 2 - comment
 procedure p;
-Select p such that Calls(_, p)
+Select p such that Calls*(_, p)
 a, b, c, d, e, g, h
 5000
 3 - comment
 procedure p;
-Select p such that Calls("a", p)
+Select p such that Calls*("a", p)
 b, c, d, e
 5000
 4 - comment
 procedure p;
-Select p such that Calls(p, "d")
+Select p such that Calls*(p, "d")
 b, i, a
 5000
 5 - comment
 procedure p;
-Select p such that Calls(p, "h")
-f, g, i
+Select p such that Calls*(p, "h")
+f, g, j
 5000
 6 - comment
 procedure p;

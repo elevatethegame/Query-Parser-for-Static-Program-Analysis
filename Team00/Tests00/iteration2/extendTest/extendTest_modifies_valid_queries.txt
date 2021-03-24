@@ -16,7 +16,7 @@ Select s such that Modifies(s, v)
 4 - comment
 stmt s; variable v;
 Select v such that Modifies(s, v)
-a, b, c, d, z, e, p, u, r, z, o, s
+a, b, c, d, e, p, u, r, z, o, s
 5000
 5 - comment
 assign a;
@@ -36,7 +36,7 @@ Select a such that Modifies(a, v)
 8 - comment
 assign a; variable v;
 Select v such that Modifies(a, v)
-a, b, c, d, z, e, p, u, r, z
+a, b, c, d, z, e, p, u, r
 5000
 9 - comment
 while w; 

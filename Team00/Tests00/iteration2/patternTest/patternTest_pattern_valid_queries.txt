@@ -21,22 +21,22 @@ Select a pattern a(_, _"g % h"_)
 5 - comment
 assign a;
 Select a pattern a(_, "a * b - c / d + e - f * g % h")
-1, 2, 3, 4, 5
+1
 5000
 6 - comment
 assign a;
 Select a pattern a(_, _"a * b - c / d + e - f * g % h"_)
-1, 2, 3, 4, 5
+1
 5000
 7 - comment
 assign a;
 Select a pattern a(_, _"b - c / d"_)
-3, 4
+4
 5000
 8 - comment
 assign a;
 Select a pattern a(_, _"b - c"_)
-3
+2, 3
 5000
 9 - comment
 assign a;

@@ -17,7 +17,7 @@ procedure d{
 	call e;
 }
 
-procedure e{}
+procedure e{read a;}
 
 procedure f{
 	call g;
@@ -28,7 +28,7 @@ procedure g{
 	call h;
 }
 
-procedure h{}
+procedure h{read b;}
 
 procedure i{
 	call a;

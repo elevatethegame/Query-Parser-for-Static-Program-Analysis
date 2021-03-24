@@ -17,7 +17,7 @@ procedure beta {
 }
 
 procedure charlie {
-	if ((d >= 0) || ((a == q) && (w < i)) && (v == c)) then {
+	if ((d >= 0) || (((a == q) && (w < i)) && (v == c))) then {
 		d = d / e - o;						
 		call beta;							
 	} else {
@@ -49,4 +49,5 @@ procedure delta {
 	} else {
 		print a;							
 	}
+	print w;
 }
