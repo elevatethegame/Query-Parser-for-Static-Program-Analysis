@@ -1,32 +1,44 @@
 <?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
 <test_results>
 <info>
-<name>autotester</name><parsing_time_taken>1.000000</parsing_time_taken>
+<name>autotester</name><parsing_time_taken>3.000000</parsing_time_taken>
 </info>
 <queries>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" comment="comment">1</id><querystr><![CDATA[1 - comment stmt s; ]]></querystr>
-<stuans></stuans>
-<correct>Select s such that Follows(s,_) and Parent(_,s)</correct>
-<time_taken>28.000000</time_taken>
-<failed>
-<missing>Select s such that Follows(s,_) and Parent(_,s)</missing>
-<additional></additional>
-<summary>
-<expected>3</expected>
-<matched>0</matched>
-<missing>3</missing>
-<additional>0</additional>
-</summary>
-</failed>
+<id ReturnTuple="1" Follows="1" Parent="1" UnnamedVar="2" SuchThat="1" CondNum="6" RelNum="2" comment="comment">1</id><querystr><![CDATA[stmt s;  Select s such that Follows(s, _) and Parent(_, s)]]></querystr>
+<stuans>14,17,25,26,27,28</stuans>
+<correct>14,17,25,26,27,28</correct>
+<time_taken>22.000000</time_taken>
+<passed/>
 </query>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >5000</id><querystr><![CDATA[2 - comment assign a;]]></querystr>
+<id ReturnTuple="1" Nextstar="1" Uses="1" SuchThat="1" CondNum="4" RelNum="2" comment="comment">2</id><querystr><![CDATA[assign a; Select a such that Next*(a, 8) and Uses(a, "c")]]></querystr>
+<stuans>3</stuans>
+<correct>3</correct>
+<time_taken>12.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Calls="1" Modifies="1" UnnamedVar="1" SuchThat="1" CondNum="5" RelNum="2" comment="comment">3</id><querystr><![CDATA[procedure p; Select p such that Calls(p, _) and Modifies(p, "b")]]></querystr>
+<stuans>alpha</stuans>
+<correct>alpha</correct>
+<time_taken>31.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Follows="1" Parent="1" UnnamedVar="2" SuchThat="1" CondNum="6" RelNum="2" comment="comment">4</id><querystr><![CDATA[while w; Select w such that Parent(_, w) and Follows(_, w)]]></querystr>
+<stuans>26</stuans>
+<correct>26</correct>
+<time_taken>34.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Follows="1" Next="1" SuchThat="1" CondNum="4" RelNum="2" comment="comment">1</id><querystr><![CDATA[stmt s; assign a; Select s such that Follows(s, a) and Next(a, s)]]></querystr>
 <stuans></stuans>
-<correct>Select a such that Next*(a,8) and Uses(a,"c")</correct>
+<correct>4,6,21</correct>
 <time_taken>31.000000</time_taken>
 <failed>
-<missing>"c"),8) and Uses(a,Select a such that Next*(a</missing>
+<missing>21,4,6</missing>
 <additional></additional>
 <summary>
 <expected>3</expected>
@@ -37,96 +49,85 @@
 </failed>
 </query>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >5000</id><querystr><![CDATA[3 - comment procedure p;]]></querystr>
-<timeout/>
-</query>
-<query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >5000</id><querystr><![CDATA[4 - comment while w;]]></querystr>
-<stuans></stuans>
-<correct>Select w such that Parent(_,w) and Follows(_,w)</correct>
-<time_taken>44.000000</time_taken>
+<id ReturnTuple="1" Modifies="1" Uses="1" SuchThat="1" CondNum="4" RelNum="2" comment="comment">2</id><querystr><![CDATA[assign a; variable v; Select a such that Uses(a, v) and Modifies(a, v)]]></querystr>
+<stuans>3,30,7,14,17,18,22</stuans>
+<correct>3,4,5,7,8,14,17,18,20,22,25,28,30,31</correct>
+<time_taken>36.000000</time_taken>
 <failed>
-<missing>Select w such that Parent(_,w),w) and Follows(_</missing>
+<missing>20,25,28,31,4,5,8</missing>
 <additional></additional>
 <summary>
-<expected>3</expected>
-<matched>0</matched>
+<expected>14</expected>
+<matched>7</matched>
+<missing>7</missing>
+<additional>0</additional>
+</summary>
+</failed>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" Uses="1" SuchThat="1" CondNum="4" RelNum="2" comment="comment">3</id><querystr><![CDATA[stmt s; variable v; Select v such  that Uses(s, v) and Modifies(s, v)]]></querystr>
+<stuans>a,d,e,p,r,s,z</stuans>
+<correct>a,b,c,d,e,o,z,r,p,s</correct>
+<time_taken>34.000000</time_taken>
+<failed>
+<missing>b,c,o</missing>
+<additional></additional>
+<summary>
+<expected>10</expected>
+<matched>7</matched>
 <missing>3</missing>
 <additional>0</additional>
 </summary>
 </failed>
 </query>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >5000</id><querystr><![CDATA[2 common - comment 1 - comment]]></querystr>
-<timeout/>
+<id ReturnTuple="1" Follows="2" UnnamedVar="1" SuchThat="1" CondNum="5" RelNum="2" comment="comment">1</id><querystr><![CDATA[stmt s; assign a; Select s such that Follows(s, 3) and Follows(a, _)]]></querystr>
+<stuans>2</stuans>
+<correct>2</correct>
+<time_taken>32.000000</time_taken>
+<passed/>
 </query>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >4</id><querystr><![CDATA[5000 2 - comment]]></querystr>
-<timeout/>
+<id ReturnTuple="1" Parent="1" UnnamedVar="1" Uses="1" SuchThat="1" CondNum="5" RelNum="2" comment="comment">2</id><querystr><![CDATA[variable v; assign a; Select v such that Uses("beta", v) and Parent(_, a)]]></querystr>
+<stuans>a,b,c</stuans>
+<correct>a,b,c</correct>
+<time_taken>32.000000</time_taken>
+<passed/>
 </query>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >3</id><querystr><![CDATA[5000 3 - comment]]></querystr>
-<timeout/>
+<id ReturnTuple="1" Follows="1" Nextstar="1" UnnamedVar="2" SuchThat="1" CondNum="6" RelNum="2" comment="comment">3</id><querystr><![CDATA[prog_line n; Select n such that Next*(n, _) and Follows(1, 2)]]></querystr>
+<stuans>1,10,11,13,14,15,16,17,18,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,4,5,6,7,8</stuans>
+<correct>1,2,3,4,5,6,7,8,10,11,13,14,15,16,17,18,20,21,22,23,24,25,26,27,28,29,30,31,32,33</correct>
+<time_taken>39.000000</time_taken>
+<passed/>
 </query>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >0</id><querystr><![CDATA[5000 0 common - comment]]></querystr>
-<timeout/>
+<id ReturnTuple="1" Parent="1" UnnamedVar="1" Uses="1" SuchThat="1" CondNum="5" RelNum="2" comment="comment">1</id><querystr><![CDATA[assign a; variable v; stmt s; Select a such that Uses(s, v) and Parent(s, _)]]></querystr>
+<stuans>14,17,18,20,22,25,28,3,30,31,4,5,7,8</stuans>
+<correct>3,4,5,7,8,14,17,18,20,22,25,28,30,31</correct>
+<time_taken>37.000000</time_taken>
+<passed/>
 </query>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >0</id><querystr><![CDATA[2 5000]]></querystr>
-<timeout/>
+<id ReturnTuple="1" Parent="1" Uses="1" SuchThat="1" CondNum="4" RelNum="2" comment="comment">2</id><querystr><![CDATA[while w; if ifs; procedure p; Select p such that Parent(ifs, w) and Uses(ifs, "a")]]></querystr>
+<stuans>alpha,beta,charlie,delta</stuans>
+<correct>alpha,beta,charlie,delta</correct>
+<time_taken>34.000000</time_taken>
+<passed/>
 </query>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >0</id><querystr><![CDATA[a, b, c 5000]]></querystr>
-<timeout/>
+<id ReturnTuple="1" Follows="1" UnnamedVar="1" Uses="1" SuchThat="1" CondNum="5" RelNum="2" comment="comment">1</id><querystr><![CDATA[stmt s; Select s such that Uses(s, _) and Follows(1, 2)]]></querystr>
+<stuans>10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,28,29,3,30,31,32,33,34,4,5,6,7,8,9</stuans>
+<correct>3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,28,29,30,31,32,33,34</correct>
+<time_taken>40.000000</time_taken>
+<passed/>
 </query>
 <query>
-<id ReturnTuple="1" CondNum="1" RelNum="0" >0</id><querystr><![CDATA[1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 5000]]></querystr>
-<stuans></stuans>
-<correct>no link - comment</correct>
-<time_taken>27.000000</time_taken>
-<failed>
-<missing>no link - comment</missing>
-<additional></additional>
-<summary>
-<expected>1</expected>
-<matched>0</matched>
-<missing>1</missing>
-<additional>0</additional>
-</summary>
-</failed>
-</query>
-<query>
-<id ReturnTuple="1" Parent="1" UnnamedVar="1" Uses="1" SuchThat="1" CondNum="5" RelNum="2" >0</id><querystr><![CDATA[Select a such that Uses(s, v) and Parent(s, _) 3, 4, 5, 7, 8, 14, 17, 18, 20, 22, 25, 28, 30, 31]]></querystr>
-<stuans></stuans>
-<correct>5000</correct>
-<time_taken>28.000000</time_taken>
-<failed>
-<missing>5000</missing>
-<additional></additional>
-<summary>
-<expected>1</expected>
-<matched>0</matched>
-<missing>1</missing>
-<additional>0</additional>
-</summary>
-</failed>
-</query>
-<query>
-<id ReturnTuple="1" Parent="1" Uses="1" SuchThat="1" CondNum="4" RelNum="2" >0</id><querystr><![CDATA[Select p such that Parent(ifs, w) and Uses(ifs, "a") alpha, beta, charlie, delta]]></querystr>
-<stuans></stuans>
-<correct>5000</correct>
-<time_taken>29.000000</time_taken>
-<failed>
-<missing>5000</missing>
-<additional></additional>
-<summary>
-<expected>1</expected>
-<matched>0</matched>
-<missing>1</missing>
-<additional>0</additional>
-</summary>
-</failed>
+<id ReturnTuple="1" Next="1" Nextstar="1" UnnamedVar="1" SuchThat="1" CondNum="5" RelNum="2" comment="comment">2</id><querystr><![CDATA[prog_line n; Select n such that Next*(n, 32) and Next(1, 2)]]></querystr>
+<stuans>20,21,22,23,24,25,26,27,28,29,30,31</stuans>
+<correct>20,21,22,23,24,25,26,27,28,29,30,31</correct>
+<time_taken>36.000000</time_taken>
+<passed/>
 </query>
 </queries>
 </test_results>
