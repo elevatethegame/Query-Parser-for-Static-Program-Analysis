@@ -81,7 +81,7 @@ Select ifs pattern ifs(v, _, _)
 5 - comment
 if ifs; variable v;
 Select v pattern ifs(v, _, _)
-a, b, c, d, e, f, x, z
+a, b, c, d, e, f, x, w
 5000
 1 - comment
 while w;

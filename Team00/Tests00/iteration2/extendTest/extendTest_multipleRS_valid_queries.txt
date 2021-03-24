@@ -21,17 +21,17 @@ Select w such that Parent(_, w) and Follows(_, w)
 1 2 common - comment
 stmt s; assign a;
 Select s such that Follows(s, a) and Next(a, s)
-4, 6, 21
+none
 5000
 2 - comment
 assign a; variable v;
 Select a such that Uses(a, v) and Modifies(a, v)
-3, 4, 5, 7, 8, 14, 17, 18, 20, 22, 25, 28, 30, 31
+3, 7, 14, 17, 18, 22, 30
 5000
 3 - comment
 stmt s; variable v;
 Select v such  that Uses(s, v) and Modifies(s, v)
-a, b, c, d, e, o, z, r, p, s
+a, d, e, p, r, s, z
 5000
 1 0 common- comment
 stmt s; assign a;
