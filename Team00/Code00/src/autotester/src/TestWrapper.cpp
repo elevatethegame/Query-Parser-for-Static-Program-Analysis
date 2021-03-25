@@ -1,5 +1,6 @@
 #include "TestWrapper.h"
 #include "QueryParser.h"
+#include "Tokenizer.h"
 #include "ResultsProjector.h"
 #include "QueryInterface.h"
 #include "QueryEvaluator.h"
@@ -74,7 +75,8 @@ void TestWrapper::evaluate(std::string input, std::list<std::string>& results) {
 	// ...code to evaluate query...
 
 	auto query = std::make_shared<Query>();
-	QueryParser queryParser = QueryParser{ input, query };
+	auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+	QueryParser queryParser = QueryParser{ tokenizer, query };
 	try {
 		queryParser.parse();
 	}
