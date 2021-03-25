@@ -1,5 +1,6 @@
 #include "QueryParser.h"
 #include "Tokenizer.h"
+#include "EntitiesTable.h"
 
 #include <stdexcept>
 #include <algorithm>  // for std::find
@@ -51,18 +52,6 @@ std::unique_ptr<Token> QueryParser::expect(TokenTypes type)
     }
     if (currToken) throw std::invalid_argument("Unexpected token encountered: " + currToken->toString());
     throw std::runtime_error("End of query reached when a token was expected");
-}
-
-// Expect a stmtRef or an entRef
-std::shared_ptr<QueryInput> QueryParser::expect(std::shared_ptr<QueryInput> queryInput, bool isStmtRef)
-{
-    if (!queryInput) {
-        if (isStmtRef)
-            throw std::invalid_argument("Unexpected token encountered when parsing stmtRef: " + currToken->toString());
-        else
-            throw std::invalid_argument("Unexpected token encountered when parsing entRef: " + currToken->toString());
-    }
-    return queryInput;
 }
 
 void QueryParser::selectClause()
@@ -136,23 +125,8 @@ bool QueryParser::suchThatClause()
 
 void QueryParser::relRef()
 {
-    if (modifies()) {
-
-    }
-    else if (uses()) {
-
-    }
-    else if (follows()) {
-
-    }
-    else if (parent()) {
-
-    }
-    else if (calls()) {
-
-    }
-    else if (next()) {
-
+    if (modifies() || uses() || follows() || parent() || calls() || next()) {
+        return;
     }
     else {
         throw std::invalid_argument("Unexpected token encountered when parsing relRef: " + currToken->toString());
@@ -186,7 +160,7 @@ std::shared_ptr<QueryInput> QueryParser::stmtRef(std::set<EntityType> allowedDes
     if (token) {
         return std::make_shared<StmtNum>(token->getValue());
     }
-    return NULL;
+    throw std::invalid_argument("Unexpected token encountered when parsing stmtRef: " + currToken->toString());
 }
 
 std::shared_ptr<QueryInput> QueryParser::entRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore)
@@ -217,26 +191,22 @@ std::shared_ptr<QueryInput> QueryParser::entRef(std::set<EntityType> allowedDesi
         expect(TokenTypes::DoubleQuote);
         return std::make_shared<Ident>(token->getValue());
     }
-    else {
-        return NULL;
-    }
+    throw std::invalid_argument("Unexpected token encountered when parsing entRef: " + currToken->toString());
 }
 
 bool QueryParser::modifies()
 {
     if (accept(TokenTypes::Modifies)) {
         expect(TokenTypes::LeftParen);
-        std::shared_ptr<QueryInput> leftQueryInput = stmtRef(std::set<EntityType>(
-            {EntityType::ASSIGN, EntityType::STMT, EntityType::READ, EntityType::PROC, EntityType::IF, EntityType::WHILE }) 
-            , false);
-        if (!leftQueryInput) {
-            leftQueryInput = expect(entRef(std::set<EntityType>(
-                { EntityType::ASSIGN, EntityType::STMT, EntityType::READ, EntityType::PROC, EntityType::IF, EntityType::WHILE })
-                , false)
-                , false);
+        std::shared_ptr<QueryInput> leftQueryInput;
+        if (currToken->getType() == TokenTypes::DoubleQuote) {
+            leftQueryInput = entRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::MODIFIES), false);
+        }
+        else {
+            leftQueryInput = stmtRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::MODIFIES), false);
         }
         expect(TokenTypes::Comma);
-        std::shared_ptr<QueryInput> rightQueryInput = expect(entRef(std::set<EntityType>({ EntityType::VAR }), true), false);
+        std::shared_ptr<QueryInput> rightQueryInput = entRef(EntitiesTable::getRelAllowedRightEntities(RelationshipType::MODIFIES), true);
         expect(TokenTypes::RightParen);
         query->addRelationshipClause(RelationshipType::MODIFIES, leftQueryInput, rightQueryInput);
         return true;
@@ -248,17 +218,15 @@ bool QueryParser::uses()
 {
     if (accept(TokenTypes::Uses)) {
         expect(TokenTypes::LeftParen);
-        std::shared_ptr<QueryInput> leftQueryInput = stmtRef(std::set<EntityType>(
-            { EntityType::ASSIGN, EntityType::STMT, EntityType::PRINT, EntityType::PROC, EntityType::IF, EntityType::WHILE })
-            , false);
-        if (!leftQueryInput) {
-            leftQueryInput = expect(entRef(std::set<EntityType>(
-                { EntityType::ASSIGN, EntityType::STMT, EntityType::PRINT, EntityType::PROC, EntityType::IF, EntityType::WHILE })
-                , false)
-                , false);
+        std::shared_ptr<QueryInput> leftQueryInput;
+        if (currToken->getType() == TokenTypes::DoubleQuote) {
+            leftQueryInput = entRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::USES), false);
+        }
+        else {
+            leftQueryInput = stmtRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::USES), false);
         }
         expect(TokenTypes::Comma);
-        std::shared_ptr<QueryInput> rightQueryInput = expect(entRef(std::set<EntityType>({ EntityType::VAR }), true), false);
+        std::shared_ptr<QueryInput> rightQueryInput = entRef(EntitiesTable::getRelAllowedRightEntities(RelationshipType::USES), true);
         expect(TokenTypes::RightParen);
         query->addRelationshipClause(RelationshipType::USES, leftQueryInput, rightQueryInput);
         return true;
@@ -277,13 +245,9 @@ bool QueryParser::parent()
             relType = RelationshipType::PARENT;
 
         expect(TokenTypes::LeftParen);
-        std::shared_ptr<QueryInput> leftQueryInput = expect(
-            stmtRef(std::set<EntityType>({ EntityType::STMT, EntityType::WHILE, EntityType::IF }) , true)
-                , true);
+        std::shared_ptr<QueryInput> leftQueryInput = stmtRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::PARENT), true);
         expect(TokenTypes::Comma);
-        std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
-            { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ }), true)
-                , true);
+        std::shared_ptr<QueryInput> rightQueryInput = stmtRef(EntitiesTable::getRelAllowedRightEntities(RelationshipType::PARENT), true);
         expect(TokenTypes::RightParen);
         // Semantic checks for Parent
         // Cannot have same synonym on both sides
@@ -317,15 +281,9 @@ bool QueryParser::follows()
             relType = RelationshipType::FOLLOWS;
 
         expect(TokenTypes::LeftParen);
-        std::shared_ptr<QueryInput> leftQueryInput = expect(stmtRef(std::set<EntityType>(
-            { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
-            , true)
-                , true);
+        std::shared_ptr<QueryInput> leftQueryInput = stmtRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::FOLLOWS), true);
         expect(TokenTypes::Comma);
-        std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
-            { EntityType::ASSIGN, EntityType::STMT, EntityType::WHILE, EntityType::IF, EntityType::PRINT, EntityType::READ })
-            , true)
-                , true);
+        std::shared_ptr<QueryInput> rightQueryInput = stmtRef(EntitiesTable::getRelAllowedRightEntities(RelationshipType::FOLLOWS), true);
         expect(TokenTypes::RightParen);
         // Semantic checks for Follows*
         // Cannot have same synonym on both sides
@@ -359,15 +317,9 @@ bool QueryParser::calls()
             relType = RelationshipType::CALLS;
 
         expect(TokenTypes::LeftParen);
-        std::shared_ptr<QueryInput> leftQueryInput = expect(entRef(std::set<EntityType>(
-            { EntityType::PROC })
-            , true)
-            , false);
+        std::shared_ptr<QueryInput> leftQueryInput = entRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::CALLS), true);
         expect(TokenTypes::Comma);
-        std::shared_ptr<QueryInput> rightQueryInput = expect(entRef(std::set<EntityType>(
-            { EntityType::PROC })
-            , true)
-            , false);
+        std::shared_ptr<QueryInput> rightQueryInput = entRef(EntitiesTable::getRelAllowedRightEntities(RelationshipType::CALLS), true);
         expect(TokenTypes::RightParen);
         // Semantic checks for Calls
         // Cannot have same synonym on both sides
@@ -393,17 +345,9 @@ bool QueryParser::next()
             relType = RelationshipType::NEXT;
 
         expect(TokenTypes::LeftParen);
-        std::shared_ptr<QueryInput> leftQueryInput = expect(stmtRef(std::set<EntityType>(
-            { EntityType::PROGLINE, EntityType::ASSIGN, EntityType::STMT, EntityType::CALL, EntityType::PRINT, EntityType::READ,
-                    EntityType::IF, EntityType::WHILE })
-            , true)
-            , true);
+        std::shared_ptr<QueryInput> leftQueryInput = stmtRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::NEXT), true);
         expect(TokenTypes::Comma);
-        std::shared_ptr<QueryInput> rightQueryInput = expect(stmtRef(std::set<EntityType>(
-            { EntityType::PROGLINE, EntityType::ASSIGN, EntityType::STMT, EntityType::CALL, EntityType::PRINT, EntityType::READ,
-                    EntityType::IF, EntityType::WHILE })
-            , true)
-            , true);
+        std::shared_ptr<QueryInput> rightQueryInput = stmtRef(EntitiesTable::getRelAllowedRightEntities(RelationshipType::NEXT), true);
         expect(TokenTypes::RightParen);
 
         // Semantic checks for Next
@@ -497,7 +441,7 @@ void QueryParser::patternAssign()
     std::unique_ptr<Token> synToken = std::move(expect(TokenTypes::Identifier));
     auto synonym = std::make_shared<Declaration>(synonyms[synToken->getValue()], synToken->getValue());
     expect(TokenTypes::LeftParen);
-    std::shared_ptr<QueryInput> queryInput = expect(entRef(std::set<EntityType>({ EntityType::VAR }), true), false);
+    std::shared_ptr<QueryInput> queryInput = entRef(EntitiesTable::getPatternAllowedEntities(PatternType::PATTERN_ASSIGN), true);
     expect(TokenTypes::Comma);
     std::shared_ptr<Expression> expression = expressionSpec();
     expect(TokenTypes::RightParen);
@@ -509,7 +453,7 @@ void QueryParser::patternWhile()
     std::unique_ptr<Token> synToken = std::move(expect(TokenTypes::Identifier));
     auto synonym = std::make_shared<Declaration>(synonyms[synToken->getValue()], synToken->getValue());
     expect(TokenTypes::LeftParen);
-    std::shared_ptr<QueryInput> queryInput = expect(entRef(std::set<EntityType>({ EntityType::VAR }), true), false);
+    std::shared_ptr<QueryInput> queryInput = entRef(EntitiesTable::getPatternAllowedEntities(PatternType::PATTERN_WHILE), true);
     expect(TokenTypes::Comma);
     expect(TokenTypes::Underscore);
     expect(TokenTypes::RightParen);
@@ -521,7 +465,7 @@ void QueryParser::patternIf()
     std::unique_ptr<Token> synToken = std::move(expect(TokenTypes::Identifier));
     auto synonym = std::make_shared<Declaration>(synonyms[synToken->getValue()], synToken->getValue());
     expect(TokenTypes::LeftParen);
-    std::shared_ptr<QueryInput> queryInput = expect(entRef(std::set<EntityType>({ EntityType::VAR }), true), false);
+    std::shared_ptr<QueryInput> queryInput = entRef(EntitiesTable::getPatternAllowedEntities(PatternType::PATTERN_IF), true);
     expect(TokenTypes::Comma);
     expect(TokenTypes::Underscore);
     expect(TokenTypes::Comma);
