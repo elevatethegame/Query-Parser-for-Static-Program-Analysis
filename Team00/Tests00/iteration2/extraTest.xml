@@ -1,0 +1,22 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>autotester</name><parsing_time_taken>1.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" UnnamedVar="3" Pattern="1" CondNum="5" RelNum="0" comment="comment">1</id><querystr><![CDATA[assign a; Select a pattern a(_, _"((a) + (((b))))"_)]]></querystr>
+<stuans>1</stuans>
+<correct>1</correct>
+<time_taken>17.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="3" Pattern="1" CondNum="5" RelNum="0" comment="comment">2</id><querystr><![CDATA[assign a; Select a pattern a(_, _"a + b"_)]]></querystr>
+<stuans>1</stuans>
+<correct>1</correct>
+<time_taken>34.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

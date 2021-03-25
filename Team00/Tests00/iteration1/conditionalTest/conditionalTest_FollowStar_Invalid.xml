@@ -1,0 +1,99 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>autotester</name><parsing_time_taken>2.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">1</id><querystr><![CDATA[stmt s; Select s such that Follows*(s, s)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>40.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">2</id><querystr><![CDATA[stmt s; Select s such that Follows*(s, "S")]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>46.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">3</id><querystr><![CDATA[stmt s; Select s such that Follows*(s, 0)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>44.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">4</id><querystr><![CDATA[stmt s; Select s such that Follows*(4. 3)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>41.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" SuchThat="1" CondNum="2" RelNum="0" comment="comment">5</id><querystr><![CDATA[while w; Select w such that Follow*(w, w)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>50.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">6</id><querystr><![CDATA[if ifs; Select ifs such that Follows*(ifs, ifs)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>44.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">7</id><querystr><![CDATA[variable v; Select v such that Follows*(v, v)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>40.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">8</id><querystr><![CDATA[variable v; stmt s; Select s such that Follows*(s, v)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>45.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">9</id><querystr><![CDATA[variable v; stmt s; Select s such that Follows*(v, s)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>44.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">10</id><querystr><![CDATA[variable v; stmt s; Select v such that Follows*(s, v)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>41.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">11</id><querystr><![CDATA[constant c; stmt s; Select s such that Follows*(s, c)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>45.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">12</id><querystr><![CDATA[constant c; stmt s; Select s such that Follows*(c, s)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>49.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">13</id><querystr><![CDATA[constant c; Select c such that Follows*(c, c)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>43.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

@@ -1,16 +1,18 @@
 #pragma once
 
 enum RelationshipType {
-	FOLLOWS = 0,
-	FOLLOWS_T = 1,
-	PARENT = 2,
-	PARENT_T = 3,
-	USES = 4,
-	MODIFIES = 5,
-	CALLS = 6,
-	CALLS_T = 7,
-	NEXT = 8,
-	NEXT_T = 9,
-	NONE = 99
+	NONE = 0,
+	FOLLOWS = 1,
+	FOLLOWS_T = 2,
+	PARENT = 3,
+	PARENT_T = 4,
+	USES = 5,
+	MODIFIES = 6,
+	CALLS = 7,
+	CALLS_T = 8,
+	NEXT = 9,
+	NEXT_T = 10,
+	AFFECTS = 11,
+	AFFECTS_T = 12
 };
 
