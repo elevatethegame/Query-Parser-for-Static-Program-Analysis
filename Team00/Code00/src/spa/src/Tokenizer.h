@@ -3,11 +3,10 @@
 #define TOKENIZER_H
 
 #include "InputStream.h"
-#include "Token.h"
+#include "TokenizerInterface.h"
 #include <functional>
-#include <memory>  // for std::unique_ptr (smart pointers)
 
-class Tokenizer
+class Tokenizer : public TokenizerInterface
 {
 private:
 

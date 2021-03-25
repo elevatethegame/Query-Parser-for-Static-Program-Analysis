@@ -1,4 +1,5 @@
 #include "QueryParser.h"
+#include "Tokenizer.h"
 
 #include <stdexcept>
 #include <algorithm>  // for std::find
@@ -7,14 +8,14 @@
 
 // =========================================================================================================================
 
-QueryParser::QueryParser(const std::string givenInput, std::shared_ptr<QueryInterface> query) : tokenizer(givenInput), query(query)
+QueryParser::QueryParser(std::shared_ptr<TokenizerInterface> tokenizer, std::shared_ptr<QueryInterface> query) : tokenizer(tokenizer), query(query)
 {
 
 }
 
 void QueryParser::getNextToken()
 {
-    currToken = std::move(tokenizer.readNext());
+    currToken = std::move(tokenizer->readNext());
 }
 
 bool QueryParser::canTreatAsIdent(TokenTypes type) {
