@@ -1,8 +1,8 @@
 #include "Tokenizer.h"
+#include "SyntacticException.h"// for throwing SyntacticException
 #include <ctype.h>  // for std::isdigit, std::isalpha
 #include <algorithm>  // for std::find
 #include <iterator>  // for std::begin, std::end
-#include <stdexcept> // for std::invalid_argument
 
 Tokenizer::Tokenizer(const std::string givenInput) : inputStream(givenInput)
 {
@@ -72,7 +72,7 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
             }
         }
         if (!isValidIdentifier)
-            throw std::invalid_argument("Invalid identifier encountered: " + identifier);
+            throw SyntacticException("Invalid identifier encountered: " + identifier);
         token = std::unique_ptr<Token>(new Token{ TokenTypes::Identifier, identifier });
     }
     return token;
@@ -128,5 +128,5 @@ std::unique_ptr<Token> Tokenizer::readNext()
     }
     if (std::isdigit(ch)) return readInteger();
     if (std::isalpha(ch)) return readIdentifier();
-    throw std::invalid_argument("Cannot handle invalid character: " + ch);
+    throw SyntacticException("Cannot handle invalid character: " + ch);
 }
