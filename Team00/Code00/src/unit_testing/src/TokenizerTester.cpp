@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "Tokenizer.h"
+#include "SyntacticException.h" // for throwing SyntacticException
 #include <vector>
 
 TEST_CASE("Test Tokenizer Ignores Whitespace")
@@ -330,7 +331,7 @@ TEST_CASE("Test Combination 11")
 		std::unique_ptr<Token> current = std::move(tokenizer.readNext());
 		REQUIRE(false);
 	}
-	catch (std::invalid_argument const& err) {
+	catch (SyntacticException const& err) {
 		REQUIRE(std::string(err.what()) == "Invalid identifier encountered: prog_line_dsa");
 	}
 }

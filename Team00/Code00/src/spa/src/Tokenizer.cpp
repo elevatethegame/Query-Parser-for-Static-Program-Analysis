@@ -1,5 +1,5 @@
 #include "Tokenizer.h"
-#include "SyntacticException.h"// for throwing SyntacticException
+#include "SyntacticException.h" // for throwing SyntacticException
 #include <ctype.h>  // for std::isdigit, std::isalpha
 #include <algorithm>  // for std::find
 #include <iterator>  // for std::begin, std::end
