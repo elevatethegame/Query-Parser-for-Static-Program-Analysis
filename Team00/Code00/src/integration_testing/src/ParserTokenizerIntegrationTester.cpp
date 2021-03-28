@@ -2,6 +2,8 @@
 #include "QueryParser.h"
 #include "Tokenizer.h"
 #include "Query.h"
+#include "SemanticException.h"
+#include "SyntacticException.h"
 #include <vector>
 #include <memory>
 
@@ -2245,7 +2247,7 @@ TEST_CASE("Test Invalid Query without Select Clause")
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SyntacticException const& err) {
 		REQUIRE(std::string(err.what()) == "End of query reached when a token was expected");
 	}
 }
@@ -2260,7 +2262,7 @@ TEST_CASE("Test synonym being redeclared as different synonym type")
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym re with Entity Type of Read being redeclared as Entity Type of Variable");
 	}
 }
@@ -2276,7 +2278,7 @@ TEST_CASE("Test undeclared synonym in Select Clause")
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Undeclared synonym encountered in Select clause: re1");
 	}
 }
@@ -2292,7 +2294,7 @@ TEST_CASE("Test undeclared synonym in Pattern Clause")
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Undeclared synonym encountered in Pattern clause: a1");
 	}
 }
@@ -2308,8 +2310,9 @@ TEST_CASE("Test synonym not of assignment type in Pattern Clause")
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "None of pattern type synAssign, synWhile or synIf could be matched. Unexpected token: pcd");
+	catch (SyntacticException const& err) {
+		REQUIRE(std::string(err.what()) == "Unexpected token encountered when parsing Pattern clause: Token Type of"
+			" Identifier with value: pcd");
 	}
 }
 
@@ -2324,8 +2327,9 @@ TEST_CASE("Test invalid expression spec in Pattern Clause")
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "Factor could not be parsed correctly. Unexpected token: ;");
+	catch (SyntacticException const& err) {
+		REQUIRE(std::string(err.what()) == "Unexpected token encountered when parsing Factor: Token Type of Semicolon"
+			" with value: ;");
 	}
 }
 
@@ -2340,8 +2344,8 @@ TEST_CASE("Test undeclared synonym in Such That Clause Left Argument")
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "Undeclared synonym encountered in StmtRef: re1");
+	catch (SemanticException const& err) {
+		REQUIRE(std::string(err.what()) == "Undeclared synonym encountered in stmtRef: re1");
 	}
 }
 
@@ -2356,8 +2360,8 @@ TEST_CASE("Test undeclared synonym in Such That Clause Right Argument")
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "Undeclared synonym encountered in StmtRef: re1");
+	catch (SemanticException const& err) {
+		REQUIRE(std::string(err.what()) == "Undeclared synonym encountered in stmtRef: re1");
 	}
 }
 
@@ -2372,7 +2376,7 @@ TEST_CASE("Test disallowed variable synonym in left argument of Such That Clause
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym v not allowed, has Entity Type of Variable");
 	}
 }
@@ -2388,7 +2392,7 @@ TEST_CASE("Test disallowed constant synonym in left argument of Such That Clause
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym c not allowed, has Entity Type of Constant");
 	}
 }
@@ -2404,7 +2408,7 @@ TEST_CASE("Test disallowed procedure synonym in left argument of Such That Claus
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym pcd not allowed, has Entity Type of Procedure");
 	}
 }
@@ -2420,7 +2424,7 @@ TEST_CASE("Test disallowed variable synonym in right argument of Such That Claus
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym v not allowed, has Entity Type of Variable");
 	}
 }
@@ -2436,7 +2440,7 @@ TEST_CASE("Test disallowed constant synonym in right argument of Such That Claus
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym c not allowed, has Entity Type of Constant");
 	}
 }
@@ -2452,7 +2456,7 @@ TEST_CASE("Test disallowed procedure synonym in right argument of Such That Clau
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym pcd not allowed, has Entity Type of Procedure");
 	}
 }
@@ -2468,8 +2472,8 @@ TEST_CASE("Test disallowed \"_\" in left argument of Such That Clause with Modif
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "Token Type of Underscore with value: _ is not allowed as first argument in stmtRef");
+	catch (SemanticException const& err) {
+		REQUIRE(std::string(err.what()) == "_ is not allowed as first argument in stmtRef");
 	}
 }
 
@@ -2484,7 +2488,7 @@ TEST_CASE("Test disallowed print synonym in left argument of Such That Clause wi
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym pn not allowed, has Entity Type of Print");
 	}
 }
@@ -2500,7 +2504,7 @@ TEST_CASE("Test disallowed constant synonym in left argument of Such That Clause
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym c not allowed, has Entity Type of Constant");
 	}
 }
@@ -2516,7 +2520,7 @@ TEST_CASE("Test disallowed variable synonym in left argument of Such That Clause
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym v not allowed, has Entity Type of Variable");
 	}
 }
@@ -2532,7 +2536,7 @@ TEST_CASE("Test disallowed constant synonym in right argument of Such That Claus
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym c not allowed, has Entity Type of Constant");
 	}
 }
@@ -2548,8 +2552,8 @@ TEST_CASE("Test disallowed \"_\" in left argument of Such That Clause with Uses"
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
-		REQUIRE(std::string(err.what()) == "Token Type of Underscore with value: _ is not allowed as first argument in stmtRef");
+	catch (SemanticException const& err) {
+		REQUIRE(std::string(err.what()) == "_ is not allowed as first argument in stmtRef");
 	}
 }
 
@@ -2564,7 +2568,7 @@ TEST_CASE("Test disallowed read synonym in left argument of Such That Clause wit
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym re not allowed, has Entity Type of Read");
 	}
 }
@@ -2580,7 +2584,7 @@ TEST_CASE("Test disallowed constant synonym in left argument of Such That Clause
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym c not allowed, has Entity Type of Constant");
 	}
 }
@@ -2596,7 +2600,7 @@ TEST_CASE("Test disallowed variable synonym in left argument of Such That Clause
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym v not allowed, has Entity Type of Variable");
 	}
 }
@@ -2612,7 +2616,7 @@ TEST_CASE("Test disallowed while synonym in right argument of Such That Clause w
 		queryParser.parse();
 		REQUIRE(false);
 	}
-	catch (std::exception const& err) {
+	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym w not allowed, has Entity Type of While");
 	}
 }

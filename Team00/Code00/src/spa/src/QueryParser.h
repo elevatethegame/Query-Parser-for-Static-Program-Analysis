@@ -35,9 +35,9 @@ private:
     bool declaration();
     bool suchThatClause();
     bool patternClause();
-    void patternAssign();
-    void patternWhile();
-    void patternIf();
+    void patternAssign(std::string synoynmValue);
+    void patternWhile(std::string synoynmValue);
+    void patternIf(std::string synoynmValue);
     void relRef();
     std::shared_ptr<QueryInput> stmtRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
     std::shared_ptr<QueryInput> entRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore);
