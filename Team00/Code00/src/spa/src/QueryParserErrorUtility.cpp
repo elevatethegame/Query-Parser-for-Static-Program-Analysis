@@ -20,7 +20,7 @@ void QueryParserErrorUtility::semanticCheckUndeclaredSynonym(std::unordered_map<
 {
     // Semantic check: Undeclared Synonym used in Clause
     if (synonyms.find(synonymValue) == synonyms.end()) {
-        throw SyntacticException("Undeclared synonym encountered in " + clause + ": " + synonymValue);
+        throw SemanticException("Undeclared synonym encountered in " + clause + ": " + synonymValue);
     }
     
 }

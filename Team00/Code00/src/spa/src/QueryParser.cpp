@@ -68,7 +68,7 @@ void QueryParser::selectClause()
     std::unique_ptr<Token> selectedSynToken = std::move(expect(TokenTypes::Identifier));
 
     // Check for undeclared synonyms
-    QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, SELECT_CLAUSE, selectedSynToken->getValue());
+    QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, SELECT_CLAUSE_STR, selectedSynToken->getValue());
 
     auto declaration = std::make_shared<Declaration>(synonyms[selectedSynToken->getValue()], selectedSynToken->getValue());
     query->setSelectClause(declaration);
@@ -121,7 +121,7 @@ void QueryParser::relRef()
     if (modifies() || uses() || follows() || parent() || calls() || next()) {
         return;
     }
-    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), RELREF);
+    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), RELREF_STR);
 }
 
 std::shared_ptr<QueryInput> QueryParser::stmtRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore)
@@ -129,7 +129,7 @@ std::shared_ptr<QueryInput> QueryParser::stmtRef(std::set<EntityType> allowedDes
     std::unique_ptr<Token> token = std::move(accept(TokenTypes::Identifier));
     if (token) {
         // Check for undeclared synonym
-        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, STMTREF, token->getValue());
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, STMTREF_STR, token->getValue());
 
         // Check that synonym has entity that is allowed
         QueryParserErrorUtility::semanticCheckValidSynonymEntityType(synonyms, token->getValue(), allowedDesignEntities);
@@ -138,14 +138,14 @@ std::shared_ptr<QueryInput> QueryParser::stmtRef(std::set<EntityType> allowedDes
     }
     token = std::move(accept(TokenTypes::Underscore));
     if (token) {
-        QueryParserErrorUtility::semanticCheckWildcardAllowed(acceptsUnderscore, token->getValue(), STMTREF);
+        QueryParserErrorUtility::semanticCheckWildcardAllowed(acceptsUnderscore, token->getValue(), STMTREF_STR);
         return std::make_shared<Any>(token->getValue());
     }
     token = std::move(accept(TokenTypes::Integer));
     if (token) {
         return std::make_shared<StmtNum>(token->getValue());
     }
-    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), STMTREF);
+    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), STMTREF_STR);
 }
 
 std::shared_ptr<QueryInput> QueryParser::entRef(std::set<EntityType> allowedDesignEntities, bool acceptsUnderscore)
@@ -153,7 +153,7 @@ std::shared_ptr<QueryInput> QueryParser::entRef(std::set<EntityType> allowedDesi
     std::unique_ptr<Token> token = std::move(accept(TokenTypes::Identifier));
     if (token) {
         // Check for undeclared synonym
-        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, STMTREF, token->getValue());
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, STMTREF_STR, token->getValue());
 
         // Check that synonym has entity that is allowed
         QueryParserErrorUtility::semanticCheckValidSynonymEntityType(synonyms, token->getValue(), allowedDesignEntities);
@@ -162,7 +162,7 @@ std::shared_ptr<QueryInput> QueryParser::entRef(std::set<EntityType> allowedDesi
     }
     token = std::move(accept(TokenTypes::Underscore));
     if (token) {
-        QueryParserErrorUtility::semanticCheckWildcardAllowed(acceptsUnderscore, token->getValue(), ENTREF);
+        QueryParserErrorUtility::semanticCheckWildcardAllowed(acceptsUnderscore, token->getValue(), ENTREF_STR);
         return std::make_shared<Any>(token->getValue());
     }
     else if (accept(TokenTypes::DoubleQuote)) {
@@ -171,7 +171,7 @@ std::shared_ptr<QueryInput> QueryParser::entRef(std::set<EntityType> allowedDesi
         return std::make_shared<Ident>(token->getValue());
     }
     else {
-        QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), ENTREF);
+        QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), ENTREF_STR);
     }
 }
 
@@ -352,7 +352,7 @@ bool QueryParser::patternClause()
             std::unique_ptr<Token> synToken = std::move(expect(TokenTypes::Identifier));
 
             // Semantic check if synonym has been declared before being used
-            QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, PATTERN_CLAUSE, synToken->getValue());
+            QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, PATTERN_CLAUSE_STR, synToken->getValue());
 
             // Find the Entity Type of the synonym
             auto it = synonyms.find(synToken->getValue());
@@ -369,7 +369,7 @@ bool QueryParser::patternClause()
                 patternIf(synToken->getValue());
             }
             else {
-                QueryParserErrorUtility::unexpectedTokenSyntacticException(synToken->toString(), PATTERN_CLAUSE);
+                QueryParserErrorUtility::unexpectedTokenSyntacticException(synToken->toString(), PATTERN_CLAUSE_STR);
             }
 
             patternFound = true;
@@ -488,7 +488,7 @@ void QueryParser::factor(Expression& result)
         return;
     }
     // Factor could not be parsed correctly
-    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), FACTOR);
+    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), FACTOR_STR);
 }
 
 void QueryParser::parse()
