@@ -345,79 +345,43 @@ bool QueryParser::next()
 bool QueryParser::patternClause()
 {
     if (accept(TokenTypes::Pattern)) {
-        if (currToken->getType() != TokenTypes::Identifier) {
-            std::string errorMsg = "Expected identifier in Pattern Clause, instead found: " + currToken->getValue();
-            throw std::runtime_error(errorMsg.c_str());
-        }
 
-        // Semantic check if synonym has been declared before being used
-        auto it = synonyms.find(currToken->getValue());
-        if (it == synonyms.end()) {
-            std::string errorMsg = "Undeclared synonym encountered in Pattern clause: " + currToken->getValue();
-            throw std::runtime_error(errorMsg.c_str());
-        }
+        bool patternFound = false;
 
-        // Find the Entity Type of the synonym
-        EntityType synonymType = it->second;
-
-        // Compulsory to match at least one pattern
-        if (synonymType == EntityType::ASSIGN) {
-            patternAssign();
-        }
-        else if (synonymType == EntityType::WHILE) {
-            patternWhile();
-        }
-        else if (synonymType == EntityType::IF) {
-            patternIf();
-        }
-        else {
-            std::string errorMsg = "None of pattern type synAssign, synWhile or synIf could be matched. Unexpected token: " + currToken->getValue();
-            throw std::runtime_error(errorMsg.c_str());
-        }
-
-        // Can be followed by zero or more ('and' pattern)
-        while (accept(TokenTypes::And)) {
-            if (currToken->getType() != TokenTypes::Identifier) {
-                std::string errorMsg = "Expected identifier in Pattern Clause, instead found: " + currToken->getValue();
-                throw std::runtime_error(errorMsg.c_str());
-            }
+        while (!patternFound || accept(TokenTypes::And)) {
+            std::unique_ptr<Token> synToken = std::move(expect(TokenTypes::Identifier));
 
             // Semantic check if synonym has been declared before being used
-            auto it = synonyms.find(currToken->getValue());
-            if (it == synonyms.end()) {
-                std::string errorMsg = "Undeclared synonym encountered in Pattern clause: " + currToken->getValue();
-                throw std::runtime_error(errorMsg.c_str());
-            }
+            QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, PATTERN_CLAUSE, synToken->getValue());
 
             // Find the Entity Type of the synonym
+            auto it = synonyms.find(synToken->getValue());
             EntityType synonymType = it->second;
 
             // Compulsory to match at least one pattern
             if (synonymType == EntityType::ASSIGN) {
-                patternAssign();
+                patternAssign(synToken->getValue());
             }
             else if (synonymType == EntityType::WHILE) {
-                patternWhile();
+                patternWhile(synToken->getValue());
             }
             else if (synonymType == EntityType::IF) {
-                patternIf();
+                patternIf(synToken->getValue());
             }
             else {
-                std::string errorMsg = "None of pattern type synAssign, synWhile or synIf could be matched. Unexpected token: " + currToken->getValue();
-                throw std::runtime_error(errorMsg.c_str());
+                QueryParserErrorUtility::unexpectedTokenSyntacticException(synToken->toString(), PATTERN_CLAUSE);
             }
+
+            patternFound = true;
         }
         return true;
-
-
     }
     return false;
 }
 
-void QueryParser::patternAssign()
+void QueryParser::patternAssign(std::string synonymValue)
 {
-    std::unique_ptr<Token> synToken = std::move(expect(TokenTypes::Identifier));
-    auto synonym = std::make_shared<Declaration>(synonyms[synToken->getValue()], synToken->getValue());
+    auto synonym = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
     expect(TokenTypes::LeftParen);
     std::shared_ptr<QueryInput> queryInput = entRef(EntitiesTable::getPatternAllowedEntities(PatternType::PATTERN_ASSIGN), true);
     expect(TokenTypes::Comma);
@@ -426,10 +390,9 @@ void QueryParser::patternAssign()
     query->addAssignPatternClause(synonym, queryInput, expression);
 }
 
-void QueryParser::patternWhile()
+void QueryParser::patternWhile(std::string synonymValue)
 {
-    std::unique_ptr<Token> synToken = std::move(expect(TokenTypes::Identifier));
-    auto synonym = std::make_shared<Declaration>(synonyms[synToken->getValue()], synToken->getValue());
+    auto synonym = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
     expect(TokenTypes::LeftParen);
     std::shared_ptr<QueryInput> queryInput = entRef(EntitiesTable::getPatternAllowedEntities(PatternType::PATTERN_WHILE), true);
     expect(TokenTypes::Comma);
@@ -438,10 +401,9 @@ void QueryParser::patternWhile()
     query->addContainerPatternClause(synonym, queryInput);
 }
 
-void QueryParser::patternIf()
+void QueryParser::patternIf(std::string synonymValue)
 {
-    std::unique_ptr<Token> synToken = std::move(expect(TokenTypes::Identifier));
-    auto synonym = std::make_shared<Declaration>(synonyms[synToken->getValue()], synToken->getValue());
+    auto synonym = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
     expect(TokenTypes::LeftParen);
     std::shared_ptr<QueryInput> queryInput = entRef(EntitiesTable::getPatternAllowedEntities(PatternType::PATTERN_IF), true);
     expect(TokenTypes::Comma);
@@ -526,8 +488,7 @@ void QueryParser::factor(Expression& result)
         return;
     }
     // Factor could not be parsed correctly
-    std::string errorMsg = "Factor could not be parsed correctly. Unexpected token: " + currToken->getValue();
-    throw std::runtime_error(errorMsg.c_str());
+    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), FACTOR);
 }
 
 void QueryParser::parse()
