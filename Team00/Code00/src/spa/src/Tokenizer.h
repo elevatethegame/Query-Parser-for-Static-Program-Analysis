@@ -5,15 +5,18 @@
 #include "InputStream.h"
 #include "TokenizerInterface.h"
 #include <functional>
+#include <set>
 
 class Tokenizer : public TokenizerInterface
 {
 private:
 
+    static std::set<char> specialCharactersAmongIdentifiers;
     InputStream inputStream;
 
-    static bool isAlphanumericOrUnderscore(char c);
+    static bool isAlphanumericOrSpecialChar(char c);
     std::unique_ptr<Token> readInteger();
+    bool canTokenizeAsAttrRef(std::string identifier);
     std::unique_ptr<Token> readIdentifier();
     std::string readWhile(std::function<bool(char)> predicate);
 

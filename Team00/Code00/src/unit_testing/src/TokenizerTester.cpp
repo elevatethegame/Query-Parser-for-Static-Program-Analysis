@@ -73,18 +73,18 @@ TEST_CASE("Test Combination 2")
 		current = std::move(tokenizer.readNext());
 	}
 
-	REQUIRE(tokens.size() == (size_t)30);
+	REQUIRE(tokens.size() == (size_t) 29);
 	TokenTypes tokenTypes[] = { TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::Select, TokenTypes::Identifier, TokenTypes::Such,
-		TokenTypes::That, TokenTypes::Follows, TokenTypes::Asterisk, TokenTypes::LeftParen,
+		TokenTypes::That, TokenTypes::FollowsT, TokenTypes::LeftParen,
 		TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier,
 		TokenTypes::RightParen, TokenTypes::Pattern, TokenTypes::Identifier,
 		TokenTypes::LeftParen, TokenTypes::DoubleQuote, TokenTypes::Identifier,
 		TokenTypes::DoubleQuote, TokenTypes::Comma, TokenTypes::Underscore,
 		TokenTypes::DoubleQuote, TokenTypes::Identifier, TokenTypes::DoubleQuote,
 		TokenTypes::Underscore, TokenTypes::RightParen };
-	std::string tokenValues[] = { "stmt", "s", ";", "print", "pn", ";", "Select", "v", "such", "that", "Follows", "*",
+	std::string tokenValues[] = { "stmt", "s", ";", "print", "pn", ";", "Select", "v", "such", "that", "Follows*",
 		"(", "s", ",", "pn", ")", "pattern", "a", "(", "\"", "testVariable", "\"", ",", "_", "\"", "v", "\"", "_", ")" };
 
 	for (size_t i = 0; i < tokens.size(); i++) {
@@ -152,7 +152,7 @@ TEST_CASE("Test Combination 4")
 
 TEST_CASE("Test Combination 5")
 {
-	Tokenizer tokenizer = Tokenizer{ "while w; if ifs;\nSelect w such that Parent * (w, ifs)" };
+	Tokenizer tokenizer = Tokenizer{ "while w; if ifs;\nSelect w such that Parent*(w, ifs)" };
 	std::vector<std::unique_ptr<Token>> tokens;
 	std::unique_ptr<Token> current = std::move(tokenizer.readNext());
 	while (current) {
@@ -160,14 +160,14 @@ TEST_CASE("Test Combination 5")
 		current = std::move(tokenizer.readNext());
 	}
 
-	REQUIRE(tokens.size() == (size_t)17);
+	REQUIRE(tokens.size() == (size_t)16);
 	TokenTypes tokenTypes[] = { TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::Select, TokenTypes::Identifier, TokenTypes::Such,
-		TokenTypes::That, TokenTypes::Parent, TokenTypes::Asterisk, TokenTypes::LeftParen,
+		TokenTypes::That, TokenTypes::ParentT, TokenTypes::LeftParen,
 		TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier,
 		TokenTypes::RightParen };
-	std::string tokenValues[] = { "while", "w", ";", "if", "ifs", ";", "Select", "w", "such", "that", "Parent", "*",
+	std::string tokenValues[] = { "while", "w", ";", "if", "ifs", ";", "Select", "w", "such", "that", "Parent*",
 		"(", "w", ",", "ifs", ")" };
 
 	for (size_t i = 0; i < tokens.size(); i++) {
@@ -178,7 +178,7 @@ TEST_CASE("Test Combination 5")
 
 TEST_CASE("Test Combination 6")
 {
-	Tokenizer tokenizer = Tokenizer{ "procedure p1, p2; assign a12, a21; \nSelect p1 such that Parent * (a12, a21) and Calls*(p1, p2)" };
+	Tokenizer tokenizer = Tokenizer{ "procedure p1, p2; assign a12, a21; \nSelect p1 such that Parent*(a12, a21) and Calls*(p1, p2)" };
 	std::vector<std::unique_ptr<Token>> tokens;
 	std::unique_ptr<Token> current = std::move(tokenizer.readNext());
 	while (current) {
@@ -186,18 +186,18 @@ TEST_CASE("Test Combination 6")
 		current = std::move(tokenizer.readNext());
 	}
 
-	REQUIRE(tokens.size() == (size_t) 29);
+	REQUIRE(tokens.size() == (size_t) 27);
 	TokenTypes tokenTypes[] = { 
 		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::Select, TokenTypes::Identifier, TokenTypes::Such,
-		TokenTypes::That, TokenTypes::Parent, TokenTypes::Asterisk, TokenTypes::LeftParen,
+		TokenTypes::That, TokenTypes::ParentT, TokenTypes::LeftParen,
 		TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier,
-		TokenTypes::RightParen, TokenTypes::And, TokenTypes::Calls, TokenTypes::Asterisk, TokenTypes::LeftParen,
+		TokenTypes::RightParen, TokenTypes::And, TokenTypes::CallsT, TokenTypes::LeftParen,
 		TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier,
 		TokenTypes::RightParen };
 	std::string tokenValues[] = { "procedure","p1",",","p2",";","assign","a12",",","a21",";","Select","p1",
-			"such","that","Parent","*","(","a12",",","a21",")","and","Calls","*","(","p1",",","p2",")" };
+			"such","that","Parent*","(","a12",",","a21",")","and","Calls*","(","p1",",","p2",")" };
 
 	for (size_t i = 0; i < tokens.size(); i++) {
 		REQUIRE(tokens[i]->getType() == tokenTypes[i]);
@@ -207,7 +207,7 @@ TEST_CASE("Test Combination 6")
 
 TEST_CASE("Test Combination 7")
 {
-	Tokenizer tokenizer = Tokenizer{ "prog_line pgl1, pgl2; \nSelect pgl1 such that Next * (pgl2, pgl1) and Next(pgl1, pgl2)" };
+	Tokenizer tokenizer = Tokenizer{ "prog_line pgl1, pgl2; \nSelect pgl1 such that Next*(pgl2, pgl1) and Next(pgl1, pgl2)" };
 	std::vector<std::unique_ptr<Token>> tokens;
 	std::unique_ptr<Token> current = std::move(tokenizer.readNext());
 	while (current) {
@@ -215,16 +215,16 @@ TEST_CASE("Test Combination 7")
 		current = std::move(tokenizer.readNext());
 	}
 
-	REQUIRE(tokens.size() == (size_t) 23);
+	REQUIRE(tokens.size() == (size_t) 22);
 	TokenTypes tokenTypes[] = {
 		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::Select, TokenTypes::Identifier, TokenTypes::Such,
-		TokenTypes::That, TokenTypes::Next, TokenTypes::Asterisk, TokenTypes::LeftParen,
+		TokenTypes::That, TokenTypes::NextT, TokenTypes::LeftParen,
 		TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier,
 		TokenTypes::RightParen, TokenTypes::And, TokenTypes::Next, TokenTypes::LeftParen,
 		TokenTypes::Identifier, TokenTypes::Comma, TokenTypes::Identifier,
 		TokenTypes::RightParen };
-	std::string tokenValues[] = { "prog_line","pgl1",",","pgl2",";","Select","pgl1","such","that","Next","*",
+	std::string tokenValues[] = { "prog_line","pgl1",",","pgl2",";","Select","pgl1","such","that","Next*",
 			"(","pgl2",",","pgl1",")","and","Next","(","pgl1",",","pgl2",")" };
 
 	for (size_t i = 0; i < tokens.size(); i++) {

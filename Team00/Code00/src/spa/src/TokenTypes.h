@@ -10,9 +10,13 @@ enum class TokenTypes
     Modifies,
     Uses,
     Parent,
+    ParentT,
     Follows,
+    FollowsT,
     Calls,
+    CallsT,
     Next,
+    NextT,
     Select,
     Such,
     That,
@@ -24,9 +28,15 @@ enum class TokenTypes
     RightParen,
     Comma,
     DoubleQuote,
-    Asterisk,
     ExprSymbol,
-    TermSymbol
+    TermSymbol,
+    LeftAngleBracket,
+    RightAngleBracket,
+    AttrName,
+    AttrRef,
+    Equals,
+    With,
+    Boolean
 };
 
 #endif
