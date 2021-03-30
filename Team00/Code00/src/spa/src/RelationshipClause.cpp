@@ -1,19 +1,20 @@
 #include "RelationshipClause.h"
 
 RelationshipClause::RelationshipClause(RelationshipType relationshipType, shared_ptr<QueryInput> leftInput, shared_ptr<QueryInput> rightInput) {
-	aRelationshipType = relationshipType;
-	aLeftInput = leftInput;
-	aRightInput = rightInput;
+	this->aRelationshipType = relationshipType;
+	this->aLeftInput = leftInput;
+	this->aRightInput = rightInput;
+	this->clauseType = ClauseType::RELATIONSHIP;
 }
 
 RelationshipType RelationshipClause::getRelationshipType() {
-	return aRelationshipType;
+	return this->aRelationshipType;
 }
 
 shared_ptr<QueryInput> RelationshipClause::getLeftInput() {
-	return aLeftInput;
+	return this->aLeftInput;
 }
 
 shared_ptr<QueryInput> RelationshipClause::getRightInput() {
-	return aRightInput;
+	return this->aRightInput;
 }
