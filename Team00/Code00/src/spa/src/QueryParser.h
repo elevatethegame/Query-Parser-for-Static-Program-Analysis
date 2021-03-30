@@ -49,7 +49,6 @@ private:
     bool next();
     std::shared_ptr<Expression> expressionSpec();
     void expression(Expression& result);
-    std::unique_ptr<Token> acceptTermSymbol();
     void term(Expression& result);
     void factor(Expression& result);
 
