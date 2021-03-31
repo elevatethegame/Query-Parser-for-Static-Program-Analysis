@@ -6,6 +6,21 @@
 
 std::set<char> Tokenizer::specialCharactersAmongIdentifiers = {'*', '_', '.', '#'};
 
+bool Tokenizer::canTreatAsIdent(TokenTypes type, std::string value) {
+    // Keyword TokenTypes which can also be treated as identifiers when accepting tokens
+    TokenTypes keywordTypes[] = { TokenTypes::Modifies, TokenTypes::Uses, TokenTypes::Parent,
+                TokenTypes::Follows, TokenTypes::Select, TokenTypes::Such, TokenTypes::That, TokenTypes::Pattern,
+                TokenTypes::Next, TokenTypes::Calls, TokenTypes::And, TokenTypes::With, TokenTypes::Boolean };
+    if (std::find(std::begin(keywordTypes), std::end(keywordTypes), type) != std::end(keywordTypes))
+        return true;
+    // Possibly an identifier with same name as design entity token
+    if (type == TokenTypes::DesignEntity && value != "prog_line")
+        return true;
+    if (type == TokenTypes::AttrName && value != "stmt#")
+        return true;
+    return false;
+}
+
 Tokenizer::Tokenizer(const std::string givenInput) : inputStream(givenInput)
 {
 
@@ -95,6 +110,12 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     else if (identifier == "Next*") {
         token = std::make_unique<Token>(Token{ TokenTypes::NextT, identifier });
     }
+    else if (identifier == "with") {
+        token = std::make_unique<Token>(Token{ TokenTypes::With, identifier });
+    }
+    else if (identifier == "BOOLEAN") {
+        token = std::make_unique<Token>(Token{ TokenTypes::Boolean, identifier });
+    }
     else if (std::find(std::begin(designEntities), std::end(designEntities), identifier) != std::end(designEntities)) {
         token = std::make_unique<Token>(Token{ TokenTypes::DesignEntity, identifier });
     }
@@ -168,6 +189,15 @@ std::unique_ptr<Token> Tokenizer::readNext()
     case '%':
     case '*':
         return std::make_unique<Token>(Token{ TokenTypes::TermSymbol, std::string(1, inputStream.next()) });
+        break;
+    case '<':
+        return std::make_unique<Token>(Token{ TokenTypes::LeftAngleBracket, std::string(1, inputStream.next()) });
+        break;
+    case '>':
+        return std::make_unique<Token>(Token{ TokenTypes::RightAngleBracket, std::string(1, inputStream.next()) });
+        break;
+    case '=':
+        return std::make_unique<Token>(Token{ TokenTypes::Equals, std::string(1, inputStream.next()) });
         break;
     default:
         break;

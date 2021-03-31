@@ -27,13 +27,13 @@ private:
     std::unordered_map<std::string, EntityType> synonyms;
 
     void getNextToken();
-    bool canTreatAsIdent(TokenTypes type);
     std::unique_ptr<Token> accept(TokenTypes type);
     std::unique_ptr<Token> expect(TokenTypes type);
     std::shared_ptr<QueryInput> expect(std::shared_ptr<QueryInput> queryInput, bool isStmtRef);
     void selectClause();
     bool declaration();
     bool suchThatClause();
+    bool withClause();
     bool patternClause();
     void patternAssign(std::string synoynmValue);
     void patternWhile(std::string synoynmValue);

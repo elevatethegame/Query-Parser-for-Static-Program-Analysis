@@ -22,6 +22,7 @@ private:
 
 public:
 
+    static bool canTreatAsIdent(TokenTypes type, std::string value);
     Tokenizer(const std::string givenInput);
     std::unique_ptr<Token> readNext();
 

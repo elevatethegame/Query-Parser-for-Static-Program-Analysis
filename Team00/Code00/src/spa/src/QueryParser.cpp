@@ -19,14 +19,6 @@ void QueryParser::getNextToken()
     currToken = std::move(tokenizer->readNext());
 }
 
-bool QueryParser::canTreatAsIdent(TokenTypes type) {
-    // Keyword TokenTypes which can also be treated as identifiers when accepting tokens
-    TokenTypes keywordTypes[] = { TokenTypes::DesignEntity, TokenTypes::Modifies, TokenTypes::Uses, TokenTypes::Parent,
-                TokenTypes::Follows, TokenTypes::Select, TokenTypes::Such, TokenTypes::That, TokenTypes::Pattern,
-                TokenTypes::And };
-    return std::find(std::begin(keywordTypes), std::end(keywordTypes), type) != std::end(keywordTypes);
-}
-
 std::unique_ptr<Token> QueryParser::accept(TokenTypes type)
 {
     if (!currToken) return std::unique_ptr<Token>();  // End of query reached
@@ -36,7 +28,7 @@ std::unique_ptr<Token> QueryParser::accept(TokenTypes type)
         return prevToken;
     }
     // Check if the current token is a keyword token (if so, it can be treated as identifier if we are accepting identifiers)
-    if (type == TokenTypes::Identifier && canTreatAsIdent(currToken->getType())) {
+    if (type == TokenTypes::Identifier && Tokenizer::canTreatAsIdent(currToken->getType(), currToken->getValue())) {
         std::unique_ptr<Token> prevToken = std::move(currToken);
         getNextToken();
         return prevToken;
@@ -74,7 +66,7 @@ void QueryParser::selectClause()
     query->setSelectClause(declaration);
 
     // Can have any number of such-that and pattern clauses in any order
-    while (suchThatClause() || patternClause());
+    while (suchThatClause() || withClause() || patternClause());
 
 }
 
@@ -335,6 +327,11 @@ bool QueryParser::next()
 
     query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
     return true;
+}
+
+bool QueryParser::withClause()
+{
+
 }
 
 bool QueryParser::patternClause()
