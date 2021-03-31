@@ -1,5 +1,5 @@
 #pragma once
 
 enum class ClauseType {
-	RELATIONSHIP, PATTERN
+	RELATIONSHIP, PATTERN, WITH
 };

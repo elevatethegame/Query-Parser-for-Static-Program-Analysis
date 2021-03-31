@@ -12,6 +12,8 @@ class Tokenizer : public TokenizerInterface
 private:
 
     static std::set<char> specialCharactersAmongIdentifiers;
+    static std::set<std::string> designEntities;
+    static std::set<std::string> attrNames;
     InputStream inputStream;
 
     static bool isAlphanumericOrSpecialChar(char c);
@@ -23,6 +25,8 @@ private:
 public:
 
     static bool canTreatAsIdent(TokenTypes type, std::string value);
+    static std::string getAttrRefSynonym(std::string tokenValue);
+    static std::string getAttrRefAttrName(std::string tokenValue);
     Tokenizer(const std::string givenInput);
     std::unique_ptr<Token> readNext();
 

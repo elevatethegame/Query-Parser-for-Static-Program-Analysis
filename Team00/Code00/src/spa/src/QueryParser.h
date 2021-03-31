@@ -34,6 +34,8 @@ private:
     bool declaration();
     bool suchThatClause();
     bool withClause();
+    void attrCompare();
+    std::shared_ptr<QueryInput> ref();
     bool patternClause();
     void patternAssign(std::string synoynmValue);
     void patternWhile(std::string synoynmValue);

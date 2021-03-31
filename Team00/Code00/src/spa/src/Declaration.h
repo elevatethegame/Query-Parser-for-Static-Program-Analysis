@@ -10,5 +10,6 @@ private:
 public:
 	Declaration(EntityType entityType, string value);
 	EntityType getEntityType();
+	bool getIsAttribute();
 	void setIsAttribute();
 };

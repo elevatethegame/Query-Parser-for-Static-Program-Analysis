@@ -20,5 +20,6 @@ const std::string CALLS_T_STR = "Calls*";
 const std::string NEXT_STR = "Next";
 const std::string NEXT_T_STR = "Next*";
 const std::string FACTOR_STR = "Factor";
+const std::string REF_STR = "ref";
 
 

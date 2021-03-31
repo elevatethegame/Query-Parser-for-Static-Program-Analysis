@@ -331,7 +331,66 @@ bool QueryParser::next()
 
 bool QueryParser::withClause()
 {
+    if (accept(TokenTypes::With)) {
+        attrCompare();
+        while (accept(TokenTypes::And)) {  // Can have any number of 'and' attrCompare
+            attrCompare();
+        }
+        return true;
+    }
+    return false;
+}
 
+void QueryParser::attrCompare()
+{
+    std::shared_ptr<QueryInput> leftRef = ref();
+    expect(TokenTypes::Equals);
+    std::shared_ptr<QueryInput> rightRef = ref();
+    query->addWithClause(leftRef, rightRef);
+}
+
+std::shared_ptr<QueryInput> QueryParser::ref()
+{
+    std::unique_ptr<Token> token = std::move(accept(TokenTypes::AttrRef));
+    if (token) {
+        std::string synonymValue = Tokenizer::getAttrRefSynonym(token->getValue());
+        std::string attrName = Tokenizer::getAttrRefAttrName(token->getValue());
+
+        // Check for undeclared synonym
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, REF_STR, synonymValue);
+
+        // TODO: add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
+
+        auto queryInput = make_shared<Declaration>(synonyms[synonymValue], synonymValue);
+        queryInput->setIsAttribute();
+
+        return queryInput;
+    }
+    token = std::move(accept(TokenTypes::Integer));
+    if (token) {
+        auto queryInput = make_shared<StmtNum>(token->getValue());
+        return queryInput;
+    }
+    token = std::move(accept(TokenTypes::Identifier));
+    if (token) {
+
+        // Check for undeclared synonym
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, REF_STR, token->getValue());
+
+        auto queryInput = make_shared<Declaration>(synonyms[token->getValue()], token->getValue());
+
+        return queryInput;
+    }
+    if (accept(TokenTypes::DoubleQuote)) {
+        token = std::move(expect(TokenTypes::Identifier));
+        expect(TokenTypes::DoubleQuote);
+
+        auto queryInput = make_shared<Ident>(token->getValue());
+
+        return queryInput;
+    }
+    // Ref could not be parsed correctly
+    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), REF_STR);
 }
 
 bool QueryParser::patternClause()

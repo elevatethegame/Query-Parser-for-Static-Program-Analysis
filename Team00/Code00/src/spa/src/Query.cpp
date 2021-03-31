@@ -1,8 +1,8 @@
 #include "Query.h"
 
 Query::Query() {
-	this->aRelationshipClauses = vector<shared_ptr<RelationshipClause>>();
-	this->aPatternClauses = vector<shared_ptr<PatternClause>>();
+	this->aRelationshipClauses = vector<shared_ptr<RelationshipClause>>(); // remove after merge with qpp
+	this->aPatternClauses = vector<shared_ptr<PatternClause>>(); // remove after merge with qpp
 	this->aOptionalClauses = vector<shared_ptr<OptionalClause>>();
 	this->aSelectClause = make_shared<SelectClause>();
 }
@@ -25,6 +25,12 @@ void Query::addContainerPatternClause(shared_ptr<Declaration> synonym, shared_pt
 	shared_ptr<PatternClause> patternClause = make_shared<PatternClause>(synonym, queryInput);
 	this->aOptionalClauses.push_back(dynamic_pointer_cast<OptionalClause>(patternClause));
 }
+
+void Query::addWithClause(shared_ptr<QueryInput> leftQueryInput, shared_ptr<QueryInput> rightQueryInput) {
+	shared_ptr<WithClause> withClause = make_shared<WithClause>(leftQueryInput, rightQueryInput);
+	this->aOptionalClauses.push_back(dynamic_pointer_cast<OptionalClause>(withClause));
+}
+
 
 vector<shared_ptr<OptionalClause>>  Query::getOptionalClauses() {
 	return this->aOptionalClauses;

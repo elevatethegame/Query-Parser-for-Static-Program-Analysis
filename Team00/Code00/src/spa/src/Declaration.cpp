@@ -16,3 +16,7 @@ EntityType Declaration::getEntityType() {
 void Declaration::setIsAttribute() {
 	this->isAttribute = true;
 }
+
+bool Declaration::getIsAttribute() {
+	return this->isAttribute;
+}

@@ -4,7 +4,11 @@
 #include <algorithm>  // for std::find
 #include <iterator>  // for std::begin, std::end
 
+
 std::set<char> Tokenizer::specialCharactersAmongIdentifiers = {'*', '_', '.', '#'};
+std::set<std::string> designEntities = { "stmt", "read", "print", "while", "if", "assign",
+            "variable", "constant", "procedure", "prog_line", "call" };
+std::set<std::string> attrNames = { "procName", "varName", "value", "stmt#" };
 
 bool Tokenizer::canTreatAsIdent(TokenTypes type, std::string value) {
     // Keyword TokenTypes which can also be treated as identifiers when accepting tokens
@@ -19,6 +23,20 @@ bool Tokenizer::canTreatAsIdent(TokenTypes type, std::string value) {
     if (type == TokenTypes::AttrName && value != "stmt#")
         return true;
     return false;
+}
+
+std::string Tokenizer::getAttrRefSynonym(std::string tokenValue)
+{
+    int periodIndex = tokenValue.find(".");
+    std::string synonym = tokenValue.substr(0, periodIndex);
+    return synonym;
+}
+
+std::string Tokenizer::getAttrRefAttrName(std::string tokenValue)
+{
+    int periodIndex = tokenValue.find(".");
+    std::string attrName = tokenValue.substr(periodIndex + 1);
+    return attrName;
 }
 
 Tokenizer::Tokenizer(const std::string givenInput) : inputStream(givenInput)
@@ -44,26 +62,25 @@ bool Tokenizer::isAlphanumericOrSpecialChar(char c)
 
 bool Tokenizer::canTokenizeAsAttrRef(std::string identifier)
 {
-    int numPeriods = 0;
-    int periodIndex = -1;
-    for (int i = 0; i < identifier.size(); i++) {
-        char c = identifier[i];
-        if (c == '.') {
-            numPeriods++;
-            periodIndex = i;
-            if (numPeriods > 1) return false;
-        }
+    int periodIndex = identifier.find(".");
+    if (periodIndex <= 0 || periodIndex >= identifier.size() - 1) return false;
+    std::string synonym = identifier.substr(0, periodIndex);
+    std::string attrName = identifier.substr(periodIndex + 1);
+    // Synonym is not a valid identifier
+    for (int i = 1; i < synonym.size(); i++) {
+        if (!std::isalnum(synonym[i])) return false;
     }
-    return numPeriods == 1 && periodIndex > 0 && periodIndex < identifier.size() - 1;
+    // AttrName is not valid
+    if (std::find(std::begin(attrNames), std::end(attrNames), identifier) != std::end(attrNames)) {
+        return false;
+    }
+    return true;
 }
 
 std::unique_ptr<Token> Tokenizer::readIdentifier()
 {
     std::string identifier = std::string(1, inputStream.next());
     identifier += readWhile(Tokenizer::isAlphanumericOrSpecialChar);
-    std::string designEntities[] = { "stmt", "read", "print", "while", "if", "assign", 
-            "variable", "constant", "procedure", "prog_line", "call" };
-    std::string attrName[] = {"procName", "varName", "value", "stmt#"};
     std::unique_ptr<Token> token;
     if (identifier == "Select") {
         token = std::make_unique<Token>(Token{ TokenTypes::Select, identifier });
@@ -119,10 +136,7 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     else if (std::find(std::begin(designEntities), std::end(designEntities), identifier) != std::end(designEntities)) {
         token = std::make_unique<Token>(Token{ TokenTypes::DesignEntity, identifier });
     }
-    else if (std::find(std::begin(attrName), std::end(attrName), identifier) != std::end(attrName)) {
-        token = std::make_unique<Token>(Token{ TokenTypes::AttrName, identifier });
-    }
-    else if (std::find(std::begin(attrName), std::end(attrName), identifier) != std::end(attrName)) {
+    else if (std::find(std::begin(attrNames), std::end(attrNames), identifier) != std::end(attrNames)) {
         token = std::make_unique<Token>(Token{ TokenTypes::AttrName, identifier });
     }
     else if (canTokenizeAsAttrRef(identifier)) {

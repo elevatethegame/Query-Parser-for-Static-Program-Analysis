@@ -25,6 +25,7 @@ public:
 		shared_ptr<QueryInput> leftQueryInput, shared_ptr<QueryInput> rightQueryInput);
 	void addAssignPatternClause(shared_ptr<Declaration> synonym, shared_ptr<QueryInput> queryInput, shared_ptr<Expression> expression);
 	void addContainerPatternClause(shared_ptr<Declaration> synonym, shared_ptr<QueryInput> queryInput);
+	void addWithClause(shared_ptr<QueryInput> leftQueryInput, shared_ptr<QueryInput> rightQueryInput);
 
 	shared_ptr<SelectClause> getSelectClause();
 	vector<shared_ptr<OptionalClause>> getOptionalClauses();
