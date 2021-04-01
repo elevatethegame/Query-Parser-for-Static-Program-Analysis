@@ -32,12 +32,12 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 	REQUIRE(synonyms["var1"] == EntityType::VAR);
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 
-	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclarations().at(0);
 	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 	REQUIRE(selectClDeclaration->getEntityType() == EntityType::VAR);
 	REQUIRE(selectClDeclaration->getValue() == "var1");
 
-	std::shared_ptr<RelationshipClause> relationshipCl = query->getRelationshipClauses().at(0);
+	std::shared_ptr<RelationshipClause> relationshipCl = std::dynamic_pointer_cast<RelationshipClause>(query->getOptionalClauses().at(0));
 	RelationshipType relationshipType = relationshipCl->getRelationshipType();
 	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = relationshipCl->getLeftInput();
 	std::shared_ptr<QueryInput> suchThatClRightQueryInput = relationshipCl->getRightInput();
@@ -48,7 +48,7 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 	REQUIRE(suchThatClRightQueryInput->getValue() == "var1");
 	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::VAR);
 
-	std::shared_ptr<PatternClause> patternCl = query->getPatternClauses().at(0);
+	std::shared_ptr<PatternClause> patternCl = std::dynamic_pointer_cast<PatternClause>(query->getOptionalClauses().at(1));
 	std::shared_ptr<Declaration> patternClDeclaration = patternCl->getSynonym();
 	std::shared_ptr<QueryInput> patternQueryInput = patternCl->getQueryInput();
 	std::shared_ptr<Expression> expression = patternCl->getExpression();
@@ -76,7 +76,7 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 //	REQUIRE(synonyms["w"] == EntityType::WHILE);
 //	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 //
-//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclarations().at(0);
 //	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 //	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 //	REQUIRE(selectClDeclaration->getValue() == "w");
@@ -123,7 +123,7 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 //	REQUIRE(synonyms["w"] == EntityType::WHILE);
 //	REQUIRE(synonyms["v"] == EntityType::VAR);
 //
-//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclarations().at(0);
 //	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 //	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 //	REQUIRE(selectClDeclaration->getValue() == "w");
@@ -187,7 +187,7 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 //	REQUIRE(synonyms["w"] == EntityType::WHILE);
 //	REQUIRE(synonyms["v"] == EntityType::VAR);
 //
-//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclarations().at(0);
 //	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 //	REQUIRE(selectClDeclaration->getEntityType() == EntityType::WHILE);
 //	REQUIRE(selectClDeclaration->getValue() == "w");
@@ -269,7 +269,7 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 //	REQUIRE(synonyms["w"] == EntityType::WHILE);
 //	REQUIRE(synonyms["v"] == EntityType::VAR);
 //
-//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclarations().at(0);
 //	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 //	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 //	REQUIRE(selectClDeclaration->getValue() == "a");
@@ -341,7 +341,7 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 //	REQUIRE(synonyms["w"] == EntityType::WHILE);
 //	REQUIRE(synonyms["v"] == EntityType::VAR);
 //
-//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclarations().at(0);
 //	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 //	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 //	REQUIRE(selectClDeclaration->getValue() == "a");
@@ -408,7 +408,7 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 //	REQUIRE(synonyms["w"] == EntityType::WHILE);
 //	REQUIRE(synonyms["v"] == EntityType::VAR);
 //
-//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclarations().at(0);
 //	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 //	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 //	REQUIRE(selectClDeclaration->getValue() == "a");
@@ -501,7 +501,7 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 //	REQUIRE(synonyms["w"] == EntityType::WHILE);
 //	REQUIRE(synonyms["v"] == EntityType::VAR);
 //
-//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclarations().at(0);
 //	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 //	REQUIRE(selectClDeclaration->getEntityType() == EntityType::ASSIGN);
 //	REQUIRE(selectClDeclaration->getValue() == "a");
@@ -611,7 +611,7 @@ TEST_CASE("Test Query with Select, Such That And Pattern Clause 1")
 //	REQUIRE(synonyms["pgl2"] == EntityType::PROGLINE);
 //	REQUIRE(synonyms["pcd1"] == EntityType::PROC);
 //
-//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclaration();
+//	std::shared_ptr<Declaration> selectClDeclaration = query->getSelectClause()->getDeclarations().at(0);
 //	REQUIRE(selectClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
 //	REQUIRE(selectClDeclaration->getEntityType() == EntityType::STMT);
 //	REQUIRE(selectClDeclaration->getValue() == "s1");

@@ -57,17 +57,74 @@ void QueryParser::selectClause()
     while (declaration());
 
     expect(TokenTypes::Select);
-    std::unique_ptr<Token> selectedSynToken = std::move(expect(TokenTypes::Identifier));
-
-    // Check for undeclared synonyms
-    QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, SELECT_CLAUSE_STR, selectedSynToken->getValue());
-
-    auto declaration = std::make_shared<Declaration>(synonyms[selectedSynToken->getValue()], selectedSynToken->getValue());
-    query->setSelectClause(declaration);
+    
+    resultClause();
 
     // Can have any number of such-that and pattern clauses in any order
     while (suchThatClause() || withClause() || patternClause());
+}
 
+void QueryParser::resultClause()
+{
+    if (accept(TokenTypes::Boolean)) {
+        return;
+    }
+    if (tuple()) {
+        return;
+    }
+    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), RES_CLAUSE_STR);
+}
+
+bool QueryParser::tuple()
+{
+    if (elem()) {
+        return true;
+    }
+    else if (accept(TokenTypes::LeftAngleBracket)) {
+        if (!elem()) return false;  // must have at least one elem in tuple
+        while (accept(TokenTypes::Comma)) {
+            elem();
+        }
+        expect(TokenTypes::RightAngleBracket);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool QueryParser::elem()
+{
+    std::unique_ptr<Token> token = std::move(accept(TokenTypes::AttrRef));
+    if (token) {
+        std::string synonymValue = Tokenizer::getAttrRefSynonym(token->getValue());
+        std::string attrName = Tokenizer::getAttrRefAttrName(token->getValue());
+
+        // Check for undeclared synonym
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, RES_CLAUSE_STR, synonymValue);
+
+        // TODO: add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
+
+        auto queryInput = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
+        queryInput->setIsAttribute();
+
+        query->addDeclarationToSelectClause(queryInput);
+
+        return true;
+    }
+    token = std::move(accept(TokenTypes::Identifier));
+    if (token) {
+
+        // Check for undeclared synonym
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, RES_CLAUSE_STR, token->getValue());
+
+        auto queryInput = std::make_shared<Declaration>(synonyms[token->getValue()], token->getValue());
+
+        query->addDeclarationToSelectClause(queryInput);
+
+        return true;
+    }
+    return false;
 }
 
 bool QueryParser::declaration()
@@ -361,14 +418,14 @@ std::shared_ptr<QueryInput> QueryParser::ref()
 
         // TODO: add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
 
-        auto queryInput = make_shared<Declaration>(synonyms[synonymValue], synonymValue);
+        auto queryInput = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
         queryInput->setIsAttribute();
 
         return queryInput;
     }
     token = std::move(accept(TokenTypes::Integer));
     if (token) {
-        auto queryInput = make_shared<StmtNum>(token->getValue());
+        auto queryInput = std::make_shared<StmtNum>(token->getValue());
         return queryInput;
     }
     token = std::move(accept(TokenTypes::Identifier));
@@ -377,7 +434,7 @@ std::shared_ptr<QueryInput> QueryParser::ref()
         // Check for undeclared synonym
         QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, REF_STR, token->getValue());
 
-        auto queryInput = make_shared<Declaration>(synonyms[token->getValue()], token->getValue());
+        auto queryInput = std::make_shared<Declaration>(synonyms[token->getValue()], token->getValue());
 
         return queryInput;
     }
@@ -385,7 +442,7 @@ std::shared_ptr<QueryInput> QueryParser::ref()
         token = std::move(expect(TokenTypes::Identifier));
         expect(TokenTypes::DoubleQuote);
 
-        auto queryInput = make_shared<Ident>(token->getValue());
+        auto queryInput = std::make_shared<Ident>(token->getValue());
 
         return queryInput;
     }

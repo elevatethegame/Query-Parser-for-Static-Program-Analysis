@@ -31,6 +31,9 @@ private:
     std::unique_ptr<Token> expect(TokenTypes type);
     std::shared_ptr<QueryInput> expect(std::shared_ptr<QueryInput> queryInput, bool isStmtRef);
     void selectClause();
+    void resultClause();
+    bool tuple();
+    bool elem();
     bool declaration();
     bool suchThatClause();
     bool withClause();

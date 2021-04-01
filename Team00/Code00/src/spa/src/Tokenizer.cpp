@@ -6,9 +6,9 @@
 
 
 std::set<char> Tokenizer::specialCharactersAmongIdentifiers = {'*', '_', '.', '#'};
-std::set<std::string> designEntities = { "stmt", "read", "print", "while", "if", "assign",
+std::set<std::string> Tokenizer::designEntities = { "stmt", "read", "print", "while", "if", "assign",
             "variable", "constant", "procedure", "prog_line", "call" };
-std::set<std::string> attrNames = { "procName", "varName", "value", "stmt#" };
+std::set<std::string> Tokenizer::attrNames = { "procName", "varName", "value", "stmt#" };
 
 bool Tokenizer::canTreatAsIdent(TokenTypes type, std::string value) {
     // Keyword TokenTypes which can also be treated as identifiers when accepting tokens
@@ -71,7 +71,7 @@ bool Tokenizer::canTokenizeAsAttrRef(std::string identifier)
         if (!std::isalnum(synonym[i])) return false;
     }
     // AttrName is not valid
-    if (std::find(std::begin(attrNames), std::end(attrNames), identifier) != std::end(attrNames)) {
+    if (std::find(std::begin(Tokenizer::attrNames), std::end(Tokenizer::attrNames), identifier) != std::end(Tokenizer::attrNames)) {
         return false;
     }
     return true;
@@ -133,10 +133,10 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     else if (identifier == "BOOLEAN") {
         token = std::make_unique<Token>(Token{ TokenTypes::Boolean, identifier });
     }
-    else if (std::find(std::begin(designEntities), std::end(designEntities), identifier) != std::end(designEntities)) {
+    else if (std::find(std::begin(Tokenizer::designEntities), std::end(Tokenizer::designEntities), identifier) != std::end(Tokenizer::designEntities)) {
         token = std::make_unique<Token>(Token{ TokenTypes::DesignEntity, identifier });
     }
-    else if (std::find(std::begin(attrNames), std::end(attrNames), identifier) != std::end(attrNames)) {
+    else if (std::find(std::begin(Tokenizer::attrNames), std::end(Tokenizer::attrNames), identifier) != std::end(Tokenizer::attrNames)) {
         token = std::make_unique<Token>(Token{ TokenTypes::AttrName, identifier });
     }
     else if (canTokenizeAsAttrRef(identifier)) {
