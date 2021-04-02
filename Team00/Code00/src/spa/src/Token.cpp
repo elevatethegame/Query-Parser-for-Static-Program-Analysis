@@ -44,6 +44,9 @@ std::string Token::TokenTypeToString(TokenTypes type)
     case TokenTypes::Next:
         return "Token Type of Next";
         break;
+    case TokenTypes::Affects:
+        return "Token Type of Affects";
+        break;
     case TokenTypes::Pattern:
         return "Token Type of Pattern";
         break;

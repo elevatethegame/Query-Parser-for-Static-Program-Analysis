@@ -5,7 +5,7 @@
 #include <iterator>  // for std::begin, std::end
 
 
-std::set<char> Tokenizer::specialCharactersAmongIdentifiers = {'*', '_', '.', '#'};
+std::set<char> Tokenizer::specialCharactersAmongIdentifiers = {'_', '.', '#'};
 std::set<std::string> Tokenizer::designEntities = { "stmt", "read", "print", "while", "if", "assign",
             "variable", "constant", "procedure", "prog_line", "call" };
 std::set<std::string> Tokenizer::attrNames = { "procName", "varName", "value", "stmt#" };
@@ -14,7 +14,8 @@ bool Tokenizer::canTreatAsIdent(TokenTypes type, std::string value) {
     // Keyword TokenTypes which can also be treated as identifiers when accepting tokens
     TokenTypes keywordTypes[] = { TokenTypes::Modifies, TokenTypes::Uses, TokenTypes::Parent,
                 TokenTypes::Follows, TokenTypes::Select, TokenTypes::Such, TokenTypes::That, TokenTypes::Pattern,
-                TokenTypes::Next, TokenTypes::Calls, TokenTypes::And, TokenTypes::With, TokenTypes::Boolean };
+                TokenTypes::Next, TokenTypes::Calls, TokenTypes::Affects, 
+                TokenTypes::And, TokenTypes::With, TokenTypes::Boolean };
     if (std::find(std::begin(keywordTypes), std::end(keywordTypes), type) != std::end(keywordTypes))
         return true;
     // Possibly an identifier with same name as design entity token
@@ -23,6 +24,10 @@ bool Tokenizer::canTreatAsIdent(TokenTypes type, std::string value) {
     if (type == TokenTypes::AttrName && value != "stmt#")
         return true;
     return false;
+}
+
+bool Tokenizer::canTreatAsTermSymbol(TokenTypes type) {
+    return type == TokenTypes::TermSymbol || type == TokenTypes::Asterisk;
 }
 
 std::string Tokenizer::getAttrRefSynonym(std::string tokenValue)
@@ -106,26 +111,17 @@ std::unique_ptr<Token> Tokenizer::readIdentifier()
     else if (identifier == "Parent") {
         token = std::make_unique<Token>(Token{ TokenTypes::Parent, identifier });
     }
-    else if (identifier == "Parent*") {
-        token = std::make_unique<Token>(Token{ TokenTypes::ParentT, identifier });
-    }
     else if (identifier == "Follows") {
         token = std::make_unique<Token>(Token{ TokenTypes::Follows, identifier });
-    }
-    else if (identifier == "Follows*") {
-        token = std::make_unique<Token>(Token{ TokenTypes::FollowsT, identifier });
     }
     else if (identifier == "Calls") {
         token = std::make_unique<Token>(Token{ TokenTypes::Calls, identifier });
     }
-    else if (identifier == "Calls*") {
-        token = std::make_unique<Token>(Token{ TokenTypes::CallsT, identifier });
-    }
     else if (identifier == "Next") {
         token = std::make_unique<Token>(Token{ TokenTypes::Next, identifier });
     }
-    else if (identifier == "Next*") {
-        token = std::make_unique<Token>(Token{ TokenTypes::NextT, identifier });
+    else if (identifier == "Affects") {
+        token = std::make_unique<Token>(Token{ TokenTypes::Affects, identifier });
     }
     else if (identifier == "with") {
         token = std::make_unique<Token>(Token{ TokenTypes::With, identifier });
@@ -177,6 +173,9 @@ std::unique_ptr<Token> Tokenizer::readNext()
     char ch = inputStream.peek();
     switch (ch)
     {
+    case '*':
+        return std::make_unique<Token>(Token{ TokenTypes::Asterisk, std::string(1, inputStream.next()) });
+        break;
     case '(':
         return std::make_unique<Token>(Token{ TokenTypes::LeftParen, std::string(1, inputStream.next()) });
         break;
@@ -201,7 +200,6 @@ std::unique_ptr<Token> Tokenizer::readNext()
         break;
     case '/':
     case '%':
-    case '*':
         return std::make_unique<Token>(Token{ TokenTypes::TermSymbol, std::string(1, inputStream.next()) });
         break;
     case '<':

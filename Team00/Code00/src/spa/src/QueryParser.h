@@ -52,6 +52,7 @@ private:
     bool follows();
     bool calls();
     bool next();
+    bool affects();
     std::shared_ptr<Expression> expressionSpec();
     void expression(Expression& result);
     void term(Expression& result);

@@ -25,6 +25,7 @@ private:
 public:
 
     static bool canTreatAsIdent(TokenTypes type, std::string value);
+    static bool canTreatAsTermSymbol(TokenTypes type);
     static std::string getAttrRefSynonym(std::string tokenValue);
     static std::string getAttrRefAttrName(std::string tokenValue);
     Tokenizer(const std::string givenInput);

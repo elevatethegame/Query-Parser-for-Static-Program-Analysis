@@ -4,19 +4,17 @@
 
 enum class TokenTypes
 {
+    Asterisk,
     Integer,
     Identifier,
     DesignEntity,
     Modifies,
     Uses,
     Parent,
-    ParentT,
     Follows,
-    FollowsT,
     Calls,
-    CallsT,
     Next,
-    NextT,
+    Affects,
     Select,
     Such,
     That,
