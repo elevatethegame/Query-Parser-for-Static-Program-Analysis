@@ -454,10 +454,14 @@ std::shared_ptr<QueryInput> QueryParser::ref()
         // Check for undeclared synonym
         QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, REF_STR, synonymValue);
 
-        // TODO: add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
+        // Add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
+        QueryParserErrorUtility::semanticCheckInvalidAttrForSynonym(EntitiesTable::getValidSynonymAttrs(synonyms[synonymValue]), 
+                attrName, synonymValue, synonyms[synonymValue]);
 
         auto queryInput = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
-        queryInput->setIsAttribute();
+
+        if (EntitiesTable::isSecondaryAttr(synonyms[synonymValue], attrName))
+            queryInput->setIsAttribute();
 
         return queryInput;
     }
@@ -471,6 +475,9 @@ std::shared_ptr<QueryInput> QueryParser::ref()
 
         // Check for undeclared synonym
         QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, REF_STR, token->getValue());
+
+        // Synonym in with clause must be of type prog_line
+        QueryParserErrorUtility::semanticCheckWithClauseSynonym(synonyms[token->getValue()], token->getValue());
 
         auto queryInput = std::make_shared<Declaration>(synonyms[token->getValue()], token->getValue());
 
