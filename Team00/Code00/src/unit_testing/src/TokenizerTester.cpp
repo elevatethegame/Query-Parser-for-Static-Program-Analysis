@@ -73,7 +73,7 @@ TEST_CASE("Test Combination 2")
 		current = std::move(tokenizer.readNext());
 	}
 
-	REQUIRE(tokens.size() == (size_t)30);
+	REQUIRE(tokens.size() == (size_t) 30);
 	TokenTypes tokenTypes[] = { TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::DesignEntity, TokenTypes::Identifier, TokenTypes::Semicolon,
 		TokenTypes::Select, TokenTypes::Identifier, TokenTypes::Such,
@@ -152,7 +152,7 @@ TEST_CASE("Test Combination 4")
 
 TEST_CASE("Test Combination 5")
 {
-	Tokenizer tokenizer = Tokenizer{ "while w; if ifs;\nSelect w such that Parent * (w, ifs)" };
+	Tokenizer tokenizer = Tokenizer{ "while w; if ifs;\nSelect w such that Parent*(w, ifs)" };
 	std::vector<std::unique_ptr<Token>> tokens;
 	std::unique_ptr<Token> current = std::move(tokenizer.readNext());
 	while (current) {
@@ -178,7 +178,7 @@ TEST_CASE("Test Combination 5")
 
 TEST_CASE("Test Combination 6")
 {
-	Tokenizer tokenizer = Tokenizer{ "procedure p1, p2; assign a12, a21; \nSelect p1 such that Parent * (a12, a21) and Calls*(p1, p2)" };
+	Tokenizer tokenizer = Tokenizer{ "procedure p1, p2; assign a12, a21; \nSelect p1 such that Parent*(a12, a21) and Calls*(p1, p2)" };
 	std::vector<std::unique_ptr<Token>> tokens;
 	std::unique_ptr<Token> current = std::move(tokenizer.readNext());
 	while (current) {
@@ -207,7 +207,7 @@ TEST_CASE("Test Combination 6")
 
 TEST_CASE("Test Combination 7")
 {
-	Tokenizer tokenizer = Tokenizer{ "prog_line pgl1, pgl2; \nSelect pgl1 such that Next * (pgl2, pgl1) and Next(pgl1, pgl2)" };
+	Tokenizer tokenizer = Tokenizer{ "prog_line pgl1, pgl2; \nSelect pgl1 such that Next*(pgl2, pgl1) and Next(pgl1, pgl2)" };
 	std::vector<std::unique_ptr<Token>> tokens;
 	std::unique_ptr<Token> current = std::move(tokenizer.readNext());
 	while (current) {

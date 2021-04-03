@@ -8,9 +8,6 @@ std::string Token::TokenTypeToString(TokenTypes type)
     case TokenTypes::And:
         return "Token Type of And";
         break;
-    case TokenTypes::Asterisk:
-        return "Token Type of Asterisk";
-        break;
     case TokenTypes::Comma:
         return "Token Type of Comma";
         break;
@@ -35,6 +32,9 @@ std::string Token::TokenTypeToString(TokenTypes type)
     case TokenTypes::Modifies:
         return "Token Type of Modifies";
         break;
+    case TokenTypes::Uses:
+        return "Token Type of Uses";
+        break;
     case TokenTypes::Parent:
         return "Token Type of Parent";
         break;
@@ -43,6 +43,9 @@ std::string Token::TokenTypeToString(TokenTypes type)
         break;
     case TokenTypes::Next:
         return "Token Type of Next";
+        break;
+    case TokenTypes::Affects:
+        return "Token Type of Affects";
         break;
     case TokenTypes::Pattern:
         return "Token Type of Pattern";
@@ -71,8 +74,26 @@ std::string Token::TokenTypeToString(TokenTypes type)
     case TokenTypes::TermSymbol:
         return "Token Type of TermSymbol";
         break;
-    default:  // case TokenTypes::Uses
-        return "Token Type of Uses";
+    case TokenTypes::LeftAngleBracket:
+        return "Token Type of LeftAngleBracket";
+        break;
+    case TokenTypes::RightAngleBracket:
+        return "Token Type of RightAngleBracket";
+        break;
+    case TokenTypes::AttrName:
+        return "Token Type of AttrName";
+        break;
+    case TokenTypes::AttrRef:
+        return "Token Type of AttrRef";
+        break;
+    case TokenTypes::Equals:
+        return "Token Type of Equals";
+        break;
+    case TokenTypes::With:
+        return "Token Type of With";
+        break;
+    default:  // case TokenTypes::Boolean
+        return "Token Type of Boolean";
         break;
     }
 }

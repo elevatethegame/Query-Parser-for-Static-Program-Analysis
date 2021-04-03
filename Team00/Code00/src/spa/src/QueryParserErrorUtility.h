@@ -26,9 +26,14 @@ public:
 
     static void semanticCheckWildcardAllowed(bool acceptsUnderscore, std::string tokenValue, std::string clause);
 
-    static void QueryParserErrorUtility::semanticCheckSameSynonymBothSides(std::shared_ptr<QueryInput> leftQueryInput,
+    static void semanticCheckSameSynonymBothSides(std::shared_ptr<QueryInput> leftQueryInput,
             std::shared_ptr<QueryInput> rightQueryInput, std::string relRef);
 
-    static void QueryParserErrorUtility::semanticCheckLeftStmtNumGtrEqualsRightStmtNum(std::shared_ptr<QueryInput> leftQueryInput,
+    static void semanticCheckLeftStmtNumGtrEqualsRightStmtNum(std::shared_ptr<QueryInput> leftQueryInput,
         std::shared_ptr<QueryInput> rightQueryInput, std::string relRef);
+
+    static void semanticCheckInvalidAttrForSynonym(std::set<std::string> validSynonymAttrs, std::string attrName, 
+            std::string synonym, EntityType entityType);
+
+    static void semanticCheckWithClauseSynonym(EntityType entityType, std::string synonym);
 };

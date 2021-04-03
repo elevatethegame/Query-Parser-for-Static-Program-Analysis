@@ -4,6 +4,7 @@
 
 enum class TokenTypes
 {
+    Asterisk,
     Integer,
     Identifier,
     DesignEntity,
@@ -13,6 +14,7 @@ enum class TokenTypes
     Follows,
     Calls,
     Next,
+    Affects,
     Select,
     Such,
     That,
@@ -24,9 +26,15 @@ enum class TokenTypes
     RightParen,
     Comma,
     DoubleQuote,
-    Asterisk,
     ExprSymbol,
-    TermSymbol
+    TermSymbol,
+    LeftAngleBracket,
+    RightAngleBracket,
+    AttrName,
+    AttrRef,
+    Equals,
+    With,
+    Boolean
 };
 
 #endif

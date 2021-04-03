@@ -19,14 +19,6 @@ void QueryParser::getNextToken()
     currToken = std::move(tokenizer->readNext());
 }
 
-bool QueryParser::canTreatAsIdent(TokenTypes type) {
-    // Keyword TokenTypes which can also be treated as identifiers when accepting tokens
-    TokenTypes keywordTypes[] = { TokenTypes::DesignEntity, TokenTypes::Modifies, TokenTypes::Uses, TokenTypes::Parent,
-                TokenTypes::Follows, TokenTypes::Select, TokenTypes::Such, TokenTypes::That, TokenTypes::Pattern,
-                TokenTypes::And };
-    return std::find(std::begin(keywordTypes), std::end(keywordTypes), type) != std::end(keywordTypes);
-}
-
 std::unique_ptr<Token> QueryParser::accept(TokenTypes type)
 {
     if (!currToken) return std::unique_ptr<Token>();  // End of query reached
@@ -36,7 +28,13 @@ std::unique_ptr<Token> QueryParser::accept(TokenTypes type)
         return prevToken;
     }
     // Check if the current token is a keyword token (if so, it can be treated as identifier if we are accepting identifiers)
-    if (type == TokenTypes::Identifier && canTreatAsIdent(currToken->getType())) {
+    if (type == TokenTypes::Identifier && Tokenizer::canTreatAsIdent(currToken->getType(), currToken->getValue())) {
+        std::unique_ptr<Token> prevToken = std::move(currToken);
+        getNextToken();
+        return prevToken;
+    }
+    // Check if the current token is an asterisk token (if so, it can be treated as a term symbol)
+    if (type == TokenTypes::TermSymbol && Tokenizer::canTreatAsTermSymbol(currToken->getType())) {
         std::unique_ptr<Token> prevToken = std::move(currToken);
         getNextToken();
         return prevToken;
@@ -65,17 +63,78 @@ void QueryParser::selectClause()
     while (declaration());
 
     expect(TokenTypes::Select);
-    std::unique_ptr<Token> selectedSynToken = std::move(expect(TokenTypes::Identifier));
-
-    // Check for undeclared synonyms
-    QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, SELECT_CLAUSE_STR, selectedSynToken->getValue());
-
-    auto declaration = std::make_shared<Declaration>(synonyms[selectedSynToken->getValue()], selectedSynToken->getValue());
-    query->setSelectClause(declaration);
+    
+    resultClause();
 
     // Can have any number of such-that and pattern clauses in any order
-    while (suchThatClause() || patternClause());
+    while (suchThatClause() || withClause() || patternClause());
+}
 
+void QueryParser::resultClause()
+{
+    if (accept(TokenTypes::Boolean)) {
+        return;
+    }
+    if (tuple()) {
+        return;
+    }
+    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), RES_CLAUSE_STR);
+}
+
+bool QueryParser::tuple()
+{
+    if (elem()) {
+        return true;
+    }
+    else if (accept(TokenTypes::LeftAngleBracket)) {
+        if (!elem()) return false;  // must have at least one elem in tuple
+        while (accept(TokenTypes::Comma)) {
+            elem();
+        }
+        expect(TokenTypes::RightAngleBracket);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool QueryParser::elem()
+{
+    std::unique_ptr<Token> token = std::move(accept(TokenTypes::AttrRef));
+    if (token) {
+        std::string synonymValue = Tokenizer::getAttrRefSynonym(token->getValue());
+        std::string attrName = Tokenizer::getAttrRefAttrName(token->getValue());
+
+        // Check for undeclared synonym
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, RES_CLAUSE_STR, synonymValue);
+
+        // Add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
+        QueryParserErrorUtility::semanticCheckInvalidAttrForSynonym(EntitiesTable::getValidSynonymAttrs(synonyms[synonymValue]),
+            attrName, synonymValue, synonyms[synonymValue]);
+
+        auto queryInput = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
+
+        if (EntitiesTable::isSecondaryAttr(synonyms[synonymValue], attrName))
+            queryInput->setIsAttribute();
+
+        query->addDeclarationToSelectClause(queryInput);
+
+        return true;
+    }
+    token = std::move(accept(TokenTypes::Identifier));
+    if (token) {
+
+        // Check for undeclared synonym
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, RES_CLAUSE_STR, token->getValue());
+
+        auto queryInput = std::make_shared<Declaration>(synonyms[token->getValue()], token->getValue());
+
+        query->addDeclarationToSelectClause(queryInput);
+
+        return true;
+    }
+    return false;
 }
 
 bool QueryParser::declaration()
@@ -118,7 +177,7 @@ bool QueryParser::suchThatClause()
 
 void QueryParser::relRef()
 {
-    if (modifies() || uses() || follows() || parent() || calls() || next()) {
+    if (modifies() || uses() || follows() || parent() || calls() || next() || affects()) {
         return;
     }
     QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), RELREF_STR);
@@ -217,19 +276,17 @@ bool QueryParser::uses()
 
 bool QueryParser::parent()
 {
+    RelationshipType relType;
+    std::string relRef;
     if (accept(TokenTypes::Parent)) {
-        RelationshipType relType;
-        std::string relRef;
-
         if (accept(TokenTypes::Asterisk)) {
             relType = RelationshipType::PARENT_T;
-            relRef = PARENT_T;
+            relRef = PARENT_T_STR;
         }
         else {
             relType = RelationshipType::PARENT;
-            relRef = PARENT;
+            relRef = PARENT_STR;
         }
-
         expect(TokenTypes::LeftParen);
         std::shared_ptr<QueryInput> leftQueryInput = stmtRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::PARENT), true);
         expect(TokenTypes::Comma);
@@ -245,24 +302,24 @@ bool QueryParser::parent()
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
-    return false;
+    else {
+        return false;
+    }
 }
 
 bool QueryParser::follows()
 {
+    RelationshipType relType;
+    std::string relRef;
     if (accept(TokenTypes::Follows)) {
-        RelationshipType relType;
-        std::string relRef;
-
         if (accept(TokenTypes::Asterisk)) {
             relType = RelationshipType::FOLLOWS_T;
-            relRef = FOLLOWS_T;
+            relRef = FOLLOWS_T_STR;
         }
         else {
             relType = RelationshipType::FOLLOWS;
-            relRef = FOLLOWS;
+            relRef = FOLLOWS_STR;
         }
-
         expect(TokenTypes::LeftParen);
         std::shared_ptr<QueryInput> leftQueryInput = stmtRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::FOLLOWS), true);
         expect(TokenTypes::Comma);
@@ -278,24 +335,24 @@ bool QueryParser::follows()
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
-    return false;
+    else {
+        return false;
+    }
 }
 
 bool QueryParser::calls()
 {
+    RelationshipType relType;
+    std::string relRef;
     if (accept(TokenTypes::Calls)) {
-        RelationshipType relType;
-        std::string relRef;
-
         if (accept(TokenTypes::Asterisk)) {
             relType = RelationshipType::CALLS_T;
-            relRef = CALLS_T;
+            relRef = CALLS_T_STR;
         }
         else {
             relType = RelationshipType::CALLS;
-            relRef = CALLS;
+            relRef = CALLS_STR;
         }
-
         expect(TokenTypes::LeftParen);
         std::shared_ptr<QueryInput> leftQueryInput = entRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::CALLS), true);
         expect(TokenTypes::Comma);
@@ -308,24 +365,24 @@ bool QueryParser::calls()
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
-    return false;
+    else {
+        return false;
+    }
 }
 
 bool QueryParser::next()
 {
+    RelationshipType relType;
+    std::string relRef;
     if (accept(TokenTypes::Next)) {
-        RelationshipType relType;
-        std::string relRef;
-
         if (accept(TokenTypes::Asterisk)) {
             relType = RelationshipType::NEXT_T;
-            relRef = NEXT_T;
+            relRef = NEXT_T_STR;
         }
         else {
             relType = RelationshipType::NEXT;
-            relRef = NEXT;
+            relRef = NEXT_STR;
         }
-
         expect(TokenTypes::LeftParen);
         std::shared_ptr<QueryInput> leftQueryInput = stmtRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::NEXT), true);
         expect(TokenTypes::Comma);
@@ -339,7 +396,107 @@ bool QueryParser::next()
         query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
         return true;
     }
+    else {
+        return false;
+    }
+}
+
+bool QueryParser::affects()
+{
+    RelationshipType relType;
+    std::string relRef;
+    if (accept(TokenTypes::Affects)) {
+        if (accept(TokenTypes::Asterisk)) {
+            relType = RelationshipType::AFFECTS_T;
+            relRef = AFFECTS_T_STR;
+        }
+        else {
+            relType = RelationshipType::AFFECTS;
+            relRef = AFFECTS_STR;
+        }
+        expect(TokenTypes::LeftParen);
+        std::shared_ptr<QueryInput> leftQueryInput = stmtRef(EntitiesTable::getRelAllowedLeftEntities(RelationshipType::AFFECTS), true);
+        expect(TokenTypes::Comma);
+        std::shared_ptr<QueryInput> rightQueryInput = stmtRef(EntitiesTable::getRelAllowedRightEntities(RelationshipType::AFFECTS), true);
+        expect(TokenTypes::RightParen);
+
+        query->addRelationshipClause(relType, leftQueryInput, rightQueryInput);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool QueryParser::withClause()
+{
+    if (accept(TokenTypes::With)) {
+        attrCompare();
+        while (accept(TokenTypes::And)) {  // Can have any number of 'and' attrCompare
+            attrCompare();
+        }
+        return true;
+    }
     return false;
+}
+
+void QueryParser::attrCompare()
+{
+    std::shared_ptr<QueryInput> leftRef = ref();
+    expect(TokenTypes::Equals);
+    std::shared_ptr<QueryInput> rightRef = ref();
+    query->addWithClause(leftRef, rightRef);
+}
+
+std::shared_ptr<QueryInput> QueryParser::ref()
+{
+    std::unique_ptr<Token> token = std::move(accept(TokenTypes::AttrRef));
+    if (token) {
+        std::string synonymValue = Tokenizer::getAttrRefSynonym(token->getValue());
+        std::string attrName = Tokenizer::getAttrRefAttrName(token->getValue());
+
+        // Check for undeclared synonym
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, REF_STR, synonymValue);
+
+        // Add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
+        QueryParserErrorUtility::semanticCheckInvalidAttrForSynonym(EntitiesTable::getValidSynonymAttrs(synonyms[synonymValue]), 
+                attrName, synonymValue, synonyms[synonymValue]);
+
+        auto queryInput = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
+
+        if (EntitiesTable::isSecondaryAttr(synonyms[synonymValue], attrName))
+            queryInput->setIsAttribute();
+
+        return queryInput;
+    }
+    token = std::move(accept(TokenTypes::Integer));
+    if (token) {
+        auto queryInput = std::make_shared<StmtNum>(token->getValue());
+        return queryInput;
+    }
+    token = std::move(accept(TokenTypes::Identifier));
+    if (token) {
+
+        // Check for undeclared synonym
+        QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, REF_STR, token->getValue());
+
+        // Synonym in with clause must be of type prog_line
+        QueryParserErrorUtility::semanticCheckWithClauseSynonym(synonyms[token->getValue()], token->getValue());
+
+        auto queryInput = std::make_shared<Declaration>(synonyms[token->getValue()], token->getValue());
+
+        return queryInput;
+    }
+    if (accept(TokenTypes::DoubleQuote)) {
+        token = std::move(expect(TokenTypes::Identifier));
+        expect(TokenTypes::DoubleQuote);
+
+        auto queryInput = std::make_shared<Ident>(token->getValue());
+
+        return queryInput;
+    }
+    // Ref could not be parsed correctly
+    QueryParserErrorUtility::unexpectedTokenSyntacticException(currToken->toString(), REF_STR);
 }
 
 bool QueryParser::patternClause()
@@ -449,24 +606,16 @@ void QueryParser::expression(Expression& result)
     }
 }
 
-std::unique_ptr<Token> QueryParser::acceptTermSymbol()
-{
-    std::unique_ptr<Token> token = std::move(accept(TokenTypes::TermSymbol));
-    if (!token)
-        token = std::move(accept(TokenTypes::Asterisk));  // Asterisk Token Type can also be Multiplication operator
-    return token;
-}
-
 void QueryParser::term(Expression& result)
 {
     factor(result);
-    std::unique_ptr<Token> token = std::move(acceptTermSymbol());
+    std::unique_ptr<Token> token = std::move(accept(TokenTypes::TermSymbol));
     while (token) {
         Expression subResult("", result.getType());
         factor(subResult);
         result = result.combineExpression(token->getValue(), subResult, result.getType());
         // Try to accept another TermSymbol to loop again
-        token = std::move(acceptTermSymbol());
+        token = std::move(accept(TokenTypes::TermSymbol));
     }
 }
 

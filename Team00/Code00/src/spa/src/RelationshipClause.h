@@ -1,10 +1,11 @@
 #pragma once
 
 #include <memory>
+#include "OptionalClause.h"
 #include "RelationshipType.h"
 #include "QueryInput.h"
 
-class RelationshipClause {
+class RelationshipClause : public OptionalClause {
 private:
 	RelationshipType aRelationshipType;
 	shared_ptr<QueryInput> aLeftInput;

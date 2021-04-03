@@ -1,11 +1,12 @@
 #pragma once
 
 #include <memory>
+#include "OptionalClause.h"
 #include "Declaration.h"
 #include "QueryInput.h"
 #include "Expression.h"
 
-class PatternClause {
+class PatternClause : public OptionalClause {
 private:
 	shared_ptr<Declaration> aSynonym;
 	shared_ptr<QueryInput> aQueryInput;

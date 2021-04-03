@@ -18,10 +18,18 @@ private:
 
     static std::unordered_map<PatternType, std::set<EntityType>> patternArgTable;
 
+    static std::unordered_map<EntityType, std::set<std::string>> entityTypeToValidAttrTable;
+
+    static std::unordered_map<EntityType, bool> entityTypeHasMultipleAttrTable;
+
+    static std::unordered_map<EntityType, std::string> entityTypeSecondaryAttrTable;
+
 public:
     static std::set<EntityType> getRelAllowedLeftEntities(RelationshipType);
     static std::set<EntityType> getRelAllowedRightEntities(RelationshipType);
     static std::set<EntityType> getPatternAllowedEntities(PatternType);
+    static std::set<std::string> getValidSynonymAttrs(EntityType);
+    static bool isSecondaryAttr(EntityType entityType, std::string attrName);
 };
 
 #endif

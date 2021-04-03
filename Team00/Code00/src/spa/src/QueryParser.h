@@ -27,13 +27,18 @@ private:
     std::unordered_map<std::string, EntityType> synonyms;
 
     void getNextToken();
-    bool canTreatAsIdent(TokenTypes type);
     std::unique_ptr<Token> accept(TokenTypes type);
     std::unique_ptr<Token> expect(TokenTypes type);
     std::shared_ptr<QueryInput> expect(std::shared_ptr<QueryInput> queryInput, bool isStmtRef);
     void selectClause();
+    void resultClause();
+    bool tuple();
+    bool elem();
     bool declaration();
     bool suchThatClause();
+    bool withClause();
+    void attrCompare();
+    std::shared_ptr<QueryInput> ref();
     bool patternClause();
     void patternAssign(std::string synoynmValue);
     void patternWhile(std::string synoynmValue);
@@ -47,9 +52,9 @@ private:
     bool follows();
     bool calls();
     bool next();
+    bool affects();
     std::shared_ptr<Expression> expressionSpec();
     void expression(Expression& result);
-    std::unique_ptr<Token> acceptTermSymbol();
     void term(Expression& result);
     void factor(Expression& result);
 
