@@ -109,10 +109,14 @@ bool QueryParser::elem()
         // Check for undeclared synonym
         QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, RES_CLAUSE_STR, synonymValue);
 
-        // TODO: add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
+        // Add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
+        QueryParserErrorUtility::semanticCheckInvalidAttrForSynonym(EntitiesTable::getValidSynonymAttrs(synonyms[synonymValue]),
+            attrName, synonymValue, synonyms[synonymValue]);
 
         auto queryInput = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
-        queryInput->setIsAttribute();
+
+        if (EntitiesTable::isSecondaryAttr(synonyms[synonymValue], attrName))
+            queryInput->setIsAttribute();
 
         query->addDeclarationToSelectClause(queryInput);
 

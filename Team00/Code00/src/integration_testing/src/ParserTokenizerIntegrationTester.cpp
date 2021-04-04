@@ -2414,6 +2414,169 @@ TEST_CASE("Test Query with Select, Such That, and With 2")
 	REQUIRE(withClRightQueryInput->getValue() == "var3");
 }
 
+// ----------------- SelectCl + Boolean ResultCl + All other clauses -----------------
+
+TEST_CASE("Test Query with Select + Boolean ResultCl + All other clauses 1")
+{
+	std::string input = "assign a; print p; variable v; while w;"
+		"\nSelect BOOLEAN such that Modifies(a, v) and Affects(a, 10) with a.stmt# = p.stmt# pattern w(v, _)";
+	auto query = std::make_shared<Query>();
+	auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+	QueryParser queryParser = QueryParser{ tokenizer, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["p"] == EntityType::PRINT);
+	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
+	REQUIRE(synonyms["v"] == EntityType::VAR);
+
+	// Select BOOLEAN means that Query's Select Clause object's list of declarations will be empty
+	REQUIRE(query->getSelectClause()->getDeclarations().size() == 0);
+
+	std::shared_ptr<RelationshipClause> relationshipCl = std::dynamic_pointer_cast<RelationshipClause>(query->getOptionalClauses().at(0));
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> suchThatClRightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::MODIFIES);
+	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(suchThatClLeftQueryInput->getValue() == "a");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::ASSIGN);
+	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(suchThatClRightQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::VAR);
+
+	relationshipCl = std::dynamic_pointer_cast<RelationshipClause>(query->getOptionalClauses().at(1));
+    relationshipType = relationshipCl->getRelationshipType();
+	suchThatClLeftQueryInput = relationshipCl->getLeftInput();
+	suchThatClRightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::AFFECTS);
+	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(suchThatClLeftQueryInput->getValue() == "a");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::ASSIGN);
+	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::STMT_NUM);
+	REQUIRE(suchThatClRightQueryInput->getValue() == "10");
+
+	std::shared_ptr<WithClause> withCl = std::dynamic_pointer_cast<WithClause>(query->getOptionalClauses().at(2));
+	std::shared_ptr<QueryInput> withClLeftQueryInput = withCl->getLeftInput();
+	std::shared_ptr<QueryInput> withClRightQueryInput = withCl->getRightInput();
+	REQUIRE(withClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(withClLeftQueryInput->getValue() == "a");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClLeftQueryInput)->getEntityType() == EntityType::ASSIGN);
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClLeftQueryInput)->getIsAttribute() == false);
+	REQUIRE(withClRightQueryInput->getValue() == "p");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClRightQueryInput)->getEntityType() == EntityType::PRINT);
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClRightQueryInput)->getIsAttribute() == false);
+
+	std::shared_ptr<PatternClause> patternCl = std::dynamic_pointer_cast<PatternClause>(query->getOptionalClauses().at(3));
+	std::shared_ptr<Declaration> patternClDeclaration = patternCl->getSynonym();
+	std::shared_ptr<QueryInput> patternQueryInput = patternCl->getQueryInput();
+	std::shared_ptr<Expression> expression = patternCl->getExpression();
+	REQUIRE(patternClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(patternClDeclaration->getValue() == "w");
+	REQUIRE(patternClDeclaration->getEntityType() == EntityType::WHILE);
+	REQUIRE(patternQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(patternQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(patternQueryInput)->getEntityType() == EntityType::VAR);
+}
+
+// ----------------- SelectCl + Tuple ResultCl + All other clauses -----------------
+
+TEST_CASE("Test Query with Select + Tuple Result Cl + All other clauses 1")
+{
+	std::string input = "assign a; stmt s; variable v; call call; constant c; procedure proc; if ifs; print pr; read rd;"
+		"\nSelect <a.stmt#, v, s, c.value, proc.procName, call.procName, call>" 
+		" with v.varName = \"var123\" such that Uses(proc, v) and Modifies(proc, v) with rd.varName = pr.varName pattern ifs(v, _, _)";
+	auto query = std::make_shared<Query>();
+	auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+	QueryParser queryParser = QueryParser{ tokenizer, query };
+	queryParser.parse();
+	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
+
+	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
+	REQUIRE(synonyms["s"] == EntityType::STMT);
+	REQUIRE(synonyms["v"] == EntityType::VAR);
+	REQUIRE(synonyms["call"] == EntityType::CALL);
+	REQUIRE(synonyms["c"] == EntityType::CONST);
+	REQUIRE(synonyms["proc"] == EntityType::PROC);
+	REQUIRE(synonyms["ifs"] == EntityType::IF);
+	REQUIRE(synonyms["pr"] == EntityType::PRINT);
+	REQUIRE(synonyms["rd"] == EntityType::READ);
+
+	// Select BOOLEAN means that Query's Select Clause object's list of declarations will be empty
+	std::vector<std::shared_ptr<Declaration>> declarations = query->getSelectClause()->getDeclarations();
+	REQUIRE(declarations.at(0)->getValue() == "a");
+	REQUIRE(declarations.at(0)->getIsAttribute() == false);
+	REQUIRE(declarations.at(1)->getValue() == "v");
+	REQUIRE(declarations.at(1)->getIsAttribute() == false);
+	REQUIRE(declarations.at(2)->getValue() == "s");
+	REQUIRE(declarations.at(2)->getIsAttribute() == false);
+	REQUIRE(declarations.at(3)->getValue() == "c");
+	REQUIRE(declarations.at(3)->getIsAttribute() == false);
+	REQUIRE(declarations.at(4)->getValue() == "proc");
+	REQUIRE(declarations.at(4)->getIsAttribute() == false);
+	REQUIRE(declarations.at(5)->getValue() == "call");
+	REQUIRE(declarations.at(5)->getIsAttribute() == true);
+	REQUIRE(declarations.at(6)->getValue() == "call");
+	REQUIRE(declarations.at(6)->getIsAttribute() == false);
+
+	std::shared_ptr<WithClause> withCl = std::dynamic_pointer_cast<WithClause>(query->getOptionalClauses().at(0));
+	std::shared_ptr<QueryInput> withClLeftQueryInput = withCl->getLeftInput();
+	std::shared_ptr<QueryInput> withClRightQueryInput = withCl->getRightInput();
+	REQUIRE(withClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(withClLeftQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClLeftQueryInput)->getEntityType() == EntityType::VAR);
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClLeftQueryInput)->getIsAttribute() == false);
+	REQUIRE(withClRightQueryInput->getQueryInputType() == QueryInputType::IDENT);
+	REQUIRE(withClRightQueryInput->getValue() == "var123");
+
+	std::shared_ptr<RelationshipClause> relationshipCl = std::dynamic_pointer_cast<RelationshipClause>(query->getOptionalClauses().at(1));
+	RelationshipType relationshipType = relationshipCl->getRelationshipType();
+	std::shared_ptr<QueryInput> suchThatClLeftQueryInput = relationshipCl->getLeftInput();
+	std::shared_ptr<QueryInput> suchThatClRightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::USES);
+	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(suchThatClLeftQueryInput->getValue() == "proc");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::PROC);
+	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(suchThatClRightQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::VAR);
+
+	relationshipCl = std::dynamic_pointer_cast<RelationshipClause>(query->getOptionalClauses().at(2));
+	relationshipType = relationshipCl->getRelationshipType();
+	suchThatClLeftQueryInput = relationshipCl->getLeftInput();
+	suchThatClRightQueryInput = relationshipCl->getRightInput();
+	REQUIRE(relationshipType == RelationshipType::MODIFIES);
+	REQUIRE(suchThatClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(suchThatClLeftQueryInput->getValue() == "proc");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClLeftQueryInput)->getEntityType() == EntityType::PROC);
+	REQUIRE(suchThatClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(suchThatClRightQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(suchThatClRightQueryInput)->getEntityType() == EntityType::VAR);
+
+	withCl = std::dynamic_pointer_cast<WithClause>(query->getOptionalClauses().at(3));
+	withClLeftQueryInput = withCl->getLeftInput();
+	withClRightQueryInput = withCl->getRightInput();
+	REQUIRE(withClLeftQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(withClLeftQueryInput->getValue() == "rd");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClLeftQueryInput)->getEntityType() == EntityType::READ);
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClLeftQueryInput)->getIsAttribute() == true);
+	REQUIRE(withClRightQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(withClRightQueryInput->getValue() == "pr");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClRightQueryInput)->getEntityType() == EntityType::PRINT);
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClRightQueryInput)->getIsAttribute() == true);
+
+	std::shared_ptr<PatternClause> patternCl = std::dynamic_pointer_cast<PatternClause>(query->getOptionalClauses().at(4));
+	std::shared_ptr<Declaration> patternClDeclaration = patternCl->getSynonym();
+	std::shared_ptr<QueryInput> patternQueryInput = patternCl->getQueryInput();
+	std::shared_ptr<Expression> expression = patternCl->getExpression();
+	REQUIRE(patternClDeclaration->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(patternClDeclaration->getValue() == "ifs");
+	REQUIRE(patternClDeclaration->getEntityType() == EntityType::IF);
+	REQUIRE(patternQueryInput->getQueryInputType() == QueryInputType::DECLARATION);
+	REQUIRE(patternQueryInput->getValue() == "v");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(patternQueryInput)->getEntityType() == EntityType::VAR);
+}
+
 // ----------------- Negative Test Cases (Appropriate Exceptions thrown) -----------------
 
 TEST_CASE("Test Invalid Query without Select Clause")
