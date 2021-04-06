@@ -58,6 +58,44 @@ std::unordered_map<EntityType, std::string> EntitiesTable::entityTypeSecondaryAt
     {EntityType::CALL, PROCNAME_ATTR},
 };
 
+std::unordered_map<EntityType, QueryInputType> EntitiesTable::primaryAttributeToQueryInputTypeTable =
+{
+    {EntityType::ASSIGN, QueryInputType::STMT_NUM},
+    {EntityType::STMT, QueryInputType::STMT_NUM},
+    {EntityType::IF, QueryInputType::STMT_NUM},
+    {EntityType::WHILE, QueryInputType::STMT_NUM},
+    {EntityType::PROGLINE, QueryInputType::STMT_NUM},
+    {EntityType::CONST, QueryInputType::STMT_NUM},
+    {EntityType::PROC, QueryInputType::IDENT},
+    {EntityType::VAR, QueryInputType::IDENT},
+    {EntityType::PRINT, QueryInputType::STMT_NUM},
+    {EntityType::READ, QueryInputType::STMT_NUM},
+    {EntityType::CALL, QueryInputType::STMT_NUM},
+};
+
+std::unordered_map<EntityType, QueryInputType> EntitiesTable::secondaryAttributeToQueryInputTypeTable =
+{
+    {EntityType::PRINT, QueryInputType::IDENT},
+    {EntityType::READ, QueryInputType::IDENT},
+    {EntityType::CALL, QueryInputType::IDENT},
+};
+
+std::unordered_map<EntityType, std::set<EntityType>> EntitiesTable::entityTypeToValidAttrCompareEntities =
+{
+    {EntityType::ASSIGN, {EntityType::ASSIGN, EntityType::STMT, EntityType::PROGLINE, EntityType::CONST}},
+    {EntityType::STMT, {EntityType::ASSIGN, EntityType::STMT, EntityType::PROGLINE, EntityType::CALL, EntityType::CONST,
+        EntityType::IF, EntityType::WHILE, EntityType::PRINT, EntityType::READ}},
+    {EntityType::IF, {EntityType::IF, EntityType::STMT, EntityType::PROGLINE, EntityType::CONST}},
+    {EntityType::WHILE, {EntityType::WHILE, EntityType::STMT, EntityType::PROGLINE, EntityType::CONST}},
+    {EntityType::PROGLINE, {EntityType::ASSIGN, EntityType::STMT, EntityType::PROGLINE, EntityType::CALL, EntityType::CONST,
+        EntityType::IF, EntityType::WHILE, EntityType::PRINT, EntityType::READ}},
+    {EntityType::CONST, {EntityType::ASSIGN, EntityType::STMT, EntityType::PROGLINE, EntityType::CALL, EntityType::CONST,
+        EntityType::IF, EntityType::WHILE, EntityType::PRINT, EntityType::READ}},
+    {EntityType::PRINT, {EntityType::PRINT, EntityType::STMT, EntityType::PROGLINE, EntityType::CONST}},
+    {EntityType::READ, {EntityType::READ, EntityType::STMT, EntityType::PROGLINE, EntityType::CONST}},
+    {EntityType::CALL, {EntityType::CALL, EntityType::STMT, EntityType::PROGLINE, EntityType::CONST}},
+};
+
 
 std::set<EntityType> EntitiesTable::getRelAllowedLeftEntities(RelationshipType relationshipType)
 {
@@ -83,4 +121,19 @@ bool EntitiesTable::isSecondaryAttr(EntityType entityType, std::string attrName)
 {
     return entityTypeSecondaryAttrTable.find(entityType) != entityTypeSecondaryAttrTable.end() &&
         attrName == entityTypeSecondaryAttrTable.at(entityType);
+}
+
+QueryInputType EntitiesTable::getAttrRefType(std::shared_ptr<Declaration> declaration)
+{
+    if (declaration->getIsAttribute()) {
+        return secondaryAttributeToQueryInputTypeTable.at(declaration->getEntityType());
+    }
+    else {
+        return primaryAttributeToQueryInputTypeTable.at(declaration->getEntityType());
+    }
+}
+
+std::set<EntityType> EntitiesTable::getEntityTypeValidAttrCompareEntities(EntityType entityType)
+{
+    return entityTypeToValidAttrCompareEntities.at(entityType);
 }

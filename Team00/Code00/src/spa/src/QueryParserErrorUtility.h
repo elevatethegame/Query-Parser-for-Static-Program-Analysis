@@ -30,10 +30,14 @@ public:
             std::shared_ptr<QueryInput> rightQueryInput, std::string relRef);
 
     static void semanticCheckLeftStmtNumGtrEqualsRightStmtNum(std::shared_ptr<QueryInput> leftQueryInput,
-        std::shared_ptr<QueryInput> rightQueryInput, std::string relRef);
+            std::shared_ptr<QueryInput> rightQueryInput, std::string relRef);
 
-    static void semanticCheckInvalidAttrForSynonym(std::set<std::string> validSynonymAttrs, std::string attrName, 
-            std::string synonym, EntityType entityType);
+    static void semanticCheckInvalidAttrForSynonym(std::unordered_map<std::string, EntityType> synonyms, std::string attrName,
+            std::string synonym);
 
     static void semanticCheckWithClauseSynonym(EntityType entityType, std::string synonym);
+
+    static void semanticCheckValidAttrCompare(std::shared_ptr<QueryInput> leftRef, std::shared_ptr<QueryInput> rightRef);
+
+    static bool isMeaninglessAttrCompare(std::shared_ptr<QueryInput> leftRef, std::shared_ptr<QueryInput> rightRef);
 };

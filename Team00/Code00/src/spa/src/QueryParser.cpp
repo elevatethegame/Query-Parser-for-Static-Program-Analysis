@@ -109,9 +109,8 @@ bool QueryParser::elem()
         // Check for undeclared synonym
         QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, RES_CLAUSE_STR, synonymValue);
 
-        // Add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
-        QueryParserErrorUtility::semanticCheckInvalidAttrForSynonym(EntitiesTable::getValidSynonymAttrs(synonyms[synonymValue]),
-            attrName, synonymValue, synonyms[synonymValue]);
+        // Check for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
+        QueryParserErrorUtility::semanticCheckInvalidAttrForSynonym(synonyms, attrName, synonymValue);
 
         auto queryInput = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
 
@@ -445,7 +444,13 @@ void QueryParser::attrCompare()
     std::shared_ptr<QueryInput> leftRef = ref();
     expect(TokenTypes::Equals);
     std::shared_ptr<QueryInput> rightRef = ref();
-    query->addWithClause(leftRef, rightRef);
+
+    // Check that the ref on both sides have the same type so that they can be compared
+    QueryParserErrorUtility::semanticCheckValidAttrCompare(leftRef, rightRef);
+
+    // Remove meaningless queries
+    if (!QueryParserErrorUtility::isMeaninglessAttrCompare(leftRef, rightRef))
+        query->addWithClause(leftRef, rightRef);
 }
 
 std::shared_ptr<QueryInput> QueryParser::ref()
@@ -459,8 +464,7 @@ std::shared_ptr<QueryInput> QueryParser::ref()
         QueryParserErrorUtility::semanticCheckUndeclaredSynonym(synonyms, REF_STR, synonymValue);
 
         // Add checks for semantically incorrect attribute names for certain synonyms (e.g. constant.procName is invalid)
-        QueryParserErrorUtility::semanticCheckInvalidAttrForSynonym(EntitiesTable::getValidSynonymAttrs(synonyms[synonymValue]), 
-                attrName, synonymValue, synonyms[synonymValue]);
+        QueryParserErrorUtility::semanticCheckInvalidAttrForSynonym(synonyms, attrName, synonymValue);
 
         auto queryInput = std::make_shared<Declaration>(synonyms[synonymValue], synonymValue);
 
