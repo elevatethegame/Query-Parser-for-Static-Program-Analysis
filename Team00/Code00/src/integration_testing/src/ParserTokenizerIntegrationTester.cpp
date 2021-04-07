@@ -2418,17 +2418,18 @@ TEST_CASE("Test Query with Select, Such That, and With 2")
 
 TEST_CASE("Test Query with Select + Boolean ResultCl + All other clauses 1")
 {
-	std::string input = "assign a; print p; variable v; while w;"
-		"\nSelect BOOLEAN such that Modifies(a, v) and Affects(a, 10) with a.stmt# = p.stmt# pattern w(v, _)";
+	std::string input = "assign a; constant c; variable v; while w;"
+		"\nSelect BOOLEAN such that Modifies(a, v) and Affects(a, 10) with a.stmt# = c.value pattern w(v, _)";
 	auto query = std::make_shared<Query>();
 	auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
 	QueryParser queryParser = QueryParser{ tokenizer, query };
 	queryParser.parse();
 	std::unordered_map<std::string, EntityType> synonyms = queryParser.getSynonyms();
 
-	REQUIRE(synonyms["p"] == EntityType::PRINT);
+	REQUIRE(synonyms["c"] == EntityType::CONST);
 	REQUIRE(synonyms["a"] == EntityType::ASSIGN);
 	REQUIRE(synonyms["v"] == EntityType::VAR);
+	REQUIRE(synonyms["w"] == EntityType::WHILE);
 
 	// Select BOOLEAN means that Query's Select Clause object's list of declarations will be empty
 	REQUIRE(query->getSelectClause()->getDeclarations().size() == 0);
@@ -2463,8 +2464,8 @@ TEST_CASE("Test Query with Select + Boolean ResultCl + All other clauses 1")
 	REQUIRE(withClLeftQueryInput->getValue() == "a");
 	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClLeftQueryInput)->getEntityType() == EntityType::ASSIGN);
 	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClLeftQueryInput)->getIsAttribute() == false);
-	REQUIRE(withClRightQueryInput->getValue() == "p");
-	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClRightQueryInput)->getEntityType() == EntityType::PRINT);
+	REQUIRE(withClRightQueryInput->getValue() == "c");
+	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClRightQueryInput)->getEntityType() == EntityType::CONST);
 	REQUIRE(std::dynamic_pointer_cast<Declaration>(withClRightQueryInput)->getIsAttribute() == false);
 
 	std::shared_ptr<PatternClause> patternCl = std::dynamic_pointer_cast<PatternClause>(query->getOptionalClauses().at(3));
@@ -2961,6 +2962,57 @@ TEST_CASE("Test disallowed while synonym in right argument of Such That Clause w
 	}
 	catch (SemanticException const& err) {
 		REQUIRE(std::string(err.what()) == "Synonym w not allowed, has Entity Type of While");
+	}
+}
+
+TEST_CASE("Test different types in attr compare")
+{
+	std::string input = "variable\nv; print\npn;"
+		"Select pn with pn.stmt# = v.varName";
+	auto query = std::make_shared<Query>();
+	auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+	QueryParser queryParser = QueryParser{ tokenizer, query };
+	try {
+		queryParser.parse();
+		REQUIRE(false);
+	}
+	catch (SemanticException const& err) {
+		REQUIRE(std::string(err.what()) == "Invalid Attribute comparison in with clause (leftRef has different type from"
+			" rightRef): pn compared to v");
+	}
+}
+
+TEST_CASE("Test same types in attr compare but guaranteed to be false/empty 1")
+{
+	std::string input = "call cl; print pn;"
+		"Select pn with cl.stmt# = pn.stmt#";
+	auto query = std::make_shared<Query>();
+	auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+	QueryParser queryParser = QueryParser{ tokenizer, query };
+	try {
+		queryParser.parse();
+		REQUIRE(false);
+	}
+	catch (SemanticException const& err) {
+		REQUIRE(std::string(err.what()) == "Attribute comparison of 2 synonym attributes guaranteed to be false/empty in with"
+			" clause: cl compared to pn");
+	}
+}
+
+TEST_CASE("Test same types in attr compare but guaranteed to be false/empty 2")
+{
+	std::string input = "print pn;"
+		"Select pn with 10 = 12";
+	auto query = std::make_shared<Query>();
+	auto tokenizer = std::make_shared<Tokenizer>(Tokenizer(input));
+	QueryParser queryParser = QueryParser{ tokenizer, query };
+	try {
+		queryParser.parse();
+		REQUIRE(false);
+	}
+	catch (SemanticException const& err) {
+		REQUIRE(std::string(err.what()) == "Attribute comparison of 2 integers guaranteed to be false/empty in with"
+			" clause: 10 compared to 12");
 	}
 }
 
