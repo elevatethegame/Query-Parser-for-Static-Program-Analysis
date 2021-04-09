@@ -51,21 +51,6 @@ std::unordered_map<EntityType, std::set<std::string>> EntitiesTable::entityTypeT
     {EntityType::CALL, {STMTNUM_ATTR, PROCNAME_ATTR}},
 };
 
-std::unordered_map<EntityType, bool> EntitiesTable::entityTypeHasMultipleAttrTable =
-{
-    {EntityType::ASSIGN, false},
-    {EntityType::STMT, false},
-    {EntityType::IF, false},
-    {EntityType::WHILE, false},
-    {EntityType::PROGLINE, false},
-    {EntityType::CONST, false},
-    {EntityType::PROC, false},
-    {EntityType::VAR, false},
-    {EntityType::PRINT, true},
-    {EntityType::READ, true},
-    {EntityType::CALL, true},
-};
-
 std::unordered_map<EntityType, std::string> EntitiesTable::entityTypeSecondaryAttrTable =
 {
     {EntityType::PRINT, VARNAME_ATTR},
@@ -96,5 +81,6 @@ std::set<std::string> EntitiesTable::getValidSynonymAttrs(EntityType entityType)
 
 bool EntitiesTable::isSecondaryAttr(EntityType entityType, std::string attrName)
 {
-    return entityTypeHasMultipleAttrTable.at(entityType) && attrName == entityTypeSecondaryAttrTable.at(entityType);
+    return entityTypeSecondaryAttrTable.find(entityType) != entityTypeSecondaryAttrTable.end() &&
+        attrName == entityTypeSecondaryAttrTable.at(entityType);
 }

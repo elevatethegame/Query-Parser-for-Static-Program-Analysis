@@ -81,7 +81,6 @@ void QueryParserErrorUtility::semanticCheckLeftStmtNumGtrEqualsRightStmtNum(std:
 void QueryParserErrorUtility::semanticCheckInvalidAttrForSynonym(std::set<std::string> validSynonymAttrs, std::string attrName, 
         std::string synonym, EntityType entityType)
 {
-    // Semantic check: Undeclared Synonym used in Clause
     if (validSynonymAttrs.find(attrName) == validSynonymAttrs.end()) {
         throw SemanticException("Invalid attrName " + attrName + " for synonym:  " + synonym + " with " + Token::EntityTypeToString(entityType));
     }
